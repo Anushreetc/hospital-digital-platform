@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { apiClient } from '../services/apiClient';
+import { playKannadaAudio, stopKannadaAudio } from '../services/kannadaTts';
 import { Mic, MicOff, Volume2, VolumeX, X, Send, AlertTriangle, CheckCircle2, RefreshCw, Languages, Play } from 'lucide-react';
 
 interface Props {
@@ -40,73 +41,23 @@ export const KannadaVoiceWidget: React.FC<Props> = ({ isOpen, onClose }) => {
       }
     }
     return () => {
-      stopSpeaking();
+      stopKannadaAudio();
     };
   }, [isOpen]);
 
-  // Speech Synthesis (Web Speech, ElevenLabs, or Fish Audio)
+  // Speech Synthesis (Authentic Kannada Native Speech)
   const speakPrompt = async (text: string) => {
     if (isMuted) return;
-    stopSpeaking();
-
-    if (voiceEngine === 'elevenlabs' || voiceEngine === 'fish_audio') {
-      try {
-        setIsSpeaking(true);
-        const res = await fetch('/api/ai/voice/tts', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text, provider: voiceEngine })
-        });
-        if (res.ok) {
-          const blob = await res.blob();
-          const audioUrl = URL.createObjectURL(blob);
-          const audio = new Audio(audioUrl);
-          audioRef.current = audio;
-          audio.onended = () => setIsSpeaking(false);
-          audio.onerror = () => {
-            setIsSpeaking(false);
-            fallbackWebSpeech(text);
-          };
-          await audio.play();
-          return;
-        }
-      } catch (err) {
-        console.warn(`[${voiceEngine}] TTS failed. Falling back to browser SpeechSynthesis.`, err);
-      }
-    }
-
-    fallbackWebSpeech(text);
-  };
-
-  const fallbackWebSpeech = (text: string) => {
-    if (!('speechSynthesis' in window)) {
-      setIsSpeaking(false);
-      return;
-    }
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = language === 'KN' ? 'kn-IN' : 'en-US';
-    utterance.rate = 0.95;
-    utterance.onstart = () => setIsSpeaking(true);
-    utterance.onend = () => setIsSpeaking(false);
-    utterance.onerror = () => setIsSpeaking(false);
-    window.speechSynthesis.speak(utterance);
-  };
-
-  const stopSpeaking = () => {
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-    }
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current = null;
-    }
-    setIsSpeaking(false);
+    playKannadaAudio(
+      text,
+      () => setIsSpeaking(true),
+      () => setIsSpeaking(false)
+    );
   };
 
   // Web Speech Recognition (STT)
   const startListening = () => {
-    stopSpeaking();
+    stopKannadaAudio();
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRecognition) {
       alert("Speech recognition is not supported in this browser. Please type your response below.");
@@ -135,7 +86,7 @@ export const KannadaVoiceWidget: React.FC<Props> = ({ isOpen, onClose }) => {
     const query = textToSend || inputText;
     if (!query.trim() || loading) return;
 
-    stopSpeaking();
+    stopKannadaAudio();
     setMessages(prev => [...prev, { sender: 'user', textKn: query, textEn: query }]);
     setInputText('');
     setLoading(true);
@@ -167,7 +118,7 @@ export const KannadaVoiceWidget: React.FC<Props> = ({ isOpen, onClose }) => {
   };
 
   const resetSession = () => {
-    stopSpeaking();
+    stopKannadaAudio();
     const newId = `vsession-${Date.now()}`;
     setSessionId(newId);
     const initialMsgs = [
@@ -252,7 +203,7 @@ export const KannadaVoiceWidget: React.FC<Props> = ({ isOpen, onClose }) => {
           {/* Mute/Unmute */}
           <button
             onClick={() => {
-              if (isSpeaking) stopSpeaking();
+              if (isSpeaking) stopKannadaAudio();
               setIsMuted(!isMuted);
             }}
             title={isMuted ? "Unmute Voice" : "Mute Voice"}
@@ -273,7 +224,7 @@ export const KannadaVoiceWidget: React.FC<Props> = ({ isOpen, onClose }) => {
           {/* Close */}
           <button
             onClick={() => {
-              stopSpeaking();
+              stopKannadaAudio();
               onClose();
             }}
             className="p-2 text-slate-300 hover:text-white hover:bg-white/10 rounded-full transition-colors"

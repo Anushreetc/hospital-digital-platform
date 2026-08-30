@@ -25,6 +25,8 @@ import {
   CheckCircle2
 } from 'lucide-react';
 
+import { playKannadaAudio, stopKannadaAudio } from '../services/kannadaTts';
+
 interface Props {
   isOpen: boolean;
   onClose: () => void;
@@ -48,100 +50,18 @@ export const VapiVoiceModal: React.FC<Props> = ({ isOpen, onClose, hospitalInfo 
 
   const transcriptEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     transcriptEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [transcripts, callState]);
 
-  // Guaranteed Audible Speech Synthesis in Kannada / English
-  const speakKannadaResponse = (textKn: string, textEn?: string) => {
-    try {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current = null;
-      }
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        if (window.speechSynthesis.paused) {
-          window.speechSynthesis.resume();
-        }
-      }
-
-      setCallState('SPEAKING');
-
-      // Primary: Browser Native SpeechSynthesis Engine
-      if ('speechSynthesis' in window) {
-        const utterance = new SpeechSynthesisUtterance(textKn);
-        utterance.lang = 'kn-IN';
-        utterance.rate = 0.92;
-        utterance.volume = 1.0;
-        utterance.pitch = 1.0;
-
-        const voices = window.speechSynthesis.getVoices();
-        if (voices && voices.length > 0) {
-          let matchedVoice = voices.find(v => v.lang.toLowerCase().includes('kn'));
-          if (!matchedVoice) matchedVoice = voices.find(v => v.lang.toLowerCase().includes('hi-in') || v.lang.toLowerCase().includes('hi'));
-          if (!matchedVoice) matchedVoice = voices.find(v => v.lang.toLowerCase().includes('en-in'));
-          if (!matchedVoice) matchedVoice = voices.find(v => v.lang.toLowerCase().includes('en'));
-
-          if (matchedVoice) {
-            utterance.voice = matchedVoice;
-            if (!matchedVoice.lang.toLowerCase().includes('kn') && textEn) {
-              utterance.text = textEn;
-              utterance.lang = matchedVoice.lang;
-            }
-          }
-        }
-
-        utterance.onstart = () => {
-          setCallState('SPEAKING');
-        };
-
-        utterance.onend = () => {
-          setCallState('CONNECTED');
-        };
-
-        utterance.onerror = (err) => {
-          console.warn('[SpeechSynthesis error], trying backend TTS fallback:', err);
-          fetchBackendTts(textKn);
-        };
-
-        window.speechSynthesis.speak(utterance);
-      } else {
-        fetchBackendTts(textKn);
-      }
-
-      setTimeout(() => {
-        setCallState(curr => (curr === 'SPEAKING' ? 'CONNECTED' : curr));
-      }, 8000);
-    } catch (err) {
-      console.warn('Speech Exception:', err);
-      setCallState('CONNECTED');
-    }
-  };
-
-  const fetchBackendTts = async (text: string) => {
-    try {
-      const res = await fetch('/api/ai/voice/tts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text, provider: 'web_speech' })
-      });
-      if (res.ok) {
-        const blob = await res.blob();
-        const audioUrl = URL.createObjectURL(blob);
-        const audio = new Audio(audioUrl);
-        audioRef.current = audio;
-        audio.onended = () => setCallState('CONNECTED');
-        audio.onerror = () => setCallState('CONNECTED');
-        await audio.play();
-      } else {
-        setCallState('CONNECTED');
-      }
-    } catch (e) {
-      setCallState('CONNECTED');
-    }
+  // Guaranteed Audible Authentic Kannada Speech Synthesis
+  const speakKannadaResponse = (textKn: string, _textEn?: string) => {
+    playKannadaAudio(
+      textKn,
+      () => setCallState('SPEAKING'),
+      () => setCallState('CONNECTED')
+    );
   };
 
   // Web Speech Recognition (STT)
@@ -153,8 +73,7 @@ export const VapiVoiceModal: React.FC<Props> = ({ isOpen, onClose, hospitalInfo 
     }
 
     try {
-      if (audioRef.current) audioRef.current.pause();
-      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+      stopKannadaAudio();
       if (recognitionRef.current) recognitionRef.current.abort();
 
       const recognition = new SpeechRecognition();
@@ -217,18 +136,16 @@ export const VapiVoiceModal: React.FC<Props> = ({ isOpen, onClose, hospitalInfo 
   // Initialize Call when Modal opens
   useEffect(() => {
     if (!isOpen) {
-      if (audioRef.current) audioRef.current.pause();
+      stopKannadaAudio();
       if (recognitionRef.current) recognitionRef.current.abort();
-      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
       return;
     }
 
     initNativeEngine();
 
     return () => {
-      if (audioRef.current) audioRef.current.pause();
+      stopKannadaAudio();
       if (recognitionRef.current) recognitionRef.current.abort();
-      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
     };
   }, [isOpen, hospitalInfo.name]);
 
@@ -251,8 +168,7 @@ export const VapiVoiceModal: React.FC<Props> = ({ isOpen, onClose, hospitalInfo 
   };
 
   const handleEndCall = () => {
-    if (audioRef.current) audioRef.current.pause();
-    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    stopKannadaAudio();
     if (recognitionRef.current) recognitionRef.current.abort();
     setCallState('ENDED');
   };

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { apiClient } from '../services/apiClient';
+import { playKannadaAudio, stopKannadaAudio } from '../services/kannadaTts';
 import { Mic, MicOff, Volume2, VolumeX, X, Send, AlertTriangle, RefreshCw, Languages, Play, Sparkles, Phone, PhoneOff, Hash } from 'lucide-react';
 
 interface Props {
@@ -30,7 +31,6 @@ export const VoiceAgentWidget: React.FC<Props> = ({ isOpen, onClose }) => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
   const recognitionRef = useRef<any>(null);
 
   useEffect(() => {
@@ -44,7 +44,7 @@ export const VoiceAgentWidget: React.FC<Props> = ({ isOpen, onClose }) => {
       timer = setInterval(() => setCallSeconds(s => s + 1), 1000);
     } else {
       setCallSeconds(0);
-      stopSpeaking();
+      stopKannadaAudio();
     }
     return () => clearInterval(timer);
   }, [isOpen]);
@@ -65,40 +65,14 @@ export const VoiceAgentWidget: React.FC<Props> = ({ isOpen, onClose }) => {
     }
   };
 
-  // Speech Synthesis Pipeline (Backend Neural Kannada Stream + WebSpeech Fallback)
-  const speakResponse = async (textKn: string, textEn?: string) => {
+  // Speech Synthesis Pipeline (Authentic Kannada Native Speech)
+  const speakResponse = async (textKn: string, _textEn?: string) => {
     if (isMuted) return;
-    stopSpeaking();
-    setIsSpeaking(true);
-
-    const targetText = language === 'KN' ? textKn : (textEn || textKn);
-
-    // 1. Try Backend Audio Synthesis (Serves authentic Kannada MP3 audio on any OS)
-    try {
-      const res = await fetch('/api/ai/voice/tts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: targetText, provider: voiceEngine, language })
-      });
-      if (res.ok) {
-        const blob = await res.blob();
-        if (blob.size > 200) {
-          const audioUrl = URL.createObjectURL(blob);
-          const audio = new Audio(audioUrl);
-          audio.playbackRate = 1.15; // Faster, energetic cadence
-          audioRef.current = audio;
-          audio.onended = () => setIsSpeaking(false);
-          audio.onerror = () => fallbackWebSpeech(textKn, textEn);
-          await audio.play();
-          return;
-        }
-      }
-    } catch (err) {
-      console.warn(`[TTS Proxy] Audio fetch error, falling back to SpeechSynthesis:`, err);
-    }
-
-    // 2. Web Speech Synthesis Fallback (Strictly Kannada or English, NO HINDI)
-    fallbackWebSpeech(textKn, textEn);
+    playKannadaAudio(
+      textKn,
+      () => setIsSpeaking(true),
+      () => setIsSpeaking(false)
+    );
   };
 
   const fallbackWebSpeech = (textKn: string, textEn?: string) => {
@@ -148,13 +122,7 @@ export const VoiceAgentWidget: React.FC<Props> = ({ isOpen, onClose }) => {
   };
 
   const stopSpeaking = () => {
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-    }
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current = null;
-    }
+    stopKannadaAudio();
     setIsSpeaking(false);
   };
 
