@@ -55,12 +55,18 @@ export const apiClient = {
     }).then(res => handleResponse<Appointment>(res));
   },
 
-  processVoiceUtterance: (sessionId: string, utterance: string) => {
-    return fetch(`${API_BASE}/voice/appointments`, {
-      method: 'POST',
-      headers: getHeaders(),
-      body: JSON.stringify({ sessionId, utterance })
-    }).then(res => handleResponse<any>(res));
+  processVoiceUtterance: async (sessionId: string, utterance: string) => {
+    try {
+      const res = await fetch(`${API_BASE}/voice/appointments`, {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify({ sessionId, utterance })
+      });
+      return await handleResponse<any>(res);
+    } catch (err) {
+      const { processLocalVoiceUtterance } = await import('./localVoiceEngine');
+      return processLocalVoiceUtterance(sessionId, utterance);
+    }
   },
 
   // Auth
