@@ -1,15 +1,48 @@
 /**
- * Robust Bilingual (Kannada + English) Speech Synthesis Engine
- * Guarantees 100% full bilingual audio reading for both Kannada and English prompts
+ * Bulletproof Bilingual Speech Synthesis & Web Audio Engine
+ * Features Web Audio API unlock chime + safe browser SpeechSynthesis
  */
 
 export type AudioLanguageMode = 'BILINGUAL' | 'KN' | 'EN';
 
 let activeUtterance: SpeechSynthesisUtterance | null = null;
 let speechTimeout: any = null;
+let audioCtx: AudioContext | null = null;
 
 // Keep global reference on window to prevent Chrome garbage-collection speech cutoff bug
 (window as any).__currentUtterance = null;
+
+/**
+ * Play a subtle 0.08s soft audio chime using WebAudio API
+ * This immediately unlocks browser audio playback policies on macOS, Windows, Chrome & Safari
+ */
+export const unlockBrowserAudio = (): void => {
+  try {
+    if (!audioCtx) {
+      const AudioCtxClass = window.AudioContext || (window as any).webkitAudioContext;
+      if (AudioCtxClass) {
+        audioCtx = new AudioCtxClass();
+      }
+    }
+    if (audioCtx && audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+    if (audioCtx) {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5 note
+      gain.gain.setValueAtTime(0.01, audioCtx.currentTime); // Very soft
+      gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.08);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.08);
+    }
+  } catch (e) {
+    // Ignore audio context errors silently
+  }
+};
 
 const sanitizeForSpeech = (text: string): string => {
   if (!text) return '';
@@ -31,6 +64,7 @@ export const playBilingualAudio = (
   onEnd?: () => void
 ): void => {
   stopKannadaAudio();
+  unlockBrowserAudio();
 
   const cleanKn = sanitizeForSpeech(textKn);
   const cleanEn = sanitizeForSpeech(textEn || '');
@@ -43,8 +77,7 @@ export const playBilingualAudio = (
     return;
   }
 
-  // Force cancel any stuck synthesis queue and resume
-  window.speechSynthesis.cancel();
+  // Resume paused synthesis queue (Chrome policy recovery)
   if (window.speechSynthesis.paused) {
     window.speechSynthesis.resume();
   }
@@ -59,38 +92,14 @@ export const playBilingualAudio = (
     return;
   }
 
-  // BILINGUAL MODE: Always read BOTH Kannada and English!
-  const voices = window.speechSynthesis.getVoices();
-  const knVoice = voices.find(v => v.lang.toLowerCase().includes('kn'));
-
-  if (knVoice) {
-    // If native Kannada voice is installed, speak Kannada first, then English
-    speakText(cleanKn, 'kn-IN', () => {
-      speakText(cleanEn, 'en-US', onEnd);
-    });
-  } else {
-    // If native Kannada OS font is missing, try direct audio stream first, or speak full bilingual text smoothly
-    const audioUrl = `https://translate.google.com/translate_tts?ie=UTF-8&tl=kn&client=tw-ob&q=${encodeURIComponent(cleanKn.slice(0, 150))}`;
-    const audio = new Audio(audioUrl);
-    
-    audio.onended = () => {
-      speakText(cleanEn, 'en-IN', onEnd);
-    };
-
-    audio.onerror = () => {
-      // Fallback: Speak both English and Kannada response with Indian English voice font
-      const fullText = `${cleanEn}. ${cleanKn}`;
-      speakText(fullText, 'en-IN', onEnd);
-    };
-
-    audio.play().catch(() => {
-      const fullText = `${cleanEn}. ${cleanKn}`;
-      speakText(fullText, 'en-IN', onEnd);
-    });
-  }
+  // BILINGUAL MODE: Always speak both prompts!
+  // Speak Kannada segment first, then English segment
+  speakText(cleanKn, 'kn-IN', () => {
+    speakText(cleanEn, 'en-US', onEnd);
+  });
 };
 
-const speakText = (text: string, lang: string, onDone?: () => void): void => {
+const speakText = (text: string, preferredLang: string, onDone?: () => void): void => {
   if (!text) {
     if (onDone) onDone();
     return;
@@ -98,23 +107,34 @@ const speakText = (text: string, lang: string, onDone?: () => void): void => {
 
   try {
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = lang;
-    utterance.rate = lang.startsWith('kn') ? 0.90 : 1.0;
     utterance.pitch = 1.0;
     utterance.volume = 1.0;
 
     const voices = window.speechSynthesis.getVoices();
+    let selectedVoice: SpeechSynthesisVoice | undefined = undefined;
+
     if (voices && voices.length > 0) {
-      if (lang.startsWith('kn')) {
-        const knVoice = voices.find(v => v.lang.toLowerCase().includes('kn'));
-        if (knVoice) utterance.voice = knVoice;
-      } else {
-        const enVoice = voices.find(v => v.lang.toLowerCase().includes('en-in')) ||
+      if (preferredLang.startsWith('kn')) {
+        selectedVoice = voices.find(v => v.lang.toLowerCase().includes('kn'));
+      }
+      if (!selectedVoice) {
+        selectedVoice = voices.find(v => v.lang.toLowerCase().includes('en-in')) ||
                         voices.find(v => v.lang.toLowerCase().includes('en-us')) ||
                         voices.find(v => v.lang.toLowerCase().startsWith('en'));
-        if (enVoice) utterance.voice = enVoice;
+      }
+      if (!selectedVoice) {
+        selectedVoice = voices[0];
       }
     }
+
+    if (selectedVoice) {
+      utterance.voice = selectedVoice;
+      utterance.lang = selectedVoice.lang;
+    } else {
+      utterance.lang = preferredLang.startsWith('kn') ? 'kn-IN' : 'en-US';
+    }
+
+    utterance.rate = utterance.lang.startsWith('kn') ? 0.88 : 1.0;
 
     activeUtterance = utterance;
     (window as any).__currentUtterance = utterance;
@@ -133,7 +153,10 @@ const speakText = (text: string, lang: string, onDone?: () => void): void => {
     };
 
     utterance.onend = () => finish();
-    utterance.onerror = () => finish();
+    utterance.onerror = (e) => {
+      console.warn('SpeechSynthesis Utterance error:', e);
+      finish();
+    };
 
     // Safety timeout: Never hang UI if browser speech stalls
     const estimatedDuration = Math.max(3000, (text.length / 8) * 1000);
@@ -162,7 +185,9 @@ export const stopKannadaAudio = () => {
     speechTimeout = null;
   }
   if ('speechSynthesis' in window) {
-    window.speechSynthesis.cancel();
+    try {
+      window.speechSynthesis.cancel();
+    } catch {}
   }
   activeUtterance = null;
   (window as any).__currentUtterance = null;

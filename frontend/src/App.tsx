@@ -17,6 +17,7 @@ import { ContactSection } from './sections/ContactSection';
 import { FaqSection } from './sections/FaqSection';
 import { Footer } from './sections/Footer';
 import { VoiceAgentWidget } from './components/VoiceAgentWidget';
+import { VapiVoiceModal } from './components/VapiVoiceModal';
 import { AuthRoleModal } from './components/AuthRoleModal';
 
 import { AuthPages } from './pages/AuthPages';
@@ -45,6 +46,7 @@ export const App: React.FC = () => {
 
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [voiceWidgetOpen, setVoiceWidgetOpen] = useState(false);
+  const [vapiModalOpen, setVapiModalOpen] = useState(false);
 
   // Auth State
   const [activeAuthRole, setActiveAuthRole] = useState<'PATIENT' | 'DOCTOR' | 'MANAGEMENT' | null>(null);
@@ -162,7 +164,7 @@ export const App: React.FC = () => {
         <HeroSection
           hospitalInfo={hospitalInfo}
           onBookClick={() => handleBookDoctorDirectly('')}
-          onVoiceClick={() => setVoiceWidgetOpen(true)}
+          onVoiceClick={() => setVapiModalOpen(true)}
           onFindDoctorClick={() => {
             const el = document.getElementById('doctors');
             if (el) el.scrollIntoView({ behavior: 'smooth' });
@@ -235,6 +237,12 @@ export const App: React.FC = () => {
       <VoiceAgentWidget
         isOpen={voiceWidgetOpen}
         onClose={() => setVoiceWidgetOpen(false)}
+      />
+
+      <VapiVoiceModal
+        isOpen={vapiModalOpen}
+        onClose={() => setVapiModalOpen(false)}
+        hospitalInfo={hospitalInfo}
       />
 
       {/* Floating Voice Agent Trigger Button */}

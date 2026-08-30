@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { apiClient } from '../services/apiClient';
-import { playKannadaAudio, stopKannadaAudio } from '../services/kannadaTts';
+import { playBilingualAudio, stopKannadaAudio, unlockBrowserAudio } from '../services/kannadaTts';
 import { Mic, MicOff, Volume2, VolumeX, X, Send, AlertTriangle, RefreshCw, Languages, Play, Sparkles, Phone, PhoneOff, Hash } from 'lucide-react';
 
 interface Props {
@@ -65,11 +65,14 @@ export const VoiceAgentWidget: React.FC<Props> = ({ isOpen, onClose }) => {
     }
   };
 
-  // Speech Synthesis Pipeline (Authentic Kannada Native Speech)
-  const speakResponse = async (textKn: string, _textEn?: string) => {
+  // Speech Synthesis Pipeline (Bilingual Kannada + English Speech)
+  const speakResponse = async (textKn: string, textEn?: string) => {
     if (isMuted) return;
-    playKannadaAudio(
+    const mode = language === 'KN' ? 'BILINGUAL' : 'EN';
+    playBilingualAudio(
       textKn,
+      textEn,
+      mode,
       () => setIsSpeaking(true),
       () => setIsSpeaking(false)
     );
