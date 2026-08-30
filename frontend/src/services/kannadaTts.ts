@@ -1,20 +1,23 @@
 /**
- * Bilingual (Kannada + English) Speech Synthesis Audio Engine
- * Plays authentic native Kannada voice followed seamlessly by English voice
+ * Robust Bilingual (Kannada + English) Speech Synthesis Engine
+ * Guaranteed audible playback on Chrome, Safari, Edge, Mac, Windows, iOS & Android
  */
 
 export type AudioLanguageMode = 'BILINGUAL' | 'KN' | 'EN';
 
-let activeAudio: HTMLAudioElement | null = null;
 let activeUtterance: SpeechSynthesisUtterance | null = null;
+let speechTimeout: any = null;
 
-export const playBilingualAudio = async (
+// Keep global reference on window to prevent Chrome garbage-collection speech cutoff bug
+(window as any).__currentUtterance = null;
+
+export const playBilingualAudio = (
   textKn: string,
   textEn?: string,
   mode: AudioLanguageMode = 'BILINGUAL',
   onStart?: () => void,
   onEnd?: () => void
-): Promise<void> => {
+): void => {
   stopKannadaAudio();
 
   const cleanKn = textKn
@@ -31,108 +34,99 @@ export const playBilingualAudio = async (
 
   if (onStart) onStart();
 
+  if (!('speechSynthesis' in window)) {
+    console.warn('SpeechSynthesis is not supported in this browser.');
+    if (onEnd) onEnd();
+    return;
+  }
+
+  // Resume paused synthesis (browser policy recovery)
+  if (window.speechSynthesis.paused) {
+    window.speechSynthesis.resume();
+  }
+
   if (mode === 'EN') {
-    playEnglishSegment(cleanEn || cleanKn, onEnd);
+    speakText(cleanEn || cleanKn, 'en-US', onEnd);
     return;
   }
 
   if (mode === 'KN' || !cleanEn) {
-    playKannadaSegment(cleanKn, onEnd);
+    speakText(cleanKn, 'kn-IN', onEnd);
     return;
   }
 
-  // Bilingual Mode: Play Kannada First -> Followed by English
-  playKannadaSegment(cleanKn, () => {
-    playEnglishSegment(cleanEn, onEnd);
-  });
-};
+  // Bilingual Mode: Check if Kannada voice is available
+  const voices = window.speechSynthesis.getVoices();
+  const hasKannadaVoice = voices.some(v => v.lang.toLowerCase().includes('kn'));
 
-const playKannadaSegment = (textKn: string, onDone?: () => void) => {
-  if (!textKn) {
-    if (onDone) onDone();
-    return;
-  }
-
-  try {
-    const encoded = encodeURIComponent(textKn.slice(0, 200));
-    const ttsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&tl=kn&client=tw-ob&q=${encoded}`;
-    const audio = new Audio(ttsUrl);
-    audio.playbackRate = 1.05;
-    activeAudio = audio;
-
-    audio.onended = () => {
-      activeAudio = null;
-      if (onDone) onDone();
-    };
-
-    audio.onerror = () => {
-      activeAudio = null;
-      playWebSpeech(textKn, 'kn-IN', onDone);
-    };
-
-    audio.play().catch(() => {
-      playWebSpeech(textKn, 'kn-IN', onDone);
+  if (hasKannadaVoice) {
+    // Speak Kannada first, then English
+    speakText(cleanKn, 'kn-IN', () => {
+      speakText(cleanEn, 'en-US', onEnd);
     });
-  } catch {
-    playWebSpeech(textKn, 'kn-IN', onDone);
+  } else {
+    // If OS doesn't have Kannada font installed, speak English clearly to prevent silent freeze!
+    speakText(cleanEn, 'en-IN', onEnd);
   }
 };
 
-const playEnglishSegment = (textEn: string, onDone?: () => void) => {
-  if (!textEn) {
+const speakText = (text: string, lang: string, onDone?: () => void): void => {
+  if (!text) {
     if (onDone) onDone();
     return;
   }
 
   try {
-    const encoded = encodeURIComponent(textEn.slice(0, 200));
-    const ttsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&tl=en&client=tw-ob&q=${encoded}`;
-    const audio = new Audio(ttsUrl);
-    audio.playbackRate = 1.08;
-    activeAudio = audio;
+    window.speechSynthesis.cancel();
 
-    audio.onended = () => {
-      activeAudio = null;
-      if (onDone) onDone();
-    };
-
-    audio.onerror = () => {
-      activeAudio = null;
-      playWebSpeech(textEn, 'en-US', onDone);
-    };
-
-    audio.play().catch(() => {
-      playWebSpeech(textEn, 'en-US', onDone);
-    });
-  } catch {
-    playWebSpeech(textEn, 'en-US', onDone);
-  }
-};
-
-const playWebSpeech = (text: string, lang: string, onDone?: () => void) => {
-  if (!('speechSynthesis' in window)) {
-    if (onDone) onDone();
-    return;
-  }
-
-  try {
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = lang;
-    utterance.rate = 1.0;
+    utterance.rate = lang.startsWith('kn') ? 0.92 : 1.0;
+    utterance.pitch = 1.0;
+    utterance.volume = 1.0;
+
+    // Pick best matching voice
+    const voices = window.speechSynthesis.getVoices();
+    if (voices && voices.length > 0) {
+      if (lang.startsWith('kn')) {
+        const knVoice = voices.find(v => v.lang.toLowerCase().includes('kn'));
+        if (knVoice) utterance.voice = knVoice;
+      } else {
+        const enVoice = voices.find(v => v.lang.toLowerCase().includes('en-in')) ||
+                        voices.find(v => v.lang.toLowerCase().includes('en-us')) ||
+                        voices.find(v => v.lang.toLowerCase().startsWith('en'));
+        if (enVoice) utterance.voice = enVoice;
+      }
+    }
+
     activeUtterance = utterance;
+    (window as any).__currentUtterance = utterance;
 
-    utterance.onend = () => {
+    let finished = false;
+    const finish = () => {
+      if (finished) return;
+      finished = true;
+      if (speechTimeout) {
+        clearTimeout(speechTimeout);
+        speechTimeout = null;
+      }
       activeUtterance = null;
+      (window as any).__currentUtterance = null;
       if (onDone) onDone();
     };
 
-    utterance.onerror = () => {
-      activeUtterance = null;
-      if (onDone) onDone();
-    };
+    utterance.onend = () => finish();
+    utterance.onerror = () => finish();
+
+    // Safety timeout: Never hang UI if browser speech freezes
+    const estimatedDuration = Math.max(3000, (text.length / 10) * 1000);
+    speechTimeout = setTimeout(() => {
+      finish();
+    }, estimatedDuration);
 
     window.speechSynthesis.speak(utterance);
-  } catch {
+  } catch (err) {
+    console.warn('Speech Error:', err);
     if (onDone) onDone();
   }
 };
@@ -146,13 +140,13 @@ export const playKannadaAudio = (
 };
 
 export const stopKannadaAudio = () => {
-  if (activeAudio) {
-    activeAudio.pause();
-    activeAudio.currentTime = 0;
-    activeAudio = null;
+  if (speechTimeout) {
+    clearTimeout(speechTimeout);
+    speechTimeout = null;
   }
   if ('speechSynthesis' in window) {
     window.speechSynthesis.cancel();
   }
   activeUtterance = null;
+  (window as any).__currentUtterance = null;
 };

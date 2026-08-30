@@ -81,7 +81,7 @@ export const VapiVoiceModal: React.FC<Props> = ({ isOpen, onClose, hospitalInfo 
 
       const recognition = new SpeechRecognition();
       recognitionRef.current = recognition;
-      recognition.lang = 'kn-IN';
+      recognition.lang = languageMode === 'KN' ? 'kn-IN' : 'en-IN';
       recognition.interimResults = false;
       recognition.maxAlternatives = 1;
 
