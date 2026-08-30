@@ -1,0 +1,47 @@
+[
+  {
+    "id": "srv-1",
+    "name": "24/7 Emergency & Trauma Care",
+    "shortDescription": "Immediate medical response with ACLS ambulances and advanced life support ICUs.",
+    "fullDescription": "Our emergency medicine department is equipped with fully monitored resuscitation bays, emergency operating theaters, and round-the-clock trauma specialists.",
+    "iconName": "Ambulance",
+    "displayOrder": 1,
+    "active": true
+  },
+  {
+    "id": "srv-2",
+    "name": "Comprehensive Diagnostics & Pathology",
+    "shortDescription": "NABL certified diagnostic lab, 128-slice CT, 3T MRI, and digital X-ray services.",
+    "fullDescription": "Accurate and rapid diagnostic imaging and blood testing services with digital report access.",
+    "iconName": "Microscope",
+    "displayOrder": 2,
+    "active": true
+  },
+  {
+    "id": "srv-3",
+    "name": "Advanced Surgical Suites",
+    "shortDescription": "Modular Operation Theatres with HEPA filters and laminar airflow systems.",
+    "fullDescription": "Equipped for minimally invasive laparoscopic, neurosurgical, cardiac, and orthopedic surgeries.",
+    "iconName": "Syringe",
+    "displayOrder": 3,
+    "active": true
+  },
+  {
+    "id": "srv-4",
+    "name": "Intensive Care Units (ICU / NICU)",
+    "shortDescription": "State-of-the-art multi-disciplinary ICU, Cardiac ICU, and Neonatal Intensive Care.",
+    "fullDescription": "1:1 nursing care ratio for critical patients with invasive monitoring and advanced ventilator support.",
+    "iconName": "Activity",
+    "displayOrder": 4,
+    "active": true
+  },
+  {
+    "id": "srv-5",
+    "name": "In-House 24/7 Pharmacy",
+    "shortDescription": "Genuine medicines, temperature-controlled storage, and bed-side delivery.",
+    "fullDescription": "Complete prescription pharmacy stocked with critical care, oncology, and daily maintenance drugs.",
+    "iconName": "Pill",
+    "displayOrder": 5,
+    "active": true
+  }
+]

@@ -1,0 +1,3583 @@
+[
+  {
+    "id": "audit-1788116032971",
+    "actor": {
+      "id": "patient",
+      "name": "ಅನುಶ್ರೀ",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260831-0009",
+    "timestamp": "2026-08-30T18:53:52.968Z",
+    "details": {
+      "source": "VOICE_KANNADA",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-31"
+    }
+  },
+  {
+    "id": "audit-1788115750672",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260831-0008",
+    "timestamp": "2026-08-30T18:49:10.672Z",
+    "details": {
+      "previousStatus": "CONFIRMED",
+      "newStatus": "COMPLETED"
+    }
+  },
+  {
+    "id": "audit-1788115750671",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260831-0008",
+    "timestamp": "2026-08-30T18:49:10.670Z",
+    "details": {
+      "previousStatus": "NEW",
+      "newStatus": "CONFIRMED"
+    }
+  },
+  {
+    "id": "audit-1788115750669",
+    "actor": {
+      "id": "patient",
+      "name": "State Machine Fail Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260831-0008",
+    "timestamp": "2026-08-30T18:49:10.669Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-31"
+    }
+  },
+  {
+    "id": "audit-1788115750667",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260831-0007",
+    "timestamp": "2026-08-30T18:49:10.666Z",
+    "details": {
+      "previousStatus": "CONTACTED",
+      "newStatus": "CONFIRMED"
+    }
+  },
+  {
+    "id": "audit-1788115750665",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260831-0007",
+    "timestamp": "2026-08-30T18:49:10.665Z",
+    "details": {
+      "previousStatus": "NEW",
+      "newStatus": "CONTACTED"
+    }
+  },
+  {
+    "id": "audit-1788115750664",
+    "actor": {
+      "id": "patient",
+      "name": "State Machine Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260831-0007",
+    "timestamp": "2026-08-30T18:49:10.664Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-31"
+    }
+  },
+  {
+    "id": "audit-1788115750661",
+    "actor": {
+      "id": "patient",
+      "name": "Duplicate Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260831-0006",
+    "timestamp": "2026-08-30T18:49:10.658Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-31"
+    }
+  },
+  {
+    "id": "audit-1788115750653",
+    "actor": {
+      "id": "patient",
+      "name": "Test Patient",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260831-0005",
+    "timestamp": "2026-08-30T18:49:10.649Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-31"
+    }
+  },
+  {
+    "id": "audit-1788114879570",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260831-0004",
+    "timestamp": "2026-08-30T18:34:39.570Z",
+    "details": {
+      "previousStatus": "CONFIRMED",
+      "newStatus": "COMPLETED"
+    }
+  },
+  {
+    "id": "audit-1788114879569",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260831-0004",
+    "timestamp": "2026-08-30T18:34:39.569Z",
+    "details": {
+      "previousStatus": "NEW",
+      "newStatus": "CONFIRMED"
+    }
+  },
+  {
+    "id": "audit-1788114879568",
+    "actor": {
+      "id": "patient",
+      "name": "State Machine Fail Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260831-0004",
+    "timestamp": "2026-08-30T18:34:39.568Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-31"
+    }
+  },
+  {
+    "id": "audit-1788114879567",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260831-0003",
+    "timestamp": "2026-08-30T18:34:39.566Z",
+    "details": {
+      "previousStatus": "CONTACTED",
+      "newStatus": "CONFIRMED"
+    }
+  },
+  {
+    "id": "audit-1788114879565",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260831-0003",
+    "timestamp": "2026-08-30T18:34:39.565Z",
+    "details": {
+      "previousStatus": "NEW",
+      "newStatus": "CONTACTED"
+    }
+  },
+  {
+    "id": "audit-1788114879564",
+    "actor": {
+      "id": "patient",
+      "name": "State Machine Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260831-0003",
+    "timestamp": "2026-08-30T18:34:39.564Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-31"
+    }
+  },
+  {
+    "id": "audit-1788114879562",
+    "actor": {
+      "id": "patient",
+      "name": "Duplicate Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260831-0002",
+    "timestamp": "2026-08-30T18:34:39.561Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-31"
+    }
+  },
+  {
+    "id": "audit-1788114879560",
+    "actor": {
+      "id": "patient",
+      "name": "Test Patient",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260831-0001",
+    "timestamp": "2026-08-30T18:34:39.558Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-31"
+    }
+  },
+  {
+    "id": "audit-1787816016266",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260827-0028",
+    "timestamp": "2026-08-27T07:33:36.266Z",
+    "details": {
+      "previousStatus": "CONFIRMED",
+      "newStatus": "COMPLETED"
+    }
+  },
+  {
+    "id": "audit-1787816016265",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260827-0028",
+    "timestamp": "2026-08-27T07:33:36.265Z",
+    "details": {
+      "previousStatus": "NEW",
+      "newStatus": "CONFIRMED"
+    }
+  },
+  {
+    "id": "audit-1787816016264",
+    "actor": {
+      "id": "patient",
+      "name": "State Machine Fail Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260827-0028",
+    "timestamp": "2026-08-27T07:33:36.264Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-27"
+    }
+  },
+  {
+    "id": "audit-1787816016263",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260827-0027",
+    "timestamp": "2026-08-27T07:33:36.263Z",
+    "details": {
+      "previousStatus": "CONTACTED",
+      "newStatus": "CONFIRMED"
+    }
+  },
+  {
+    "id": "audit-1787816016262",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260827-0027",
+    "timestamp": "2026-08-27T07:33:36.261Z",
+    "details": {
+      "previousStatus": "NEW",
+      "newStatus": "CONTACTED"
+    }
+  },
+  {
+    "id": "audit-1787816016261",
+    "actor": {
+      "id": "patient",
+      "name": "State Machine Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260827-0027",
+    "timestamp": "2026-08-27T07:33:36.260Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-27"
+    }
+  },
+  {
+    "id": "audit-1787816016258",
+    "actor": {
+      "id": "patient",
+      "name": "Duplicate Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260827-0026",
+    "timestamp": "2026-08-27T07:33:36.258Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-27"
+    }
+  },
+  {
+    "id": "audit-1787816016256",
+    "actor": {
+      "id": "patient",
+      "name": "Test Patient",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260827-0025",
+    "timestamp": "2026-08-27T07:33:36.255Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-27"
+    }
+  },
+  {
+    "id": "audit-1787815210216",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260827-0024",
+    "timestamp": "2026-08-27T07:20:10.216Z",
+    "details": {
+      "previousStatus": "CONFIRMED",
+      "newStatus": "COMPLETED"
+    }
+  },
+  {
+    "id": "audit-1787815210215",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260827-0024",
+    "timestamp": "2026-08-27T07:20:10.215Z",
+    "details": {
+      "previousStatus": "NEW",
+      "newStatus": "CONFIRMED"
+    }
+  },
+  {
+    "id": "audit-1787815210214",
+    "actor": {
+      "id": "patient",
+      "name": "State Machine Fail Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260827-0024",
+    "timestamp": "2026-08-27T07:20:10.214Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-27"
+    }
+  },
+  {
+    "id": "audit-1787815210213",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260827-0023",
+    "timestamp": "2026-08-27T07:20:10.212Z",
+    "details": {
+      "previousStatus": "CONTACTED",
+      "newStatus": "CONFIRMED"
+    }
+  },
+  {
+    "id": "audit-1787815210212",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260827-0023",
+    "timestamp": "2026-08-27T07:20:10.211Z",
+    "details": {
+      "previousStatus": "NEW",
+      "newStatus": "CONTACTED"
+    }
+  },
+  {
+    "id": "audit-1787815210211",
+    "actor": {
+      "id": "patient",
+      "name": "State Machine Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260827-0023",
+    "timestamp": "2026-08-27T07:20:10.210Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-27"
+    }
+  },
+  {
+    "id": "audit-1787815210209",
+    "actor": {
+      "id": "patient",
+      "name": "Duplicate Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260827-0022",
+    "timestamp": "2026-08-27T07:20:10.208Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-27"
+    }
+  },
+  {
+    "id": "audit-1787815210206",
+    "actor": {
+      "id": "patient",
+      "name": "Test Patient",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260827-0021",
+    "timestamp": "2026-08-27T07:20:10.204Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-27"
+    }
+  },
+  {
+    "id": "audit-1787814328673",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260827-0020",
+    "timestamp": "2026-08-27T07:05:28.672Z",
+    "details": {
+      "previousStatus": "CONFIRMED",
+      "newStatus": "COMPLETED"
+    }
+  },
+  {
+    "id": "audit-1787814328672",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260827-0020",
+    "timestamp": "2026-08-27T07:05:28.672Z",
+    "details": {
+      "previousStatus": "NEW",
+      "newStatus": "CONFIRMED"
+    }
+  },
+  {
+    "id": "audit-1787814328671",
+    "actor": {
+      "id": "patient",
+      "name": "State Machine Fail Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260827-0020",
+    "timestamp": "2026-08-27T07:05:28.671Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-27"
+    }
+  },
+  {
+    "id": "audit-1787814328670",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260827-0019",
+    "timestamp": "2026-08-27T07:05:28.669Z",
+    "details": {
+      "previousStatus": "CONTACTED",
+      "newStatus": "CONFIRMED"
+    }
+  },
+  {
+    "id": "audit-1787814328669",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260827-0019",
+    "timestamp": "2026-08-27T07:05:28.669Z",
+    "details": {
+      "previousStatus": "NEW",
+      "newStatus": "CONTACTED"
+    }
+  },
+  {
+    "id": "audit-1787814328668",
+    "actor": {
+      "id": "patient",
+      "name": "State Machine Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260827-0019",
+    "timestamp": "2026-08-27T07:05:28.668Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-27"
+    }
+  },
+  {
+    "id": "audit-1787814328666",
+    "actor": {
+      "id": "patient",
+      "name": "Duplicate Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260827-0018",
+    "timestamp": "2026-08-27T07:05:28.665Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-27"
+    }
+  },
+  {
+    "id": "audit-1787814328663",
+    "actor": {
+      "id": "patient",
+      "name": "Test Patient",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260827-0017",
+    "timestamp": "2026-08-27T07:05:28.662Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-27"
+    }
+  },
+  {
+    "id": "audit-1787813704173",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260827-0016",
+    "timestamp": "2026-08-27T06:55:04.172Z",
+    "details": {
+      "previousStatus": "CONFIRMED",
+      "newStatus": "COMPLETED"
+    }
+  },
+  {
+    "id": "audit-1787813704172",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260827-0016",
+    "timestamp": "2026-08-27T06:55:04.172Z",
+    "details": {
+      "previousStatus": "NEW",
+      "newStatus": "CONFIRMED"
+    }
+  },
+  {
+    "id": "audit-1787813704171",
+    "actor": {
+      "id": "patient",
+      "name": "State Machine Fail Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260827-0016",
+    "timestamp": "2026-08-27T06:55:04.170Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-27"
+    }
+  },
+  {
+    "id": "audit-1787813704170",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260827-0015",
+    "timestamp": "2026-08-27T06:55:04.169Z",
+    "details": {
+      "previousStatus": "CONTACTED",
+      "newStatus": "CONFIRMED"
+    }
+  },
+  {
+    "id": "audit-1787813704169",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260827-0015",
+    "timestamp": "2026-08-27T06:55:04.169Z",
+    "details": {
+      "previousStatus": "NEW",
+      "newStatus": "CONTACTED"
+    }
+  },
+  {
+    "id": "audit-1787813704168",
+    "actor": {
+      "id": "patient",
+      "name": "State Machine Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260827-0015",
+    "timestamp": "2026-08-27T06:55:04.167Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-27"
+    }
+  },
+  {
+    "id": "audit-1787813704165",
+    "actor": {
+      "id": "patient",
+      "name": "Duplicate Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260827-0014",
+    "timestamp": "2026-08-27T06:55:04.165Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-27"
+    }
+  },
+  {
+    "id": "audit-1787813704163",
+    "actor": {
+      "id": "patient",
+      "name": "Test Patient",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260827-0013",
+    "timestamp": "2026-08-27T06:55:04.162Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-27"
+    }
+  },
+  {
+    "id": "audit-1787813326654",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260827-0012",
+    "timestamp": "2026-08-27T06:48:46.654Z",
+    "details": {
+      "previousStatus": "CONFIRMED",
+      "newStatus": "COMPLETED"
+    }
+  },
+  {
+    "id": "audit-1787813326653",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260827-0012",
+    "timestamp": "2026-08-27T06:48:46.653Z",
+    "details": {
+      "previousStatus": "NEW",
+      "newStatus": "CONFIRMED"
+    }
+  },
+  {
+    "id": "audit-1787813326652",
+    "actor": {
+      "id": "patient",
+      "name": "State Machine Fail Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260827-0012",
+    "timestamp": "2026-08-27T06:48:46.652Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-27"
+    }
+  },
+  {
+    "id": "audit-1787813326651",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260827-0011",
+    "timestamp": "2026-08-27T06:48:46.651Z",
+    "details": {
+      "previousStatus": "CONTACTED",
+      "newStatus": "CONFIRMED"
+    }
+  },
+  {
+    "id": "audit-1787813326650",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260827-0011",
+    "timestamp": "2026-08-27T06:48:46.650Z",
+    "details": {
+      "previousStatus": "NEW",
+      "newStatus": "CONTACTED"
+    }
+  },
+  {
+    "id": "audit-1787813326649",
+    "actor": {
+      "id": "patient",
+      "name": "State Machine Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260827-0011",
+    "timestamp": "2026-08-27T06:48:46.649Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-27"
+    }
+  },
+  {
+    "id": "audit-1787813326647",
+    "actor": {
+      "id": "patient",
+      "name": "Duplicate Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260827-0010",
+    "timestamp": "2026-08-27T06:48:46.647Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-27"
+    }
+  },
+  {
+    "id": "audit-1787813326646",
+    "actor": {
+      "id": "patient",
+      "name": "Test Patient",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260827-0009",
+    "timestamp": "2026-08-27T06:48:46.645Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-27"
+    }
+  },
+  {
+    "id": "audit-1787813115715",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260827-0008",
+    "timestamp": "2026-08-27T06:45:15.715Z",
+    "details": {
+      "previousStatus": "CONFIRMED",
+      "newStatus": "COMPLETED"
+    }
+  },
+  {
+    "id": "audit-1787813115714",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260827-0008",
+    "timestamp": "2026-08-27T06:45:15.714Z",
+    "details": {
+      "previousStatus": "NEW",
+      "newStatus": "CONFIRMED"
+    }
+  },
+  {
+    "id": "audit-1787813115713",
+    "actor": {
+      "id": "patient",
+      "name": "State Machine Fail Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260827-0008",
+    "timestamp": "2026-08-27T06:45:15.713Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-27"
+    }
+  },
+  {
+    "id": "audit-1787813115712",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260827-0007",
+    "timestamp": "2026-08-27T06:45:15.712Z",
+    "details": {
+      "previousStatus": "CONTACTED",
+      "newStatus": "CONFIRMED"
+    }
+  },
+  {
+    "id": "audit-1787813115712",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260827-0007",
+    "timestamp": "2026-08-27T06:45:15.711Z",
+    "details": {
+      "previousStatus": "NEW",
+      "newStatus": "CONTACTED"
+    }
+  },
+  {
+    "id": "audit-1787813115711",
+    "actor": {
+      "id": "patient",
+      "name": "State Machine Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260827-0007",
+    "timestamp": "2026-08-27T06:45:15.711Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-27"
+    }
+  },
+  {
+    "id": "audit-1787813115709",
+    "actor": {
+      "id": "patient",
+      "name": "Duplicate Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260827-0006",
+    "timestamp": "2026-08-27T06:45:15.709Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-27"
+    }
+  },
+  {
+    "id": "audit-1787813115707",
+    "actor": {
+      "id": "patient",
+      "name": "Test Patient",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260827-0005",
+    "timestamp": "2026-08-27T06:45:15.706Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-27"
+    }
+  },
+  {
+    "id": "audit-1787812808264",
+    "actor": {
+      "id": "patient",
+      "name": "Anushree TC",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260828-0001",
+    "timestamp": "2026-08-27T06:40:08.258Z",
+    "details": {
+      "source": "VOICE_KANNADA",
+      "doctor": "Dr. Ananya Rao",
+      "date": "2026-08-28"
+    }
+  },
+  {
+    "id": "audit-1787812556991",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260827-0004",
+    "timestamp": "2026-08-27T06:35:56.991Z",
+    "details": {
+      "previousStatus": "CONFIRMED",
+      "newStatus": "COMPLETED"
+    }
+  },
+  {
+    "id": "audit-1787812556990",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260827-0004",
+    "timestamp": "2026-08-27T06:35:56.990Z",
+    "details": {
+      "previousStatus": "NEW",
+      "newStatus": "CONFIRMED"
+    }
+  },
+  {
+    "id": "audit-1787812556989",
+    "actor": {
+      "id": "patient",
+      "name": "State Machine Fail Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260827-0004",
+    "timestamp": "2026-08-27T06:35:56.988Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-27"
+    }
+  },
+  {
+    "id": "audit-1787812556987",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260827-0003",
+    "timestamp": "2026-08-27T06:35:56.986Z",
+    "details": {
+      "previousStatus": "CONTACTED",
+      "newStatus": "CONFIRMED"
+    }
+  },
+  {
+    "id": "audit-1787812556985",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260827-0003",
+    "timestamp": "2026-08-27T06:35:56.985Z",
+    "details": {
+      "previousStatus": "NEW",
+      "newStatus": "CONTACTED"
+    }
+  },
+  {
+    "id": "audit-1787812556984",
+    "actor": {
+      "id": "patient",
+      "name": "State Machine Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260827-0003",
+    "timestamp": "2026-08-27T06:35:56.984Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-27"
+    }
+  },
+  {
+    "id": "audit-1787812556982",
+    "actor": {
+      "id": "patient",
+      "name": "Duplicate Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260827-0002",
+    "timestamp": "2026-08-27T06:35:56.982Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-27"
+    }
+  },
+  {
+    "id": "audit-1787812556980",
+    "actor": {
+      "id": "patient",
+      "name": "Test Patient",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260827-0001",
+    "timestamp": "2026-08-27T06:35:56.979Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-27"
+    }
+  },
+  {
+    "id": "audit-1787652706237",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0047",
+    "timestamp": "2026-08-25T10:11:46.236Z",
+    "details": {
+      "previousStatus": "CONFIRMED",
+      "newStatus": "COMPLETED"
+    }
+  },
+  {
+    "id": "audit-1787652706236",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0047",
+    "timestamp": "2026-08-25T10:11:46.236Z",
+    "details": {
+      "previousStatus": "NEW",
+      "newStatus": "CONFIRMED"
+    }
+  },
+  {
+    "id": "audit-1787652706235",
+    "actor": {
+      "id": "patient",
+      "name": "State Machine Fail Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0047",
+    "timestamp": "2026-08-25T10:11:46.235Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-25"
+    }
+  },
+  {
+    "id": "audit-1787652706234",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0046",
+    "timestamp": "2026-08-25T10:11:46.234Z",
+    "details": {
+      "previousStatus": "CONTACTED",
+      "newStatus": "CONFIRMED"
+    }
+  },
+  {
+    "id": "audit-1787652706233",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0046",
+    "timestamp": "2026-08-25T10:11:46.233Z",
+    "details": {
+      "previousStatus": "NEW",
+      "newStatus": "CONTACTED"
+    }
+  },
+  {
+    "id": "audit-1787652706232",
+    "actor": {
+      "id": "patient",
+      "name": "State Machine Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0046",
+    "timestamp": "2026-08-25T10:11:46.231Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-25"
+    }
+  },
+  {
+    "id": "audit-1787652706230",
+    "actor": {
+      "id": "patient",
+      "name": "Duplicate Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0045",
+    "timestamp": "2026-08-25T10:11:46.229Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-25"
+    }
+  },
+  {
+    "id": "audit-1787652706227",
+    "actor": {
+      "id": "patient",
+      "name": "Test Patient",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0044",
+    "timestamp": "2026-08-25T10:11:46.226Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-25"
+    }
+  },
+  {
+    "id": "audit-1787648548653",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0043",
+    "timestamp": "2026-08-25T09:02:28.652Z",
+    "details": {
+      "previousStatus": "CONFIRMED",
+      "newStatus": "COMPLETED"
+    }
+  },
+  {
+    "id": "audit-1787648548652",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0043",
+    "timestamp": "2026-08-25T09:02:28.651Z",
+    "details": {
+      "previousStatus": "NEW",
+      "newStatus": "CONFIRMED"
+    }
+  },
+  {
+    "id": "audit-1787648548650",
+    "actor": {
+      "id": "patient",
+      "name": "State Machine Fail Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0043",
+    "timestamp": "2026-08-25T09:02:28.649Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-25"
+    }
+  },
+  {
+    "id": "audit-1787648548648",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0042",
+    "timestamp": "2026-08-25T09:02:28.647Z",
+    "details": {
+      "previousStatus": "CONTACTED",
+      "newStatus": "CONFIRMED"
+    }
+  },
+  {
+    "id": "audit-1787648548647",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0042",
+    "timestamp": "2026-08-25T09:02:28.646Z",
+    "details": {
+      "previousStatus": "NEW",
+      "newStatus": "CONTACTED"
+    }
+  },
+  {
+    "id": "audit-1787648548646",
+    "actor": {
+      "id": "patient",
+      "name": "State Machine Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0042",
+    "timestamp": "2026-08-25T09:02:28.645Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-25"
+    }
+  },
+  {
+    "id": "audit-1787648548644",
+    "actor": {
+      "id": "patient",
+      "name": "Duplicate Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0041",
+    "timestamp": "2026-08-25T09:02:28.643Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-25"
+    }
+  },
+  {
+    "id": "audit-1787648548641",
+    "actor": {
+      "id": "patient",
+      "name": "Test Patient",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0040",
+    "timestamp": "2026-08-25T09:02:28.640Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-25"
+    }
+  },
+  {
+    "id": "audit-1787641892758",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0039",
+    "timestamp": "2026-08-25T07:11:32.758Z",
+    "details": {
+      "previousStatus": "CONFIRMED",
+      "newStatus": "COMPLETED"
+    }
+  },
+  {
+    "id": "audit-1787641892758",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0039",
+    "timestamp": "2026-08-25T07:11:32.757Z",
+    "details": {
+      "previousStatus": "NEW",
+      "newStatus": "CONFIRMED"
+    }
+  },
+  {
+    "id": "audit-1787641892757",
+    "actor": {
+      "id": "patient",
+      "name": "State Machine Fail Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0039",
+    "timestamp": "2026-08-25T07:11:32.757Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-25"
+    }
+  },
+  {
+    "id": "audit-1787641892756",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0038",
+    "timestamp": "2026-08-25T07:11:32.756Z",
+    "details": {
+      "previousStatus": "CONTACTED",
+      "newStatus": "CONFIRMED"
+    }
+  },
+  {
+    "id": "audit-1787641892755",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0038",
+    "timestamp": "2026-08-25T07:11:32.755Z",
+    "details": {
+      "previousStatus": "NEW",
+      "newStatus": "CONTACTED"
+    }
+  },
+  {
+    "id": "audit-1787641892754",
+    "actor": {
+      "id": "patient",
+      "name": "State Machine Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0038",
+    "timestamp": "2026-08-25T07:11:32.754Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-25"
+    }
+  },
+  {
+    "id": "audit-1787641892752",
+    "actor": {
+      "id": "patient",
+      "name": "Duplicate Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0037",
+    "timestamp": "2026-08-25T07:11:32.752Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-25"
+    }
+  },
+  {
+    "id": "audit-1787641892750",
+    "actor": {
+      "id": "patient",
+      "name": "Test Patient",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0036",
+    "timestamp": "2026-08-25T07:11:32.749Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-25"
+    }
+  },
+  {
+    "id": "audit-1787640699337",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0035",
+    "timestamp": "2026-08-25T06:51:39.337Z",
+    "details": {
+      "previousStatus": "CONFIRMED",
+      "newStatus": "COMPLETED"
+    }
+  },
+  {
+    "id": "audit-1787640699335",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0035",
+    "timestamp": "2026-08-25T06:51:39.335Z",
+    "details": {
+      "previousStatus": "NEW",
+      "newStatus": "CONFIRMED"
+    }
+  },
+  {
+    "id": "audit-1787640699334",
+    "actor": {
+      "id": "patient",
+      "name": "State Machine Fail Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0035",
+    "timestamp": "2026-08-25T06:51:39.333Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-25"
+    }
+  },
+  {
+    "id": "audit-1787640699332",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0034",
+    "timestamp": "2026-08-25T06:51:39.332Z",
+    "details": {
+      "previousStatus": "CONTACTED",
+      "newStatus": "CONFIRMED"
+    }
+  },
+  {
+    "id": "audit-1787640699332",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0034",
+    "timestamp": "2026-08-25T06:51:39.331Z",
+    "details": {
+      "previousStatus": "NEW",
+      "newStatus": "CONTACTED"
+    }
+  },
+  {
+    "id": "audit-1787640699330",
+    "actor": {
+      "id": "patient",
+      "name": "State Machine Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0034",
+    "timestamp": "2026-08-25T06:51:39.330Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-25"
+    }
+  },
+  {
+    "id": "audit-1787640699327",
+    "actor": {
+      "id": "patient",
+      "name": "Duplicate Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0033",
+    "timestamp": "2026-08-25T06:51:39.327Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-25"
+    }
+  },
+  {
+    "id": "audit-1787640699325",
+    "actor": {
+      "id": "patient",
+      "name": "Test Patient",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0032",
+    "timestamp": "2026-08-25T06:51:39.324Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-25"
+    }
+  },
+  {
+    "id": "audit-1787640273255",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0031",
+    "timestamp": "2026-08-25T06:44:33.255Z",
+    "details": {
+      "previousStatus": "CONFIRMED",
+      "newStatus": "COMPLETED"
+    }
+  },
+  {
+    "id": "audit-1787640273255",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0031",
+    "timestamp": "2026-08-25T06:44:33.254Z",
+    "details": {
+      "previousStatus": "NEW",
+      "newStatus": "CONFIRMED"
+    }
+  },
+  {
+    "id": "audit-1787640273254",
+    "actor": {
+      "id": "patient",
+      "name": "State Machine Fail Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0031",
+    "timestamp": "2026-08-25T06:44:33.254Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-25"
+    }
+  },
+  {
+    "id": "audit-1787640273253",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0030",
+    "timestamp": "2026-08-25T06:44:33.253Z",
+    "details": {
+      "previousStatus": "CONTACTED",
+      "newStatus": "CONFIRMED"
+    }
+  },
+  {
+    "id": "audit-1787640273253",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0030",
+    "timestamp": "2026-08-25T06:44:33.252Z",
+    "details": {
+      "previousStatus": "NEW",
+      "newStatus": "CONTACTED"
+    }
+  },
+  {
+    "id": "audit-1787640273252",
+    "actor": {
+      "id": "patient",
+      "name": "State Machine Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0030",
+    "timestamp": "2026-08-25T06:44:33.252Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-25"
+    }
+  },
+  {
+    "id": "audit-1787640273250",
+    "actor": {
+      "id": "patient",
+      "name": "Duplicate Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0029",
+    "timestamp": "2026-08-25T06:44:33.250Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-25"
+    }
+  },
+  {
+    "id": "audit-1787640273249",
+    "actor": {
+      "id": "patient",
+      "name": "Test Patient",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0028",
+    "timestamp": "2026-08-25T06:44:33.247Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-25"
+    }
+  },
+  {
+    "id": "audit-1787639608039",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0027",
+    "timestamp": "2026-08-25T06:33:28.039Z",
+    "details": {
+      "previousStatus": "CONFIRMED",
+      "newStatus": "COMPLETED"
+    }
+  },
+  {
+    "id": "audit-1787639608039",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0027",
+    "timestamp": "2026-08-25T06:33:28.039Z",
+    "details": {
+      "previousStatus": "NEW",
+      "newStatus": "CONFIRMED"
+    }
+  },
+  {
+    "id": "audit-1787639608038",
+    "actor": {
+      "id": "patient",
+      "name": "State Machine Fail Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0027",
+    "timestamp": "2026-08-25T06:33:28.038Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-25"
+    }
+  },
+  {
+    "id": "audit-1787639608037",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0026",
+    "timestamp": "2026-08-25T06:33:28.037Z",
+    "details": {
+      "previousStatus": "CONTACTED",
+      "newStatus": "CONFIRMED"
+    }
+  },
+  {
+    "id": "audit-1787639608037",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0026",
+    "timestamp": "2026-08-25T06:33:28.037Z",
+    "details": {
+      "previousStatus": "NEW",
+      "newStatus": "CONTACTED"
+    }
+  },
+  {
+    "id": "audit-1787639608036",
+    "actor": {
+      "id": "patient",
+      "name": "State Machine Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0026",
+    "timestamp": "2026-08-25T06:33:28.036Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-25"
+    }
+  },
+  {
+    "id": "audit-1787639608034",
+    "actor": {
+      "id": "patient",
+      "name": "Duplicate Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0025",
+    "timestamp": "2026-08-25T06:33:28.034Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-25"
+    }
+  },
+  {
+    "id": "audit-1787639608031",
+    "actor": {
+      "id": "patient",
+      "name": "Test Patient",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0024",
+    "timestamp": "2026-08-25T06:33:28.031Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-25"
+    }
+  },
+  {
+    "id": "audit-1787600224888",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0023",
+    "timestamp": "2026-08-24T19:37:04.888Z",
+    "details": {
+      "previousStatus": "CONFIRMED",
+      "newStatus": "COMPLETED"
+    }
+  },
+  {
+    "id": "audit-1787600224887",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0023",
+    "timestamp": "2026-08-24T19:37:04.887Z",
+    "details": {
+      "previousStatus": "NEW",
+      "newStatus": "CONFIRMED"
+    }
+  },
+  {
+    "id": "audit-1787600224887",
+    "actor": {
+      "id": "patient",
+      "name": "State Machine Fail Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0023",
+    "timestamp": "2026-08-24T19:37:04.887Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-25"
+    }
+  },
+  {
+    "id": "audit-1787600224886",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0022",
+    "timestamp": "2026-08-24T19:37:04.886Z",
+    "details": {
+      "previousStatus": "CONTACTED",
+      "newStatus": "CONFIRMED"
+    }
+  },
+  {
+    "id": "audit-1787600224886",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0022",
+    "timestamp": "2026-08-24T19:37:04.885Z",
+    "details": {
+      "previousStatus": "NEW",
+      "newStatus": "CONTACTED"
+    }
+  },
+  {
+    "id": "audit-1787600224885",
+    "actor": {
+      "id": "patient",
+      "name": "State Machine Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0022",
+    "timestamp": "2026-08-24T19:37:04.885Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-25"
+    }
+  },
+  {
+    "id": "audit-1787600224883",
+    "actor": {
+      "id": "patient",
+      "name": "Duplicate Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0021",
+    "timestamp": "2026-08-24T19:37:04.883Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-25"
+    }
+  },
+  {
+    "id": "audit-1787600224881",
+    "actor": {
+      "id": "patient",
+      "name": "Test Patient",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0020",
+    "timestamp": "2026-08-24T19:37:04.880Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-25"
+    }
+  },
+  {
+    "id": "audit-1787599916387",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0019",
+    "timestamp": "2026-08-24T19:31:56.387Z",
+    "details": {
+      "previousStatus": "CONFIRMED",
+      "newStatus": "COMPLETED"
+    }
+  },
+  {
+    "id": "audit-1787599916387",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0019",
+    "timestamp": "2026-08-24T19:31:56.386Z",
+    "details": {
+      "previousStatus": "NEW",
+      "newStatus": "CONFIRMED"
+    }
+  },
+  {
+    "id": "audit-1787599916386",
+    "actor": {
+      "id": "patient",
+      "name": "State Machine Fail Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0019",
+    "timestamp": "2026-08-24T19:31:56.386Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-25"
+    }
+  },
+  {
+    "id": "audit-1787599916385",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0018",
+    "timestamp": "2026-08-24T19:31:56.385Z",
+    "details": {
+      "previousStatus": "CONTACTED",
+      "newStatus": "CONFIRMED"
+    }
+  },
+  {
+    "id": "audit-1787599916385",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0018",
+    "timestamp": "2026-08-24T19:31:56.384Z",
+    "details": {
+      "previousStatus": "NEW",
+      "newStatus": "CONTACTED"
+    }
+  },
+  {
+    "id": "audit-1787599916384",
+    "actor": {
+      "id": "patient",
+      "name": "State Machine Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0018",
+    "timestamp": "2026-08-24T19:31:56.384Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-25"
+    }
+  },
+  {
+    "id": "audit-1787599916382",
+    "actor": {
+      "id": "patient",
+      "name": "Duplicate Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0017",
+    "timestamp": "2026-08-24T19:31:56.382Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-25"
+    }
+  },
+  {
+    "id": "audit-1787599916380",
+    "actor": {
+      "id": "patient",
+      "name": "Test Patient",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0016",
+    "timestamp": "2026-08-24T19:31:56.379Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-25"
+    }
+  },
+  {
+    "id": "audit-1787599456656",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0015",
+    "timestamp": "2026-08-24T19:24:16.656Z",
+    "details": {
+      "previousStatus": "CONFIRMED",
+      "newStatus": "COMPLETED"
+    }
+  },
+  {
+    "id": "audit-1787599456655",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0015",
+    "timestamp": "2026-08-24T19:24:16.655Z",
+    "details": {
+      "previousStatus": "NEW",
+      "newStatus": "CONFIRMED"
+    }
+  },
+  {
+    "id": "audit-1787599456655",
+    "actor": {
+      "id": "patient",
+      "name": "State Machine Fail Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0015",
+    "timestamp": "2026-08-24T19:24:16.655Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-25"
+    }
+  },
+  {
+    "id": "audit-1787599456654",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0014",
+    "timestamp": "2026-08-24T19:24:16.654Z",
+    "details": {
+      "previousStatus": "CONTACTED",
+      "newStatus": "CONFIRMED"
+    }
+  },
+  {
+    "id": "audit-1787599456654",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0014",
+    "timestamp": "2026-08-24T19:24:16.653Z",
+    "details": {
+      "previousStatus": "NEW",
+      "newStatus": "CONTACTED"
+    }
+  },
+  {
+    "id": "audit-1787599456653",
+    "actor": {
+      "id": "patient",
+      "name": "State Machine Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0014",
+    "timestamp": "2026-08-24T19:24:16.653Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-25"
+    }
+  },
+  {
+    "id": "audit-1787599456651",
+    "actor": {
+      "id": "patient",
+      "name": "Duplicate Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0013",
+    "timestamp": "2026-08-24T19:24:16.651Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-25"
+    }
+  },
+  {
+    "id": "audit-1787599456650",
+    "actor": {
+      "id": "patient",
+      "name": "Test Patient",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0012",
+    "timestamp": "2026-08-24T19:24:16.649Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-25"
+    }
+  },
+  {
+    "id": "audit-1787597297710",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0011",
+    "timestamp": "2026-08-24T18:48:17.710Z",
+    "details": {
+      "previousStatus": "CONFIRMED",
+      "newStatus": "COMPLETED"
+    }
+  },
+  {
+    "id": "audit-1787597297710",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0011",
+    "timestamp": "2026-08-24T18:48:17.710Z",
+    "details": {
+      "previousStatus": "NEW",
+      "newStatus": "CONFIRMED"
+    }
+  },
+  {
+    "id": "audit-1787597297710",
+    "actor": {
+      "id": "patient",
+      "name": "State Machine Fail Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0011",
+    "timestamp": "2026-08-24T18:48:17.709Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-25"
+    }
+  },
+  {
+    "id": "audit-1787597297709",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0010",
+    "timestamp": "2026-08-24T18:48:17.709Z",
+    "details": {
+      "previousStatus": "CONTACTED",
+      "newStatus": "CONFIRMED"
+    }
+  },
+  {
+    "id": "audit-1787597297709",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0010",
+    "timestamp": "2026-08-24T18:48:17.708Z",
+    "details": {
+      "previousStatus": "NEW",
+      "newStatus": "CONTACTED"
+    }
+  },
+  {
+    "id": "audit-1787597297708",
+    "actor": {
+      "id": "patient",
+      "name": "State Machine Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0010",
+    "timestamp": "2026-08-24T18:48:17.708Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-25"
+    }
+  },
+  {
+    "id": "audit-1787597297707",
+    "actor": {
+      "id": "patient",
+      "name": "Duplicate Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0009",
+    "timestamp": "2026-08-24T18:48:17.706Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-25"
+    }
+  },
+  {
+    "id": "audit-1787597297705",
+    "actor": {
+      "id": "patient",
+      "name": "Test Patient",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0008",
+    "timestamp": "2026-08-24T18:48:17.704Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-25"
+    }
+  },
+  {
+    "id": "audit-1787596993914",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0007",
+    "timestamp": "2026-08-24T18:43:13.914Z",
+    "details": {
+      "previousStatus": "CONFIRMED",
+      "newStatus": "COMPLETED"
+    }
+  },
+  {
+    "id": "audit-1787596993914",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0007",
+    "timestamp": "2026-08-24T18:43:13.913Z",
+    "details": {
+      "previousStatus": "NEW",
+      "newStatus": "CONFIRMED"
+    }
+  },
+  {
+    "id": "audit-1787596993913",
+    "actor": {
+      "id": "patient",
+      "name": "State Machine Fail Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0007",
+    "timestamp": "2026-08-24T18:43:13.913Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-25"
+    }
+  },
+  {
+    "id": "audit-1787596993912",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0006",
+    "timestamp": "2026-08-24T18:43:13.912Z",
+    "details": {
+      "previousStatus": "CONTACTED",
+      "newStatus": "CONFIRMED"
+    }
+  },
+  {
+    "id": "audit-1787596993911",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0006",
+    "timestamp": "2026-08-24T18:43:13.911Z",
+    "details": {
+      "previousStatus": "NEW",
+      "newStatus": "CONTACTED"
+    }
+  },
+  {
+    "id": "audit-1787596993910",
+    "actor": {
+      "id": "patient",
+      "name": "State Machine Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0006",
+    "timestamp": "2026-08-24T18:43:13.910Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-25"
+    }
+  },
+  {
+    "id": "audit-1787596993909",
+    "actor": {
+      "id": "patient",
+      "name": "Duplicate Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0005",
+    "timestamp": "2026-08-24T18:43:13.908Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-25"
+    }
+  },
+  {
+    "id": "audit-1787596993907",
+    "actor": {
+      "id": "patient",
+      "name": "Test Patient",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0004",
+    "timestamp": "2026-08-24T18:43:13.906Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-25"
+    }
+  },
+  {
+    "id": "audit-1787596890089",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0003",
+    "timestamp": "2026-08-24T18:41:30.089Z",
+    "details": {
+      "previousStatus": "CONFIRMED",
+      "newStatus": "COMPLETED"
+    }
+  },
+  {
+    "id": "audit-1787596890089",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0003",
+    "timestamp": "2026-08-24T18:41:30.089Z",
+    "details": {
+      "previousStatus": "NEW",
+      "newStatus": "CONFIRMED"
+    }
+  },
+  {
+    "id": "audit-1787596890089",
+    "actor": {
+      "id": "patient",
+      "name": "State Machine Fail Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0003",
+    "timestamp": "2026-08-24T18:41:30.088Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-25"
+    }
+  },
+  {
+    "id": "audit-1787596890088",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0002",
+    "timestamp": "2026-08-24T18:41:30.088Z",
+    "details": {
+      "previousStatus": "CONTACTED",
+      "newStatus": "CONFIRMED"
+    }
+  },
+  {
+    "id": "audit-1787596890087",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0002",
+    "timestamp": "2026-08-24T18:41:30.087Z",
+    "details": {
+      "previousStatus": "NEW",
+      "newStatus": "CONTACTED"
+    }
+  },
+  {
+    "id": "audit-1787596890087",
+    "actor": {
+      "id": "patient",
+      "name": "State Machine Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0002",
+    "timestamp": "2026-08-24T18:41:30.086Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-25"
+    }
+  },
+  {
+    "id": "audit-1787596890084",
+    "actor": {
+      "id": "patient",
+      "name": "Test Patient",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260825-0001",
+    "timestamp": "2026-08-24T18:41:30.083Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-25"
+    }
+  },
+  {
+    "id": "audit-1787594467949",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260824-0024",
+    "timestamp": "2026-08-24T18:01:07.949Z",
+    "details": {
+      "previousStatus": "CONFIRMED",
+      "newStatus": "COMPLETED"
+    }
+  },
+  {
+    "id": "audit-1787594467948",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260824-0024",
+    "timestamp": "2026-08-24T18:01:07.948Z",
+    "details": {
+      "previousStatus": "NEW",
+      "newStatus": "CONFIRMED"
+    }
+  },
+  {
+    "id": "audit-1787594467948",
+    "actor": {
+      "id": "patient",
+      "name": "State Machine Fail Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260824-0024",
+    "timestamp": "2026-08-24T18:01:07.948Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-24"
+    }
+  },
+  {
+    "id": "audit-1787594467947",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260824-0023",
+    "timestamp": "2026-08-24T18:01:07.947Z",
+    "details": {
+      "previousStatus": "CONTACTED",
+      "newStatus": "CONFIRMED"
+    }
+  },
+  {
+    "id": "audit-1787594467947",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260824-0023",
+    "timestamp": "2026-08-24T18:01:07.947Z",
+    "details": {
+      "previousStatus": "NEW",
+      "newStatus": "CONTACTED"
+    }
+  },
+  {
+    "id": "audit-1787594467946",
+    "actor": {
+      "id": "patient",
+      "name": "State Machine Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260824-0023",
+    "timestamp": "2026-08-24T18:01:07.946Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-24"
+    }
+  },
+  {
+    "id": "audit-1787594467945",
+    "actor": {
+      "id": "patient",
+      "name": "Duplicate Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260824-0022",
+    "timestamp": "2026-08-24T18:01:07.945Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Ananya Rao",
+      "date": "2026-08-24"
+    }
+  },
+  {
+    "id": "audit-1787594467944",
+    "actor": {
+      "id": "patient",
+      "name": "Test Patient",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260824-0021",
+    "timestamp": "2026-08-24T18:01:07.943Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-24"
+    }
+  },
+  {
+    "id": "audit-1787583673144",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260824-0020",
+    "timestamp": "2026-08-24T15:01:13.144Z",
+    "details": {
+      "previousStatus": "CONFIRMED",
+      "newStatus": "COMPLETED"
+    }
+  },
+  {
+    "id": "audit-1787583673144",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260824-0020",
+    "timestamp": "2026-08-24T15:01:13.143Z",
+    "details": {
+      "previousStatus": "NEW",
+      "newStatus": "CONFIRMED"
+    }
+  },
+  {
+    "id": "audit-1787583673143",
+    "actor": {
+      "id": "patient",
+      "name": "State Machine Fail Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260824-0020",
+    "timestamp": "2026-08-24T15:01:13.143Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-24"
+    }
+  },
+  {
+    "id": "audit-1787583673143",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260824-0019",
+    "timestamp": "2026-08-24T15:01:13.143Z",
+    "details": {
+      "previousStatus": "CONTACTED",
+      "newStatus": "CONFIRMED"
+    }
+  },
+  {
+    "id": "audit-1787583673142",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260824-0019",
+    "timestamp": "2026-08-24T15:01:13.142Z",
+    "details": {
+      "previousStatus": "NEW",
+      "newStatus": "CONTACTED"
+    }
+  },
+  {
+    "id": "audit-1787583673142",
+    "actor": {
+      "id": "patient",
+      "name": "State Machine Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260824-0019",
+    "timestamp": "2026-08-24T15:01:13.142Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-24"
+    }
+  },
+  {
+    "id": "audit-1787583673141",
+    "actor": {
+      "id": "patient",
+      "name": "Duplicate Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260824-0018",
+    "timestamp": "2026-08-24T15:01:13.140Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Ananya Rao",
+      "date": "2026-08-24"
+    }
+  },
+  {
+    "id": "audit-1787583673139",
+    "actor": {
+      "id": "patient",
+      "name": "Test Patient",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260824-0017",
+    "timestamp": "2026-08-24T15:01:13.139Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-24"
+    }
+  },
+  {
+    "id": "audit-1787583422346",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260824-0016",
+    "timestamp": "2026-08-24T14:57:02.346Z",
+    "details": {
+      "previousStatus": "CONFIRMED",
+      "newStatus": "COMPLETED"
+    }
+  },
+  {
+    "id": "audit-1787583422346",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260824-0016",
+    "timestamp": "2026-08-24T14:57:02.346Z",
+    "details": {
+      "previousStatus": "NEW",
+      "newStatus": "CONFIRMED"
+    }
+  },
+  {
+    "id": "audit-1787583422346",
+    "actor": {
+      "id": "patient",
+      "name": "State Machine Fail Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260824-0016",
+    "timestamp": "2026-08-24T14:57:02.345Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-24"
+    }
+  },
+  {
+    "id": "audit-1787583422344",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260824-0015",
+    "timestamp": "2026-08-24T14:57:02.344Z",
+    "details": {
+      "previousStatus": "CONTACTED",
+      "newStatus": "CONFIRMED"
+    }
+  },
+  {
+    "id": "audit-1787583422344",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260824-0015",
+    "timestamp": "2026-08-24T14:57:02.344Z",
+    "details": {
+      "previousStatus": "NEW",
+      "newStatus": "CONTACTED"
+    }
+  },
+  {
+    "id": "audit-1787583422344",
+    "actor": {
+      "id": "patient",
+      "name": "State Machine Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260824-0015",
+    "timestamp": "2026-08-24T14:57:02.343Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-24"
+    }
+  },
+  {
+    "id": "audit-1787583422342",
+    "actor": {
+      "id": "patient",
+      "name": "Duplicate Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260824-0014",
+    "timestamp": "2026-08-24T14:57:02.342Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Ananya Rao",
+      "date": "2026-08-24"
+    }
+  },
+  {
+    "id": "audit-1787583422340",
+    "actor": {
+      "id": "patient",
+      "name": "Test Patient",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260824-0013",
+    "timestamp": "2026-08-24T14:57:02.339Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-24"
+    }
+  },
+  {
+    "id": "audit-1787559484138",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260824-0012",
+    "timestamp": "2026-08-24T08:18:04.137Z",
+    "details": {
+      "previousStatus": "CONFIRMED",
+      "newStatus": "COMPLETED"
+    }
+  },
+  {
+    "id": "audit-1787559484137",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260824-0012",
+    "timestamp": "2026-08-24T08:18:04.137Z",
+    "details": {
+      "previousStatus": "NEW",
+      "newStatus": "CONFIRMED"
+    }
+  },
+  {
+    "id": "audit-1787559484137",
+    "actor": {
+      "id": "patient",
+      "name": "State Machine Fail Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260824-0012",
+    "timestamp": "2026-08-24T08:18:04.136Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-24"
+    }
+  },
+  {
+    "id": "audit-1787559484136",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260824-0011",
+    "timestamp": "2026-08-24T08:18:04.136Z",
+    "details": {
+      "previousStatus": "CONTACTED",
+      "newStatus": "CONFIRMED"
+    }
+  },
+  {
+    "id": "audit-1787559484136",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260824-0011",
+    "timestamp": "2026-08-24T08:18:04.135Z",
+    "details": {
+      "previousStatus": "NEW",
+      "newStatus": "CONTACTED"
+    }
+  },
+  {
+    "id": "audit-1787559484135",
+    "actor": {
+      "id": "patient",
+      "name": "State Machine Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260824-0011",
+    "timestamp": "2026-08-24T08:18:04.135Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-24"
+    }
+  },
+  {
+    "id": "audit-1787559484133",
+    "actor": {
+      "id": "patient",
+      "name": "Duplicate Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260824-0010",
+    "timestamp": "2026-08-24T08:18:04.133Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Ananya Rao",
+      "date": "2026-08-24"
+    }
+  },
+  {
+    "id": "audit-1787559484132",
+    "actor": {
+      "id": "patient",
+      "name": "Test Patient",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260824-0009",
+    "timestamp": "2026-08-24T08:18:04.132Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-24"
+    }
+  },
+  {
+    "id": "audit-1787558312228",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260824-0008",
+    "timestamp": "2026-08-24T07:58:32.228Z",
+    "details": {
+      "previousStatus": "CONFIRMED",
+      "newStatus": "COMPLETED"
+    }
+  },
+  {
+    "id": "audit-1787558312228",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260824-0008",
+    "timestamp": "2026-08-24T07:58:32.228Z",
+    "details": {
+      "previousStatus": "NEW",
+      "newStatus": "CONFIRMED"
+    }
+  },
+  {
+    "id": "audit-1787558312228",
+    "actor": {
+      "id": "patient",
+      "name": "State Machine Fail Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260824-0008",
+    "timestamp": "2026-08-24T07:58:32.228Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-24"
+    }
+  },
+  {
+    "id": "audit-1787558312227",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260824-0007",
+    "timestamp": "2026-08-24T07:58:32.227Z",
+    "details": {
+      "previousStatus": "CONTACTED",
+      "newStatus": "CONFIRMED"
+    }
+  },
+  {
+    "id": "audit-1787558312227",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260824-0007",
+    "timestamp": "2026-08-24T07:58:32.227Z",
+    "details": {
+      "previousStatus": "NEW",
+      "newStatus": "CONTACTED"
+    }
+  },
+  {
+    "id": "audit-1787558312227",
+    "actor": {
+      "id": "patient",
+      "name": "State Machine Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260824-0007",
+    "timestamp": "2026-08-24T07:58:32.227Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-24"
+    }
+  },
+  {
+    "id": "audit-1787558312226",
+    "actor": {
+      "id": "patient",
+      "name": "Duplicate Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260824-0006",
+    "timestamp": "2026-08-24T07:58:32.225Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Ananya Rao",
+      "date": "2026-08-24"
+    }
+  },
+  {
+    "id": "audit-1787558312225",
+    "actor": {
+      "id": "patient",
+      "name": "Test Patient",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260824-0005",
+    "timestamp": "2026-08-24T07:58:32.224Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-24"
+    }
+  },
+  {
+    "id": "audit-1787558283967",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260824-0004",
+    "timestamp": "2026-08-24T07:58:03.967Z",
+    "details": {
+      "previousStatus": "CONFIRMED",
+      "newStatus": "COMPLETED"
+    }
+  },
+  {
+    "id": "audit-1787558283967",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260824-0004",
+    "timestamp": "2026-08-24T07:58:03.967Z",
+    "details": {
+      "previousStatus": "NEW",
+      "newStatus": "CONFIRMED"
+    }
+  },
+  {
+    "id": "audit-1787558283967",
+    "actor": {
+      "id": "patient",
+      "name": "State Machine Fail Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260824-0004",
+    "timestamp": "2026-08-24T07:58:03.967Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-24"
+    }
+  },
+  {
+    "id": "audit-1787558283966",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260824-0003",
+    "timestamp": "2026-08-24T07:58:03.966Z",
+    "details": {
+      "previousStatus": "CONTACTED",
+      "newStatus": "CONFIRMED"
+    }
+  },
+  {
+    "id": "audit-1787558283966",
+    "actor": {
+      "id": "usr-admin",
+      "name": "Admin",
+      "role": "HOSPITAL_ADMIN"
+    },
+    "action": "UPDATE_STATUS",
+    "entity": "Appointment",
+    "entityId": "APT-20260824-0003",
+    "timestamp": "2026-08-24T07:58:03.966Z",
+    "details": {
+      "previousStatus": "NEW",
+      "newStatus": "CONTACTED"
+    }
+  },
+  {
+    "id": "audit-1787558283965",
+    "actor": {
+      "id": "patient",
+      "name": "State Machine Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260824-0003",
+    "timestamp": "2026-08-24T07:58:03.965Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-24"
+    }
+  },
+  {
+    "id": "audit-1787558283964",
+    "actor": {
+      "id": "patient",
+      "name": "Duplicate Test",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260824-0002",
+    "timestamp": "2026-08-24T07:58:03.964Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Ananya Rao",
+      "date": "2026-08-24"
+    }
+  },
+  {
+    "id": "audit-1787558283963",
+    "actor": {
+      "id": "patient",
+      "name": "Test Patient",
+      "role": "PATIENT"
+    },
+    "action": "CREATE_APPOINTMENT",
+    "entity": "Appointment",
+    "entityId": "APT-20260824-0001",
+    "timestamp": "2026-08-24T07:58:03.963Z",
+    "details": {
+      "source": "WEBSITE",
+      "doctor": "Dr. Rajesh Sharma",
+      "date": "2026-08-24"
+    }
+  }
+]

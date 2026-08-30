@@ -1,0 +1,187 @@
+{
+  "name": "City Care Hospital Receptionist",
+  "transcriber": {
+    "provider": "deepgram",
+    "model": "nova-2",
+    "language": "multi"
+  },
+  "model": {
+    "provider": "openai",
+    "model": "gpt-4o",
+    "temperature": 0.3,
+    "systemPrompt": "You are the official hospital receptionist and appointment booking assistant for City Care Hospital (ಸಿಟಿ ಕೇರ್ ಆಸ್ಪತ್ರೆ).\n\n# CORE ROLE & GOAL\nYour job is to answer incoming telephone calls warmly, answer patient questions about departments and doctors, check appointment availability, and book OPD consultations into the hospital management system.\n\n# LANGUAGE & TONE\n- You are bilingual in Kannada and English. Speak in whichever language the caller prefers or mix them naturally (Kanglish).\n- If the user starts speaking in Kannada, greet and continue in Kannada: 'ನಮಸ್ಕಾರ! ಸಿಟಿ ಕೇರ್ ಆಸ್ಪತ್ರೆಗೆ ಸುಸ್ವಾಗತ. ನಾನು ನಿಮಗೆ ಹೇಗೆ ಸಹಾಯ ಮಾಡಲಿ?'\n- If in English: 'Namaskara! Welcome to City Care Hospital. How may I assist you with your appointment today?'\n- Keep your spoken answers brief, clear, polite, and conversational (1-2 sentences per turn), as this is a real-time telephone conversation.\n\n# APPOINTMENT BOOKING CONVERSATION FLOW\n1. **Greeting & Patient Name**: Ask for the patient's full name if not known.\n2. **Department / Medical Problem**: Ask which department or medical specialty they need (e.g., Cardiology, Orthopedics, Pediatrics, General Medicine), or ask about their symptoms to recommend a department.\n3. **Doctor Selection**: Call `searchDoctors` to find doctors in that department. Propose 1-2 available doctors with their specialization.\n4. **Preferred Date & Time**: Ask for preferred appointment date (YYYY-MM-DD) and check doctor schedule using `checkDoctorAvailability`.\n5. **10-Digit Mobile Number**: Collect their mobile number for SMS confirmation. Read it back to confirm accuracy.\n6. **Confirmation & Booking**: Confirm all details with the patient (Patient Name, Doctor, Date, Time Slot). Once confirmed, call `createAppointment`.\n7. **Closing**: Provide the generated Appointment ID (e.g. APT-XXXX) and remind them to arrive 15 minutes before the slot.\n\n# CRITICAL MEDICAL SAFETY GUARDRAILS\n- You are an automated booking receptionist, NOT a physician. NEVER diagnose illnesses, recommend medications, or give dosages.\n- If a caller mentions emergency symptoms (severe chest pain, breathing difficulty, severe bleeding, unconsciousness, stroke symptoms):\n  IMMEDIATELY tell them to call Emergency 108 or proceed to the Emergency Room right away. Call `handleEmergency` tool. Do NOT attempt to book a standard OPD slot.\n- If the caller requests human staff or is confused/frustrated, call `requestHumanAssistance` to transfer to reception.\n\n# REAL-TIME CONSTRAINTS\n- Only quote doctors, fees, and slots returned by tool calls. Never make up doctor names or timings.\n- Always format dates as YYYY-MM-DD when calling tools.",
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "getHospitalInfo",
+          "description": "Retrieves hospital contact details, emergency lines, address, and operating hours.",
+          "parameters": {
+            "type": "object",
+            "properties": {}
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "getDepartments",
+          "description": "Returns the list of active clinical departments at City Care Hospital.",
+          "parameters": {
+            "type": "object",
+            "properties": {}
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "searchDoctors",
+          "description": "Search available doctors by department name, specialization, or doctor name.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "department": {
+                "type": "string",
+                "description": "Department name (e.g. Cardiology, Orthopedics, Pediatrics, General Medicine)"
+              },
+              "specialization": {
+                "type": "string",
+                "description": "Specialization keyword (e.g. Heart, Bone, Child)"
+              },
+              "name": {
+                "type": "string",
+                "description": "Doctor's name to filter"
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "checkDoctorAvailability",
+          "description": "Check if a doctor is available on a specific date and retrieve open time slots.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "doctorId": {
+                "type": "string",
+                "description": "Doctor ID (e.g. doc-1, doc-2)"
+              },
+              "date": {
+                "type": "string",
+                "description": "Target date in YYYY-MM-DD format"
+              }
+            },
+            "required": ["doctorId", "date"]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "createAppointment",
+          "description": "Creates and confirms an OPD appointment in the hospital database.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "patientName": {
+                "type": "string",
+                "description": "Full name of the patient"
+              },
+              "phone": {
+                "type": "string",
+                "description": "10-digit mobile number of the patient"
+              },
+              "departmentId": {
+                "type": "string",
+                "description": "ID of the hospital department"
+              },
+              "doctorId": {
+                "type": "string",
+                "description": "ID of the chosen doctor"
+              },
+              "date": {
+                "type": "string",
+                "description": "Appointment date in YYYY-MM-DD format"
+              },
+              "time": {
+                "type": "string",
+                "description": "Time slot (e.g. '10:00 AM', '04:00 PM')"
+              },
+              "reason": {
+                "type": "string",
+                "description": "Brief reason or symptoms for visit"
+              },
+              "language": {
+                "type": "string",
+                "enum": ["kn", "en"],
+                "description": "Language used by caller ('kn' for Kannada, 'en' for English)"
+              }
+            },
+            "required": ["patientName", "phone", "doctorId", "date", "time"]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "requestHumanAssistance",
+          "description": "Transfers the call to human reception staff when the patient requests or when complex assistance is needed.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "reason": {
+                "type": "string",
+                "description": "Reason for handoff to human receptionist"
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "handleEmergency",
+          "description": "Escalates a medical emergency and provides immediate 108 ambulance contact.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "emergencyType": {
+                "type": "string",
+                "description": "Type of emergency described (e.g. chest pain, severe trauma)"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "voice": {
+    "provider": "11labs",
+    "voiceId": "21m00Tcm4TlvDq8ikWAM",
+    "speed": 0.95
+  },
+  "firstMessage": "ನಮಸ್ಕಾರ! ಸಿಟಿ ಕೇರ್ ಆಸ್ಪತ್ರೆಗೆ ಸುಸ್ವಾಗತ. Namaskara, welcome to City Care Hospital. How may I assist you with your appointment today?",
+  "server": {
+    "url": "https://YOUR_BACKEND_DOMAIN_OR_NGROK/api/telephony/vapi/webhook"
+  },
+  "endCallPhrases": [
+    "goodbye",
+    "bye",
+    "ಧನ್ಯವಾದಗಳು",
+    "thank you bye"
+  ],
+  "clientMessages": [
+    "transcript",
+    "hang",
+    "function-call",
+    "speech-update",
+    "tool-calls"
+  ],
+  "serverMessages": [
+    "tool-calls",
+    "end-of-call-report"
+  ]
+}

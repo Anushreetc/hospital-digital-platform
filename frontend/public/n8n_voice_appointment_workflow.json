@@ -1,0 +1,202 @@
+{
+  "name": "Hospital Voice Assistant & Appointment Booking Router",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "hospital-voice-webhook",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "name": "Webhook Inbound (Vapi / Telephony)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [220, 300],
+      "id": "node-webhook-inbound"
+    },
+    {
+      "parameters": {
+        "dataType": "string",
+        "value1": "={{ $json.body.message.type || $json.body.action || 'tool-calls' }}",
+        "rules": {
+          "rules": [
+            {
+              "value2": "tool-calls",
+              "outputKey": "tool-calls"
+            },
+            {
+              "value2": "book_appointment",
+              "outputKey": "direct-booking"
+            },
+            {
+              "value2": "check_availability",
+              "outputKey": "availability-check"
+            },
+            {
+              "value2": "end-of-call-report",
+              "outputKey": "call-report"
+            }
+          ]
+        }
+      },
+      "name": "Route Event Type",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 2,
+      "position": [460, 300],
+      "id": "node-route-event"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.HOSPITAL_API_URL || 'http://localhost:5001' }}/api/telephony/vapi/webhook",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.body) }}",
+        "options": {}
+      },
+      "name": "Forward to Hospital Telephony API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [720, 200],
+      "id": "node-http-telephony"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.HOSPITAL_API_URL || 'http://localhost:5001' }}/api/ai/appointments",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.body.parameters || $json.body) }}",
+        "options": {}
+      },
+      "name": "Direct Booking Node",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [720, 380],
+      "id": "node-http-direct-booking"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "name": "Respond to Voice Assistant",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [980, 200],
+      "id": "node-respond-voice"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.success }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "name": "Check If Appointment Created",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [980, 380],
+      "id": "node-check-created"
+    },
+    {
+      "parameters": {
+        "content": "## SMS / WhatsApp Patient Confirmation\nSends immediate SMS to the patient with Appointment ID and instructions.",
+        "height": 180,
+        "width": 320
+      },
+      "name": "Notification Sticky",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [1200, 320],
+      "id": "node-sticky-notify"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ success: true, message: 'Call report logged successfully.' }) }}",
+        "options": {}
+      },
+      "name": "Respond Call Report",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [720, 560],
+      "id": "node-respond-report"
+    }
+  ],
+  "connections": {
+    "Webhook Inbound (Vapi / Telephony)": {
+      "main": [
+        [
+          {
+            "node": "Route Event Type",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route Event Type": {
+      "main": [
+        [
+          {
+            "node": "Forward to Hospital Telephony API",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Direct Booking Node",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [],
+        [
+          {
+            "node": "Respond Call Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Forward to Hospital Telephony API": {
+      "main": [
+        [
+          {
+            "node": "Respond to Voice Assistant",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Direct Booking Node": {
+      "main": [
+        [
+          {
+            "node": "Check If Appointment Created",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Respond to Voice Assistant",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

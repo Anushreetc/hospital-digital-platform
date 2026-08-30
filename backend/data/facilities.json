@@ -1,0 +1,34 @@
+[
+  {
+    "id": "fac-1",
+    "name": "Advanced Critical Care ICUs",
+    "description": "Dedicated Cardiac, Neonatal, and Surgical ICUs with central telemetry monitoring.",
+    "imageUrl": "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=600",
+    "displayOrder": 1,
+    "active": true
+  },
+  {
+    "id": "fac-2",
+    "name": "3T MRI & 128-Slice CT Scanner",
+    "description": "Ultra-fast, high-resolution diagnostic imaging for precision neurological and cardiac care.",
+    "imageUrl": "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&q=80&w=600",
+    "displayOrder": 2,
+    "active": true
+  },
+  {
+    "id": "fac-3",
+    "name": "Modular Operation Theatres",
+    "description": "Infection-controlled ultra-clean operating suits with robotic surgical assistance.",
+    "imageUrl": "https://images.unsplash.com/photo-1551076805-e1869033e561?auto=format&fit=crop&q=80&w=600",
+    "displayOrder": 3,
+    "active": true
+  },
+  {
+    "id": "fac-4",
+    "name": "Deluxe Patient Suites & Private Wards",
+    "description": "Spacious, comfortable rooms with guest accommodation, nurse call systems, and Wi-Fi.",
+    "imageUrl": "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&q=80&w=600",
+    "displayOrder": 4,
+    "active": true
+  }
+]

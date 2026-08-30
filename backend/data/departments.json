@@ -1,0 +1,58 @@
+[
+  {
+    "id": "dept-cardio",
+    "name": "Cardiology",
+    "code": "CARD",
+    "description": "Comprehensive cardiovascular diagnosis, angioplasty, cardiac rehabilitation, and heart care.",
+    "iconName": "HeartPulse",
+    "active": true
+  },
+  {
+    "id": "dept-neuro",
+    "name": "Neurology & Neurosurgery",
+    "code": "NEUR",
+    "description": "Advanced brain and nerve care, stroke management, spine surgery, and neurological rehabilitation.",
+    "iconName": "Brain",
+    "active": true
+  },
+  {
+    "id": "dept-ortho",
+    "name": "Orthopedics & Joint Replacement",
+    "code": "ORTH",
+    "description": "Joint replacement, fracture care, sports injury management, and arthroscopic surgery.",
+    "iconName": "Bone",
+    "active": true
+  },
+  {
+    "id": "dept-pedia",
+    "name": "Pediatrics & Neonatology",
+    "code": "PEDI",
+    "description": "Specialized pediatric care, NICU facilities, childhood vaccination, and growth monitoring.",
+    "iconName": "Baby",
+    "active": true
+  },
+  {
+    "id": "dept-gynaec",
+    "name": "Obstetrics & Gynecology",
+    "code": "GYNA",
+    "description": "High-risk pregnancy care, maternity services, laparoscopic gynecological surgery, and women's health.",
+    "iconName": "UserPlus",
+    "active": true
+  },
+  {
+    "id": "dept-gastro",
+    "name": "Gastroenterology",
+    "code": "GAST",
+    "description": "Endoscopy, liver diseases, digestive disorders, and gastrointestinal surgery.",
+    "iconName": "Activity",
+    "active": true
+  },
+  {
+    "id": "dept-genmed",
+    "name": "General Medicine & Internal Medicine",
+    "code": "GMED",
+    "description": "Diagnosis and management of chronic lifestyle diseases, fevers, infections, and preventive health checks.",
+    "iconName": "Stethoscope",
+    "active": true
+  }
+]

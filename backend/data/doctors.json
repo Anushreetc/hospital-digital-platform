@@ -1,0 +1,98 @@
+[
+  {
+    "id": "doc-101",
+    "userId": "usr-doc-101",
+    "name": "Dr. Rajesh Sharma",
+    "email": "doc101@example.com",
+    "photoUrl": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=400",
+    "qualification": "MBBS, MD (General Medicine), DM (Cardiology)",
+    "designation": "Senior Consultant Cardiologist",
+    "specialization": "Interventional Cardiology & Heart Failure",
+    "departmentId": "dept-cardio",
+    "departmentName": "Cardiology",
+    "experienceYears": 18,
+    "bio": "Dr. Rajesh Sharma is a renowned cardiologist with over 18 years of experience in interventional cardiology, cardiac catheterization, and preventive heart care.",
+    "languages": [
+      "Kannada",
+      "English",
+      "Hindi"
+    ],
+    "consultationFee": 700,
+    "active": true
+  },
+  {
+    "id": "doc-102",
+    "name": "Dr. Ananya Rao",
+    "photoUrl": "https://images.unsplash.com/photo-1594824813566-88855ce78c00?auto=format&fit=crop&q=80&w=400",
+    "qualification": "MBBS, MS (Orthopedics), M.Ch (Joint Replacement)",
+    "designation": "Chief Orthopedic Surgeon",
+    "specialization": "Robotic Knee & Hip Replacement",
+    "departmentId": "dept-ortho",
+    "departmentName": "Orthopedics & Joint Replacement",
+    "experienceYears": 15,
+    "bio": "Dr. Ananya Rao specializes in minimally invasive joint replacement surgeries and complex trauma management.",
+    "languages": [
+      "Kannada",
+      "English"
+    ],
+    "consultationFee": 650,
+    "active": true
+  },
+  {
+    "id": "doc-103",
+    "name": "Dr. Suresh Kumar",
+    "photoUrl": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=400",
+    "qualification": "MBBS, M.Ch (Neurosurgery), Fellow (Spine)",
+    "designation": "Lead Neurosurgeon",
+    "specialization": "Brain Tumor Surgery & Micro-Neurosurgery",
+    "departmentId": "dept-neuro",
+    "departmentName": "Neurology & Neurosurgery",
+    "experienceYears": 14,
+    "bio": "Dr. Suresh Kumar is an expert in brain tumor excisions, endovascular neurosurgery, and complex spinal disorders.",
+    "languages": [
+      "Kannada",
+      "English",
+      "Telugu"
+    ],
+    "consultationFee": 800,
+    "active": true
+  },
+  {
+    "id": "doc-104",
+    "name": "Dr. Priya Deshmukh",
+    "photoUrl": "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=400",
+    "qualification": "MBBS, MD (Pediatrics), DNB",
+    "designation": "Senior Pediatrician",
+    "specialization": "Pediatric Critical Care & Immunization",
+    "departmentId": "dept-pedia",
+    "departmentName": "Pediatrics & Neonatology",
+    "experienceYears": 12,
+    "bio": "Dr. Priya Deshmukh is dedicated to child healthcare, pediatric emergency management, and infant nutrition counseling.",
+    "languages": [
+      "Kannada",
+      "English",
+      "Hindi",
+      "Marathi"
+    ],
+    "consultationFee": 500,
+    "active": true
+  },
+  {
+    "id": "doc-105",
+    "name": "Dr. Lakshmi Prasad",
+    "photoUrl": "https://images.unsplash.com/photo-1527613426441-4da17471b66d?auto=format&fit=crop&q=80&w=400",
+    "qualification": "MBBS, MS (OBG), Fellowship in Reproductive Medicine",
+    "designation": "Senior Consultant Gynecologist",
+    "specialization": "High-Risk Obstetrics & Laparoscopy",
+    "departmentId": "dept-gynaec",
+    "departmentName": "Obstetrics & Gynecology",
+    "experienceYears": 16,
+    "bio": "Dr. Lakshmi Prasad specializes in natural births, laparoscopic uterine surgeries, and adolescent health counseling.",
+    "languages": [
+      "Kannada",
+      "English"
+    ],
+    "consultationFee": 600,
+    "active": true
+  }
+]

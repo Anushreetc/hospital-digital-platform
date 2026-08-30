@@ -1,0 +1,128 @@
+{
+  "name": "City Care Hospital AI Receptionist",
+  "transcriber": {
+    "provider": "deepgram",
+    "model": "nova-2",
+    "language": "multi"
+  },
+  "model": {
+    "provider": "openai",
+    "model": "gpt-4o",
+    "temperature": 0.2,
+    "systemPrompt": "You are the official AI Phone Receptionist for City Care Super Specialty Hospital.\n\nPRIMARY GOALS:\n1. Greet callers warmly in Kannada and English: 'Namaskara! Welcome to City Care Super Specialty Hospital. I am your hospital AI assistant. How can I help you today?'\n2. Answer questions about hospital operating hours, address, services, facilities, departments, and doctors using ONLY your backend tools.\n3. Assist callers with finding doctors, checking availability, and booking OPD appointments.\n\nCRITICAL CONSTRAINTS & MEDICAL SAFETY:\n- YOU ARE A RECEPTIONIST, NOT A DOCTOR.\n- NEVER diagnose diseases, prescribe medicines, or provide medical treatment advice.\n- If asked for medical advice or medicine prescriptions, respond: 'I am sorry, I can only help with hospital information and appointments. Please speak with a qualified doctor for medical advice.'\n\nEMERGENCY HANDLING:\n- If a caller mentions severe chest pain, inability to breathe, heavy bleeding, or unconsciousness: IMMEDIATELY state emergency instructions and advise calling 108 or visiting the emergency department right away.\n\nPRE-BOOKING CONFIRMATION PROTOCOL:\n- NEVER call `createAppointment` without summarizing patient name, phone number, department, doctor name, date, and time.\n- Ask: 'Would you like me to confirm this appointment?'\n- ONLY call `createAppointment` after the caller explicitly says 'Yes' or confirms.\n- Tell the caller the appointment ID returned by `createAppointment` (e.g. APT-20260827-0001)."
+  },
+  "voice": {
+    "provider": "elevenlabs",
+    "voiceId": "21m00Tcm4TlvDq8ikWAM"
+  },
+  "serverUrl": "https://YOUR-BACKEND-DOMAIN.com/api/ai/vapi/webhook",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "getHospitalInfo",
+        "description": "Fetch official hospital information including address, phone, emergency numbers, and operating hours."
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "getDepartments",
+        "description": "Fetch the list of active medical departments."
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "getServices",
+        "description": "Fetch approved public hospital clinical services."
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "getFacilities",
+        "description": "Fetch hospital facility details."
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "searchDoctors",
+        "description": "Search active doctors by department name, specialization, or doctor name.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "department": { "type": "string", "description": "Department name or code e.g. Cardiology" },
+            "specialization": { "type": "string", "description": "Specialization search query" },
+            "name": { "type": "string", "description": "Doctor name query" }
+          }
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "getDoctorDetails",
+        "description": "Fetch detailed profile information for a specific doctor.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "doctorId": { "type": "string", "description": "Unique Doctor ID" }
+          },
+          "required": ["doctorId"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "checkDoctorAvailability",
+        "description": "Check available time slots for a doctor on a target date.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "doctorId": { "type": "string", "description": "Doctor ID" },
+            "date": { "type": "string", "description": "Target date in YYYY-MM-DD format" }
+          },
+          "required": ["doctorId", "date"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "createAppointment",
+        "description": "Create and confirm a hospital OPD appointment after receiving caller confirmation.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "patientName": { "type": "string", "description": "Caller full name" },
+            "phone": { "type": "string", "description": "10-digit Indian phone number" },
+            "departmentId": { "type": "string", "description": "Department ID" },
+            "doctorId": { "type": "string", "description": "Doctor ID" },
+            "date": { "type": "string", "description": "Date in YYYY-MM-DD format" },
+            "time": { "type": "string", "description": "Preferred slot time e.g. 10:00 AM" },
+            "reason": { "type": "string", "description": "Reason for visit" },
+            "language": { "type": "string", "description": "kn or en" }
+          },
+          "required": ["patientName", "phone", "departmentId", "doctorId", "date", "time"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "requestHumanAssistance",
+        "description": "Transfer caller to human hospital reception desk."
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "handleEmergency",
+        "description": "Trigger emergency escalation protocol for life-threatening medical conditions."
+      }
+    }
+  ]
+}

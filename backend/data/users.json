@@ -1,0 +1,42 @@
+[
+  {
+    "id": "usr-superadmin",
+    "username": "superadmin",
+    "email": "superadmin@citycarehospital.example.com",
+    "passwordHash": "$2a$10$w9a5rTIFdQDcOydRe/iSJ.CUSljnA5ae1xekYmG7n/U2HSZ4vG1xK",
+    "role": "SUPER_ADMIN",
+    "name": "System Super Admin",
+    "active": true,
+    "createdAt": "2026-08-24T07:58:03.823Z"
+  },
+  {
+    "id": "usr-admin",
+    "username": "hospitaladmin",
+    "email": "admin@citycarehospital.example.com",
+    "passwordHash": "$2a$10$0Gtb3ovn5bAKvmFWGKiksePc.SHk8Ll9RrlKhw5CEBa4/sqPfIjTW",
+    "role": "HOSPITAL_ADMIN",
+    "name": "Dr. Hospital Administrator",
+    "active": true,
+    "createdAt": "2026-08-24T07:58:03.893Z"
+  },
+  {
+    "id": "usr-receptionist",
+    "username": "reception",
+    "email": "reception@citycarehospital.example.com",
+    "passwordHash": "$2a$10$gTfULhJwlnn60lD0.4FgLeoy99PRAvQNyUHecByLARdhwrjuA8ovm",
+    "role": "RECEPTIONIST",
+    "name": "Front Desk Receptionist",
+    "active": true,
+    "createdAt": "2026-08-24T07:58:03.961Z"
+  },
+  {
+    "id": "usr-doc-101",
+    "username": "doc101@example.com",
+    "email": "doc101@example.com",
+    "passwordHash": "$2a$10$vO59M1i1hqDXw3rht499DeEDyreeHSYXBu6XvKXaZEz8pAa1GxcVS",
+    "role": "DOCTOR",
+    "name": "Dr. Rajesh Sharma",
+    "active": true,
+    "createdAt": "2026-08-24T08:00:00.000Z"
+  }
+]
