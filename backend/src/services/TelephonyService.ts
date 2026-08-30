@@ -237,7 +237,7 @@ export class TelephonyService {
           const { patientName, phone, departmentId, doctorId, date, time, reason, language } = args;
           const patientPhone = phone || normalizedPhone;
 
-          const appointment = await this.appointmentService.createAppointment({
+          const created = await this.appointmentService.createAppointment({
             patientName,
             patientPhone,
             departmentId,
@@ -250,6 +250,8 @@ export class TelephonyService {
             idempotencyKey: `vapi_${callId}_${date}_${doctorId}`,
             agentSessionId: callId
           });
+
+          const appointment = created.appointment;
 
           // Log Successful Voice Appointment Call Session
           this.logCallSession({

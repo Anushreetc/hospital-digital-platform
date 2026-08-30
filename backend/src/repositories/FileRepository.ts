@@ -249,10 +249,10 @@ export class FileRepository {
 
   // Notifications
   public getNotificationsForUser(userId: string): UserNotification[] {
-    return this.readJson(this.notificationsPath, []).filter(n => n.userId === userId);
+    return this.readJson<UserNotification[]>(this.notificationsPath, []).filter(n => n.userId === userId);
   }
   public addNotification(notification: UserNotification): UserNotification {
-    const list = this.readJson(this.notificationsPath, []);
+    const list = this.readJson<UserNotification[]>(this.notificationsPath, []);
     list.unshift(notification);
     this.writeJson(this.notificationsPath, list);
     return notification;

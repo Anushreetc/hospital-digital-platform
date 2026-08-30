@@ -1,7 +1,7 @@
 import { FileRepository } from '../repositories/FileRepository';
 import { GoogleSheetsRepository } from '../repositories/GoogleSheetsRepository';
 import { Appointment, AppointmentStatus, AppointmentSource, AuditLog } from '../models/types';
-import { v4 as uuidv4 } from 'crypto';
+import { randomUUID } from 'crypto';
 
 export interface CreateAppointmentDTO {
   patientName: string;
