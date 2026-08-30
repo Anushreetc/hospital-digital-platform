@@ -125,13 +125,30 @@ export const VapiVoiceModal: React.FC<Props> = ({ isOpen, onClose, hospitalInfo 
 
     try {
       const res = await apiClient.processVoiceUtterance(sessionId, query);
-      const botText = `${res.promptKannada}\n\n(${res.promptEnglish})`;
+      const botText = `${res.promptKannada}\n\n${res.promptEnglish}`;
       
-      setTranscripts(prev => [...prev, { role: 'assistant', transcript: botText }]);
+      setTranscripts(prev => [
+        ...prev,
+        {
+          role: 'assistant',
+          transcript: botText,
+          textKn: res.promptKannada,
+          textEn: res.promptEnglish
+        }
+      ]);
       speakBilingualResponse(res.promptKannada, res.promptEnglish);
     } catch (err: any) {
-      const errText = 'ಕ್ಷಮಿಸಿ, ದೋಷ ಸಂಭವಿಸಿದೆ. ದಯವಿಟ್ಟು ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಿ.';
-      setTranscripts(prev => [...prev, { role: 'assistant', transcript: errText }]);
+      const errKn = 'ಕ್ಷಮಿಸಿ, ದೋಷ ಸಂಭವಿಸಿದೆ. ದಯವಿಟ್ಟು ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಿ.';
+      const errEn = 'Sorry, an error occurred. Please try again.';
+      setTranscripts(prev => [
+        ...prev,
+        {
+          role: 'assistant',
+          transcript: `${errKn}\n\n${errEn}`,
+          textKn: errKn,
+          textEn: errEn
+        }
+      ]);
       setCallState('CONNECTED');
     }
   };
@@ -157,13 +174,15 @@ export const VapiVoiceModal: React.FC<Props> = ({ isOpen, onClose, hospitalInfo 
     const newSession = `vsession-${Date.now()}`;
     setSessionId(newSession);
 
-    const welcomeKn = 'ನಮಸ್ಕಾರ! ಸಿಟಿ ಕೇರ್ ಆಸ್ಪತ್ರೆಗೆ ಸುಸ್ವಾಗತ. ಅಪಾಯಿಂಟ್‌ಮೆಂಟ್ ಕಾಯ್ದಿರಿಸಲು ನಿಮ್ಮ ಹೆಸರು ಏನು?';
-    const welcomeEn = `Hello! Welcome to ${hospitalInfo.name}. What is your full name for the appointment booking?`;
+    const welcomeKn = 'ನಮಸ್ಕಾರ ಸಿಟಿ ಕೇರ್ ಆಸ್ಪತ್ರೆಗೆ ಸುಸ್ವಾಗತ. ಅಪಾಯಿಂಟ್‌ಮೆಂಟ್ ಕಾಯ್ದಿರಿಸಲು ನಿಮ್ಮ ಹೆಸರು ಏನು';
+    const welcomeEn = `Hello and welcome to ${hospitalInfo.name}. What is your full name for the appointment booking`;
 
     setTranscripts([
       {
         role: 'assistant',
-        transcript: `${welcomeKn}\n\n(${welcomeEn})`
+        transcript: `${welcomeKn}\n\n${welcomeEn}`,
+        textKn: welcomeKn,
+        textEn: welcomeEn
       }
     ]);
 
@@ -361,11 +380,8 @@ export const VapiVoiceModal: React.FC<Props> = ({ isOpen, onClose, hospitalInfo 
                 <button
                   onClick={() => {
                     const lastAssistant = [...transcripts].reverse().find(t => t.role === 'assistant');
-                    if (lastAssistant) {
-                      const parts = lastAssistant.transcript.split('\n\n');
-                      const textKn = parts[0];
-                      const textEn = parts[1] ? parts[1].replace(/^\(|\)$/g, '') : undefined;
-                      speakBilingualResponse(textKn, textEn);
+                    if (lastAssistant && (lastAssistant.textKn || lastAssistant.textEn)) {
+                      speakBilingualResponse(lastAssistant.textKn || '', lastAssistant.textEn);
                     } else {
                       startNativeListening();
                     }
@@ -379,25 +395,49 @@ export const VapiVoiceModal: React.FC<Props> = ({ isOpen, onClose, hospitalInfo 
                       ? 'bg-indigo-600 border-indigo-400'
                       : 'bg-slate-800 border-slate-700 hover:border-emerald-500 hover:scale-105'
                   }`}
+                  title="Click to replay spoken voice"
                 >
                   {callState === 'SPEAKING' && <Volume2 className="w-7 h-7 text-white animate-bounce" />}
                   {callState === 'LISTENING' && <Mic className="w-7 h-7 text-white animate-pulse" />}
                   {callState === 'THINKING' && <Sparkles className="w-7 h-7 text-indigo-300 animate-spin" />}
                   {(callState === 'CONNECTED' || callState === 'IDLE' || callState === 'ENDED') && (
-                    <VolumeIcon className="w-7 h-7 text-emerald-400 animate-pulse" />
+                    <VolumeIcon className="w-7 h-7 text-emerald-400" />
                   )}
                 </button>
               </div>
 
-              {/* Status Label Banner */}
-              <div className="text-center space-y-1">
+              {/* Status Label Banner & Interactive Buttons */}
+              <div className="text-center space-y-1 flex flex-col items-center">
                 <span className="text-[11px] font-bold uppercase tracking-wider px-3 py-0.5 rounded-full bg-slate-800 text-slate-200 border border-slate-700 inline-block">
-                  {callState === 'CONNECTED' && 'Click Mic to Speak (Kannada / English) or type below'}
-                  {callState === 'LISTENING' && 'Listening... Speak Your Request Now'}
+                  {callState === 'CONNECTED' && 'Connected • Tap to speak or listen'}
+                  {callState === 'LISTENING' && 'Listening... Speak Your Request'}
                   {callState === 'THINKING' && 'Checking Schedules & Booking OPD...'}
-                  {callState === 'SPEAKING' && '🔊 AI Speaking Voice (Click orb to replay)'}
+                  {callState === 'SPEAKING' && '🔊 AI Speaking Voice...'}
                   {callState === 'ENDED' && 'Call ended'}
                 </span>
+
+                <div className="flex items-center gap-2 pt-1">
+                  <button
+                    onClick={() => {
+                      const lastAssistant = [...transcripts].reverse().find(t => t.role === 'assistant');
+                      if (lastAssistant && (lastAssistant.textKn || lastAssistant.textEn)) {
+                        speakBilingualResponse(lastAssistant.textKn || '', lastAssistant.textEn);
+                      }
+                    }}
+                    className="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1 rounded-full border border-slate-700 flex items-center gap-1.5 transition-colors cursor-pointer"
+                  >
+                    <Volume2 className="w-3.5 h-3.5 text-blue-400" />
+                    <span>🔊 Listen / Replay Voice</span>
+                  </button>
+
+                  <button
+                    onClick={startNativeListening}
+                    className="text-xs bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1 rounded-full shadow-sm flex items-center gap-1.5 transition-colors cursor-pointer"
+                  >
+                    <Mic className="w-3.5 h-3.5 text-white" />
+                    <span>🎙️ Speak Now</span>
+                  </button>
+                </div>
               </div>
             </div>
 

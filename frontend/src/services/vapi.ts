@@ -13,6 +13,8 @@ export type VapiCallState =
 export interface VapiTranscriptMessage {
   role: 'user' | 'assistant' | 'system';
   transcript: string;
+  textKn?: string;
+  textEn?: string;
 }
 
 const env = (import.meta as any).env || {};

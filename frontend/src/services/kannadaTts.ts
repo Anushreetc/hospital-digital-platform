@@ -1,6 +1,6 @@
 /**
  * Robust Bilingual (Kannada + English) Speech Synthesis Engine
- * Guaranteed audible playback on Chrome, Safari, Edge, Mac, Windows, iOS & Android
+ * Clean, natural vocalization without reading punctuation (e.g. question marks)
  */
 
 export type AudioLanguageMode = 'BILINGUAL' | 'KN' | 'EN';
@@ -11,6 +11,18 @@ let speechTimeout: any = null;
 // Keep global reference on window to prevent Chrome garbage-collection speech cutoff bug
 (window as any).__currentUtterance = null;
 
+const sanitizeForSpeech = (text: string): string => {
+  if (!text) return '';
+  return text
+    .replace(/[?؟]/g, ' ') // Strip question mark symbol so synthesizer never speaks "question mark"
+    .replace(/[:;!#*`_~]/g, ' ')
+    .replace(/\(.*?\)/g, ' ')
+    .replace(/\[.*?\]/g, ' ')
+    .replace(/["'“”]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+};
+
 export const playBilingualAudio = (
   textKn: string,
   textEn?: string,
@@ -20,17 +32,8 @@ export const playBilingualAudio = (
 ): void => {
   stopKannadaAudio();
 
-  const cleanKn = textKn
-    .replace(/\(.*?\)/g, '')
-    .replace(/\[.*?\]/g, '')
-    .replace(/[#*`_]/g, '')
-    .trim();
-
-  const cleanEn = (textEn || '')
-    .replace(/\(.*?\)/g, '')
-    .replace(/\[.*?\]/g, '')
-    .replace(/[#*`_]/g, '')
-    .trim();
+  const cleanKn = sanitizeForSpeech(textKn);
+  const cleanEn = sanitizeForSpeech(textEn || '');
 
   if (onStart) onStart();
 
@@ -40,7 +43,8 @@ export const playBilingualAudio = (
     return;
   }
 
-  // Resume paused synthesis (browser policy recovery)
+  // Force cancel any stuck synthesis queue and resume
+  window.speechSynthesis.cancel();
   if (window.speechSynthesis.paused) {
     window.speechSynthesis.resume();
   }
@@ -55,17 +59,16 @@ export const playBilingualAudio = (
     return;
   }
 
-  // Bilingual Mode: Check if Kannada voice is available
+  // Bilingual Mode: Check available voices
   const voices = window.speechSynthesis.getVoices();
   const hasKannadaVoice = voices.some(v => v.lang.toLowerCase().includes('kn'));
 
   if (hasKannadaVoice) {
-    // Speak Kannada first, then English
     speakText(cleanKn, 'kn-IN', () => {
       speakText(cleanEn, 'en-US', onEnd);
     });
   } else {
-    // If OS doesn't have Kannada font installed, speak English clearly to prevent silent freeze!
+    // If Kannada OS font is unavailable, speak English clearly to prevent silent freeze
     speakText(cleanEn, 'en-IN', onEnd);
   }
 };
@@ -77,15 +80,12 @@ const speakText = (text: string, lang: string, onDone?: () => void): void => {
   }
 
   try {
-    window.speechSynthesis.cancel();
-
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = lang;
-    utterance.rate = lang.startsWith('kn') ? 0.92 : 1.0;
+    utterance.rate = lang.startsWith('kn') ? 0.90 : 1.0;
     utterance.pitch = 1.0;
     utterance.volume = 1.0;
 
-    // Pick best matching voice
     const voices = window.speechSynthesis.getVoices();
     if (voices && voices.length > 0) {
       if (lang.startsWith('kn')) {
@@ -118,8 +118,8 @@ const speakText = (text: string, lang: string, onDone?: () => void): void => {
     utterance.onend = () => finish();
     utterance.onerror = () => finish();
 
-    // Safety timeout: Never hang UI if browser speech freezes
-    const estimatedDuration = Math.max(3000, (text.length / 10) * 1000);
+    // Safety timeout: Never hang UI if browser speech stalls
+    const estimatedDuration = Math.max(3000, (text.length / 8) * 1000);
     speechTimeout = setTimeout(() => {
       finish();
     }, estimatedDuration);
