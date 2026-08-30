@@ -23,13 +23,20 @@ import { AuthPages } from './pages/AuthPages';
 import { PatientDashboard } from './pages/PatientDashboard';
 import { DoctorDashboard } from './pages/DoctorDashboard';
 import { ManagementDashboard } from './pages/ManagementDashboard';
+import {
+  fallbackHospitalInfo,
+  fallbackDepartments,
+  fallbackDoctors,
+  fallbackServices,
+  fallbackFacilities
+} from './services/mockData';
 
 export const App: React.FC = () => {
-  const [hospitalInfo, setHospitalInfo] = useState<HospitalInfo | null>(null);
-  const [departments, setDepartments] = useState<Department[]>([]);
-  const [services, setServices] = useState<ServiceItem[]>([]);
-  const [facilities, setFacilities] = useState<FacilityItem[]>([]);
-  const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [hospitalInfo, setHospitalInfo] = useState<HospitalInfo>(fallbackHospitalInfo);
+  const [departments, setDepartments] = useState<Department[]>(fallbackDepartments);
+  const [services, setServices] = useState<ServiceItem[]>(fallbackServices);
+  const [facilities, setFacilities] = useState<FacilityItem[]>(fallbackFacilities);
+  const [doctors, setDoctors] = useState<Doctor[]>(fallbackDoctors);
 
   // Modals & Navigation
   const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
@@ -50,20 +57,20 @@ export const App: React.FC = () => {
 
   const loadPublicData = async () => {
     try {
-      const [info, depts, srvs, facs, docs] = await Promise.all([
+      const [info, depts, srvs, facs, docs] = await Promise.allSettled([
         apiClient.getHospitalInfo(),
         apiClient.getDepartments(),
         apiClient.getServices(),
         apiClient.getFacilities(),
         apiClient.getDoctors()
       ]);
-      setHospitalInfo(info);
-      setDepartments(depts);
-      setServices(srvs);
-      setFacilities(facs);
-      setDoctors(docs);
+      if (info.status === 'fulfilled') setHospitalInfo(info.value);
+      if (depts.status === 'fulfilled') setDepartments(depts.value);
+      if (srvs.status === 'fulfilled') setServices(srvs.value);
+      if (facs.status === 'fulfilled') setFacilities(facs.value);
+      if (docs.status === 'fulfilled') setDoctors(docs.value);
     } catch (err) {
-      console.error('Failed to load hospital data:', err);
+      console.warn('Backend loading in background:', err);
     }
   };
 

@@ -10,7 +10,8 @@ import {
   AuthUser
 } from '../types';
 
-const API_BASE = '/api';
+const envBase = ((import.meta as any).env?.VITE_API_URL || '').replace(/\/$/, '');
+const API_BASE = envBase ? `${envBase}/api` : '/api';
 
 const getHeaders = () => {
   const token = localStorage.getItem('hospital_auth_token');
