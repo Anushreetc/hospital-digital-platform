@@ -25,7 +25,7 @@ import {
   CheckCircle2
 } from 'lucide-react';
 
-import { playKannadaAudio, stopKannadaAudio } from '../services/kannadaTts';
+import { playBilingualAudio, stopKannadaAudio, AudioLanguageMode } from '../services/kannadaTts';
 
 interface Props {
   isOpen: boolean;
@@ -35,6 +35,7 @@ interface Props {
 
 export const VapiVoiceModal: React.FC<Props> = ({ isOpen, onClose, hospitalInfo }) => {
   const [activeTab, setActiveTab] = useState<'CALL_SIMULATOR' | 'INTEGRATION_HUB'>('CALL_SIMULATOR');
+  const [languageMode, setLanguageMode] = useState<AudioLanguageMode>('BILINGUAL');
   const [callState, setCallState] = useState<VapiCallState>('IDLE');
   const [transcripts, setTranscripts] = useState<VapiTranscriptMessage[]>([]);
   const [sessionId, setSessionId] = useState<string>(`vsession-${Date.now()}`);
@@ -55,10 +56,12 @@ export const VapiVoiceModal: React.FC<Props> = ({ isOpen, onClose, hospitalInfo 
     transcriptEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [transcripts, callState]);
 
-  // Guaranteed Audible Authentic Kannada Speech Synthesis
-  const speakKannadaResponse = (textKn: string, _textEn?: string) => {
-    playKannadaAudio(
+  // Guaranteed Audible Bilingual (Kannada + English) Speech Synthesis
+  const speakBilingualResponse = (textKn: string, textEn?: string) => {
+    playBilingualAudio(
       textKn,
+      textEn,
+      languageMode,
       () => setCallState('SPEAKING'),
       () => setCallState('CONNECTED')
     );
@@ -125,7 +128,7 @@ export const VapiVoiceModal: React.FC<Props> = ({ isOpen, onClose, hospitalInfo 
       const botText = `${res.promptKannada}\n\n(${res.promptEnglish})`;
       
       setTranscripts(prev => [...prev, { role: 'assistant', transcript: botText }]);
-      speakKannadaResponse(res.promptKannada, res.promptEnglish);
+      speakBilingualResponse(res.promptKannada, res.promptEnglish);
     } catch (err: any) {
       const errText = 'ಕ್ಷಮಿಸಿ, ದೋಷ ಸಂಭವಿಸಿದೆ. ದಯವಿಟ್ಟು ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಿ.';
       setTranscripts(prev => [...prev, { role: 'assistant', transcript: errText }]);
@@ -147,7 +150,7 @@ export const VapiVoiceModal: React.FC<Props> = ({ isOpen, onClose, hospitalInfo 
       stopKannadaAudio();
       if (recognitionRef.current) recognitionRef.current.abort();
     };
-  }, [isOpen, hospitalInfo.name]);
+  }, [isOpen, hospitalInfo.name, languageMode]);
 
   const initNativeEngine = () => {
     setCallState('CONNECTED');
@@ -164,7 +167,7 @@ export const VapiVoiceModal: React.FC<Props> = ({ isOpen, onClose, hospitalInfo 
       }
     ]);
 
-    speakKannadaResponse(welcomeKn, welcomeEn);
+    speakBilingualResponse(welcomeKn, welcomeEn);
   };
 
   const handleEndCall = () => {
@@ -250,7 +253,7 @@ export const VapiVoiceModal: React.FC<Props> = ({ isOpen, onClose, hospitalInfo 
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/85 backdrop-blur-md p-4 animate-in fade-in duration-200">
-      <div className="bg-slate-900 text-white rounded-3xl max-w-2xl w-full p-6 shadow-2xl border border-slate-800 relative flex flex-col h-[650px]">
+      <div className="bg-slate-900 text-white rounded-3xl max-w-2xl w-full p-6 shadow-2xl border border-slate-800 relative flex flex-col h-[660px]">
         {/* Header */}
         <div className="flex items-center justify-between pb-3 border-b border-slate-800">
           <div className="flex items-center space-x-3">
@@ -261,7 +264,7 @@ export const VapiVoiceModal: React.FC<Props> = ({ isOpen, onClose, hospitalInfo 
               <div className="flex items-center gap-2">
                 <h3 className="font-bold text-base text-white">AI Phone Calling Assistant</h3>
                 <span className="text-[10px] bg-emerald-400/20 text-emerald-300 font-bold px-2 py-0.5 rounded-full border border-emerald-400/30">
-                  Vapi + n8n Ready
+                  Bilingual Voice
                 </span>
               </div>
               <div className="text-xs text-slate-400 font-medium">Bilingual Inbound OPD Booking Receptionist</div>
@@ -269,12 +272,46 @@ export const VapiVoiceModal: React.FC<Props> = ({ isOpen, onClose, hospitalInfo 
           </div>
 
           <div className="flex items-center space-x-2">
+            {/* Language Selector Pills */}
+            <div className="hidden sm:flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800 text-[11px]">
+              <button
+                onClick={() => setLanguageMode('BILINGUAL')}
+                className={`px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer ${
+                  languageMode === 'BILINGUAL'
+                    ? 'bg-blue-600 text-white shadow-sm'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                🔊 ಕನ್ನಡ + EN
+              </button>
+              <button
+                onClick={() => setLanguageMode('KN')}
+                className={`px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer ${
+                  languageMode === 'KN'
+                    ? 'bg-emerald-600 text-white shadow-sm'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                ಕನ್ನಡ
+              </button>
+              <button
+                onClick={() => setLanguageMode('EN')}
+                className={`px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer ${
+                  languageMode === 'EN'
+                    ? 'bg-indigo-600 text-white shadow-sm'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                English
+              </button>
+            </div>
+
             <button
               onClick={() => {
                 handleEndCall();
                 onClose();
               }}
-              className="p-2 text-slate-400 hover:text-white rounded-full hover:bg-slate-800 transition-colors"
+              className="p-2 text-slate-400 hover:text-white rounded-full hover:bg-slate-800 transition-colors cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
@@ -285,7 +322,7 @@ export const VapiVoiceModal: React.FC<Props> = ({ isOpen, onClose, hospitalInfo 
         <div className="flex items-center space-x-2 pt-3 pb-2 border-b border-slate-800 text-xs">
           <button
             onClick={() => setActiveTab('CALL_SIMULATOR')}
-            className={`px-4 py-2 rounded-xl font-bold transition-all flex items-center gap-2 ${
+            className={`px-4 py-2 rounded-xl font-bold transition-all flex items-center gap-2 cursor-pointer ${
               activeTab === 'CALL_SIMULATOR'
                 ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/30'
                 : 'text-slate-400 hover:text-white hover:bg-slate-800'
@@ -297,7 +334,7 @@ export const VapiVoiceModal: React.FC<Props> = ({ isOpen, onClose, hospitalInfo 
 
           <button
             onClick={() => setActiveTab('INTEGRATION_HUB')}
-            className={`px-4 py-2 rounded-xl font-bold transition-all flex items-center gap-2 ${
+            className={`px-4 py-2 rounded-xl font-bold transition-all flex items-center gap-2 cursor-pointer ${
               activeTab === 'INTEGRATION_HUB'
                 ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
                 : 'text-slate-400 hover:text-white hover:bg-slate-800'
@@ -328,7 +365,7 @@ export const VapiVoiceModal: React.FC<Props> = ({ isOpen, onClose, hospitalInfo 
                       const parts = lastAssistant.transcript.split('\n\n');
                       const textKn = parts[0];
                       const textEn = parts[1] ? parts[1].replace(/^\(|\)$/g, '') : undefined;
-                      speakKannadaResponse(textKn, textEn);
+                      speakBilingualResponse(textKn, textEn);
                     } else {
                       startNativeListening();
                     }
