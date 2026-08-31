@@ -80,38 +80,67 @@ const getBestSmoothVoice = (lang: 'KN' | 'EN'): { voice?: SpeechSynthesisVoice; 
     }
   }
 
-  // Specifically search for Indian Accent voices (en-IN, Veena, Neerja, Rishi, Heera, etc.)
+  // Specifically search for Indian Female / Women Accent voices (Veena, Neerja, Heera, Kavya, Lekha, Aditi, Swara)
   const scoreVoice = (v: SpeechSynthesisVoice): number => {
     let score = 0;
     const name = v.name.toLowerCase();
     const voiceLang = v.lang.toLowerCase();
 
-    // 1. Mandatory Top Priority: Indian Accent Voice
+    // 1. Absolute Top Priority: Celebrated Indian Female / Women Voices
+    // Veena (Apple Indian Female), Neerja (Microsoft Indian Female Natural), Heera (Windows Indian Female), Aditi / Kavya / Lekha / Swara / Isha
+    if (
+      name.includes('veena') ||
+      name.includes('neerja') ||
+      name.includes('heera') ||
+      name.includes('kavya') ||
+      name.includes('lekha') ||
+      name.includes('aditi') ||
+      name.includes('swara') ||
+      name.includes('isha')
+    ) {
+      score += 1000;
+    }
+
+    // 2. Indian Accent (en-IN, kn-IN, hi-IN)
     if (voiceLang.includes('en-in') || voiceLang.includes('kn-in') || voiceLang.includes('hi-in') || voiceLang.includes('te-in') || voiceLang.includes('ta-in')) {
+      score += 500;
+      if (name.includes('female') || name.includes('woman') || name.includes('girl')) {
+        score += 300;
+      }
+    }
+
+    if (name.includes('india') || name.includes('indian')) {
       score += 300;
     }
-    if (name.includes('india') || name.includes('indian')) {
-      score += 250;
+
+    // 3. Neural / Natural / Premium enhancements
+    if (name.includes('natural') || name.includes('online')) score += 80;
+    if (name.includes('enhanced') || name.includes('premium')) score += 60;
+    if (name.includes('google')) score += 40;
+
+    // 4. Disqualify / heavily penalize Male voices to guarantee an authentic Female voice
+    if (
+      name.includes('rishi') ||
+      name.includes('prabhat') ||
+      name.includes('male') ||
+      name.includes('man') ||
+      name.includes('boy') ||
+      name.includes('alex') ||
+      name.includes('fred') ||
+      name.includes('daniel') ||
+      name.includes('george') ||
+      name.includes('oliver') ||
+      name.includes('david') ||
+      name.includes('guy') ||
+      name.includes('ravi')
+    ) {
+      score -= 900;
     }
 
-    // Specific Indian Voice Profiles across Windows, macOS, Android, Chrome & iOS
-    if (name.includes('veena') || name.includes('neerja') || name.includes('heera') || name.includes('kavya') || name.includes('lekha') || name.includes('aditi')) {
-      score += 200;
+    // General Female voice fallback if Indian voice is missing
+    if (name.includes('female') || name.includes('samantha') || name.includes('serena') || name.includes('ava') || name.includes('victoria') || name.includes('karen')) {
+      score += 50;
     }
-    if (name.includes('rishi') || name.includes('prabhat')) {
-      score += 180;
-    }
-
-    // Premium / Natural / Neural tags
-    if (name.includes('natural') || name.includes('online')) score += 50;
-    if (name.includes('enhanced') || name.includes('premium')) score += 40;
-    if (name.includes('google')) score += 30;
-
-    // Fallback English if no Indian voice installed
-    if (voiceLang.startsWith('en')) score += 10;
-
-    // Penalize robotic voices
-    if (name.includes('compact') || name.includes('alex') || name.includes('fred')) score -= 50;
 
     return score;
   };
@@ -168,7 +197,7 @@ const playAudioSegment = async (text: string, lang: 'KN' | 'EN', onDone?: () => 
     return;
   }
 
-  // 1. Try Backend Neural Audio Stream (Authentic Kannada & English MP3)
+  // 1. Try Backend Neural Audio Stream (Authentic Indian Female Kannada & English MP3)
   try {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 3500);
@@ -178,7 +207,7 @@ const playAudioSegment = async (text: string, lang: 'KN' | 'EN', onDone?: () => 
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         text,
-        language: lang,
+        language: lang === 'EN' ? 'en-IN' : 'kn',
         provider: 'web_speech'
       }),
       signal: controller.signal
@@ -213,7 +242,7 @@ const playAudioSegment = async (text: string, lang: 'KN' | 'EN', onDone?: () => 
     // Backend fetch failed or timed out, fallback to browser synthesis immediately
   }
 
-  // 2. Fallback: Browser Web Speech Synthesis with smooth voice tuning
+  // 2. Fallback: Browser Web Speech Synthesis with smooth Indian female voice tuning
   fallbackWebSpeech(text, lang, onDone);
 };
 
@@ -243,8 +272,8 @@ const fallbackWebSpeech = (text: string, lang: 'KN' | 'EN', onDone?: () => void)
 
     const utterance = new SpeechSynthesisUtterance(formattedText);
     utterance.volume = 1.0;
-    utterance.pitch = 1.02; // Warm, friendly hospital receptionist pitch
-    utterance.rate = lang === 'KN' ? 0.90 : 0.93; // Smooth, clear, relaxed cadence
+    utterance.pitch = 1.08; // Smooth, clear, warm Indian female receptionist pitch
+    utterance.rate = 0.90; // Natural, unhurried, articulate cadence
 
     if (selectedVoice) {
       utterance.voice = selectedVoice;
