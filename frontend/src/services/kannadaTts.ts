@@ -1,6 +1,6 @@
 /**
  * Ultra-Smooth High-Fidelity Speech Audio Engine
- * Provides crystal-clear, steady, 100% natural Indian Female voice synthesis without shaking or jitter.
+ * Calibrated for steady, natural, melodious Indian Female receptionist voice synthesis
  */
 
 import { transliterateKannadaToPhonetic } from './kannadaTransliterate';
@@ -11,7 +11,7 @@ let activeUtterance: SpeechSynthesisUtterance | null = null;
 let speechTimeout: any = null;
 let audioCtx: AudioContext | null = null;
 
-// Keep global reference to prevent Chrome garbage collection
+// Global reference to prevent Chromium garbage collection
 (window as any).__currentUtterance = null;
 
 /**
@@ -37,7 +37,7 @@ const sanitizeForSpeech = (text: string): string => {
   if (!text) return '';
   return text
     .replace(/[?؟]/g, '') // Strip question marks
-    .replace(/[:;!#*`_~]/g, ' ')
+    .replace(/[:;!#*`_~]/g, ', ')
     .replace(/\(.*?\)/g, ' ')
     .replace(/\[.*?\]/g, ' ')
     .replace(/["'“”]/g, '')
@@ -170,7 +170,10 @@ export const playBilingualAudio = async (
 
   // BILINGUAL MODE: Speak Kannada first -> then speak English
   speakSegment(cleanKn, 'KN', () => {
-    speakSegment(cleanEn, 'EN', onEnd);
+    // Gentle 300ms pause between Kannada and English for human breathing
+    setTimeout(() => {
+      speakSegment(cleanEn, 'EN', onEnd);
+    }, 300);
   });
 };
 
@@ -192,7 +195,7 @@ const speakSegment = (text: string, lang: 'KN' | 'EN', onDone?: () => void): voi
 
     let textToSpeak = text;
     if (lang === 'KN') {
-      // If no native Kannada voice is installed, convert to smooth phonetic speech
+      // If no native Kannada voice is installed, convert to refined phonetic speech
       if (!selectedVoice || !selectedVoice.lang.toLowerCase().includes('kn')) {
         textToSpeak = transliterateKannadaToPhonetic(text);
       }
@@ -202,8 +205,8 @@ const speakSegment = (text: string, lang: 'KN' | 'EN', onDone?: () => void): voi
     utterance.volume = 1.0;
     // Standard native pitch (1.0) eliminates pitch-shifter tremolo/vibrato artifacts
     utterance.pitch = 1.0;
-    // Clear, steady conversational speech rate
-    utterance.rate = 0.95;
+    // Calibrated natural speech rates: 0.88 for multi-syllabic Kannada phonetics, 0.94 for English
+    utterance.rate = lang === 'KN' ? 0.88 : 0.94;
 
     if (selectedVoice) {
       utterance.voice = selectedVoice;
