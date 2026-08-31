@@ -1,9 +1,11 @@
 /**
  * High-Fidelity Bilingual (Kannada + English) Speech Audio Engine
- * Plays authentic native MP3 audio from backend proxy with Web Speech fallback
+ * Plays authentic Kannada speech (using native Kannada voice or fluent phonetic vocalization)
+ * followed by English speech on any browser/device.
  */
 
 import { API_BASE } from './apiClient';
+import { transliterateKannadaToPhonetic } from './kannadaTransliterate';
 
 export type AudioLanguageMode = 'BILINGUAL' | 'KN' | 'EN';
 
@@ -104,7 +106,7 @@ const playAudioSegment = async (text: string, lang: 'KN' | 'EN', onDone?: () => 
   // 1. Try Backend Neural Audio Stream (Authentic Kannada & English MP3)
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 4000);
+    const timeoutId = setTimeout(() => controller.abort(), 3500);
 
     const res = await fetch(`${API_BASE}/ai/voice/tts`, {
       method: 'POST',
@@ -143,7 +145,7 @@ const playAudioSegment = async (text: string, lang: 'KN' | 'EN', onDone?: () => 
       }
     }
   } catch (err) {
-    console.warn('[TTS Proxy] Backend audio fetch error, using Web Speech fallback:', err);
+    // Backend fetch failed or timed out, fallback to browser synthesis immediately
   }
 
   // 2. Fallback: Browser Web Speech Synthesis
@@ -161,35 +163,47 @@ const fallbackWebSpeech = (text: string, lang: 'KN' | 'EN', onDone?: () => void)
       window.speechSynthesis.resume();
     }
 
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.volume = 1.0;
-    utterance.pitch = 1.0;
-
     const voices = window.speechSynthesis.getVoices();
     let selectedVoice: SpeechSynthesisVoice | undefined = undefined;
+    let textToSpeak = text;
+    let targetLang = 'en-US';
 
-    if (voices && voices.length > 0) {
-      if (lang === 'KN') {
-        selectedVoice = voices.find(v => v.lang.toLowerCase().includes('kn'));
-      }
-      if (!selectedVoice) {
+    if (lang === 'KN') {
+      // Check if native Kannada voice is installed on OS
+      selectedVoice = voices.find(v => v.lang.toLowerCase().includes('kn'));
+
+      if (selectedVoice) {
+        // Native Kannada voice available: speak Kannada script
+        textToSpeak = text;
+        targetLang = selectedVoice.lang;
+      } else {
+        // No native Kannada voice: Transliterate Kannada script to phonetic Latin (Kanglish)
+        // so Indian English / default voice speaks fluent, natural Kannada!
+        textToSpeak = transliterateKannadaToPhonetic(text);
         selectedVoice = voices.find(v => v.lang.toLowerCase().includes('en-in')) ||
                         voices.find(v => v.lang.toLowerCase().includes('en-us')) ||
-                        voices.find(v => v.lang.toLowerCase().startsWith('en'));
+                        voices.find(v => v.lang.toLowerCase().startsWith('en')) ||
+                        voices[0];
+        targetLang = selectedVoice ? selectedVoice.lang : 'en-IN';
       }
-      if (!selectedVoice) {
-        selectedVoice = voices[0];
-      }
+    } else {
+      // English text
+      textToSpeak = text;
+      selectedVoice = voices.find(v => v.lang.toLowerCase().includes('en-in')) ||
+                      voices.find(v => v.lang.toLowerCase().includes('en-us')) ||
+                      voices.find(v => v.lang.toLowerCase().startsWith('en')) ||
+                      voices[0];
+      targetLang = selectedVoice ? selectedVoice.lang : 'en-US';
     }
 
+    const utterance = new SpeechSynthesisUtterance(textToSpeak);
+    utterance.volume = 1.0;
+    utterance.pitch = 1.0;
     if (selectedVoice) {
       utterance.voice = selectedVoice;
-      utterance.lang = selectedVoice.lang;
-    } else {
-      utterance.lang = lang === 'KN' ? 'kn-IN' : 'en-US';
     }
-
-    utterance.rate = lang === 'KN' ? 0.88 : 1.0;
+    utterance.lang = targetLang;
+    utterance.rate = lang === 'KN' ? 0.90 : 1.0;
 
     activeUtterance = utterance;
     (window as any).__currentUtterance = utterance;
@@ -211,7 +225,7 @@ const fallbackWebSpeech = (text: string, lang: 'KN' | 'EN', onDone?: () => void)
     utterance.onerror = () => finish();
 
     // Safety timeout
-    const estimatedDuration = Math.max(3000, (text.length / 8) * 1000);
+    const estimatedDuration = Math.max(3000, (textToSpeak.length / 7) * 1000);
     speechTimeout = setTimeout(() => {
       finish();
     }, estimatedDuration);
