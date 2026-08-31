@@ -9,6 +9,7 @@ import {
   Appointment,
   AuthUser
 } from '../types';
+import { processLocalVoiceUtterance } from './localVoiceEngine';
 
 const defaultRemoteUrl = 'https://hospital-digital-platform-1.onrender.com';
 const envBase = ((import.meta as any).env?.VITE_API_URL || (typeof window !== 'undefined' && window.location.hostname.includes('vercel.app') ? defaultRemoteUrl : '')).replace(/\/$/, '');
@@ -58,14 +59,22 @@ export const apiClient = {
 
   processVoiceUtterance: async (sessionId: string, utterance: string) => {
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 2500);
+
       const res = await fetch(`${API_BASE}/voice/appointments`, {
         method: 'POST',
         headers: getHeaders(),
-        body: JSON.stringify({ sessionId, utterance })
+        body: JSON.stringify({ sessionId, utterance }),
+        signal: controller.signal
       });
-      return await handleResponse<any>(res);
+
+      clearTimeout(timeoutId);
+      if (res.ok) {
+        return await handleResponse<any>(res);
+      }
+      return processLocalVoiceUtterance(sessionId, utterance);
     } catch (err) {
-      const { processLocalVoiceUtterance } = await import('./localVoiceEngine');
       return processLocalVoiceUtterance(sessionId, utterance);
     }
   },

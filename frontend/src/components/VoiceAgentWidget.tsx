@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { apiClient } from '../services/apiClient';
-import { playBilingualAudio, stopKannadaAudio, unlockBrowserAudio } from '../services/kannadaTts';
+import { playBilingualAudio, stopKannadaAudio, unlockBrowserAudio, AudioLanguageMode } from '../services/kannadaTts';
 import { Mic, MicOff, Volume2, VolumeX, X, Send, AlertTriangle, RefreshCw, Languages, Play, Sparkles, Phone, PhoneOff, Hash } from 'lucide-react';
 
 interface Props {
@@ -10,7 +10,7 @@ interface Props {
 
 export const VoiceAgentWidget: React.FC<Props> = ({ isOpen, onClose }) => {
   const [sessionId, setSessionId] = useState<string>(`vsession-${Date.now()}`);
-  const [language, setLanguage] = useState<'KN' | 'EN'>('KN');
+  const [language, setLanguage] = useState<AudioLanguageMode>('BILINGUAL');
   const [voiceEngine, setVoiceEngine] = useState<'web' | 'elevenlabs' | 'fish_audio'>('web');
   const [isMuted, setIsMuted] = useState<boolean>(false);
   const [isAudioStarted, setIsAudioStarted] = useState<boolean>(false);
@@ -68,11 +68,10 @@ export const VoiceAgentWidget: React.FC<Props> = ({ isOpen, onClose }) => {
   // Speech Synthesis Pipeline (Bilingual Kannada + English Speech)
   const speakResponse = async (textKn: string, textEn?: string) => {
     if (isMuted) return;
-    const mode = language === 'KN' ? 'BILINGUAL' : 'EN';
     playBilingualAudio(
       textKn,
       textEn,
-      mode,
+      language,
       () => setIsSpeaking(true),
       () => setIsSpeaking(false)
     );
@@ -147,7 +146,7 @@ export const VoiceAgentWidget: React.FC<Props> = ({ isOpen, onClose }) => {
 
       const recognition = new SpeechRecognition();
       recognitionRef.current = recognition;
-      recognition.lang = language === 'KN' ? 'kn-IN' : 'en-US';
+      recognition.lang = language === 'KN' ? 'kn-IN' : 'en-IN';
       recognition.interimResults = false;
       recognition.maxAlternatives = 1;
 
@@ -278,14 +277,15 @@ export const VoiceAgentWidget: React.FC<Props> = ({ isOpen, onClose }) => {
             {/* Language Selector */}
             <button
               onClick={() => {
-                const nextLang = language === 'KN' ? 'EN' : 'KN';
-                setLanguage(nextLang);
+                const modes: AudioLanguageMode[] = ['BILINGUAL', 'KN', 'EN'];
+                const nextIdx = (modes.indexOf(language) + 1) % modes.length;
+                setLanguage(modes[nextIdx]);
               }}
-              title="Switch Language (KN / EN)"
-              className="px-2 py-1 text-xs font-bold text-blue-200 hover:text-white bg-white/10 hover:bg-white/20 rounded-lg transition-colors flex items-center gap-1"
+              title="Switch Language Mode (Bilingual / Kannada / English)"
+              className="px-2.5 py-1 text-xs font-bold text-blue-200 hover:text-white bg-white/10 hover:bg-white/20 rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer border border-blue-400/30"
             >
-              <Languages className="w-3.5 h-3.5" />
-              <span>{language}</span>
+              <Languages className="w-3.5 h-3.5 text-blue-300" />
+              <span>{language === 'BILINGUAL' ? '🔊 KN + EN' : language === 'KN' ? 'ಕನ್ನಡ' : 'English'}</span>
             </button>
 
             {/* Mute/Unmute */}
@@ -430,11 +430,11 @@ export const VoiceAgentWidget: React.FC<Props> = ({ isOpen, onClose }) => {
                     : 'bg-slate-800 text-slate-100 border border-slate-700 rounded-bl-none font-medium'
                 }`}
               >
-                <div className="font-semibold">
-                  {language === 'KN' ? m.textKn : (m.textEn || m.textKn)}
+                <div className="font-semibold text-slate-100">
+                  {language === 'EN' ? (m.textEn || m.textKn) : m.textKn}
                 </div>
-                {language === 'KN' && m.textEn && (
-                  <div className="text-[11px] text-slate-400 font-normal pt-1.5 border-t border-slate-700/60 mt-1">
+                {(language === 'BILINGUAL' || (language === 'KN' && m.sender === 'bot')) && m.textEn && (
+                  <div className="text-[11px] text-slate-300 font-normal pt-1.5 border-t border-slate-700/60 mt-1.5">
                     {m.textEn}
                   </div>
                 )}
