@@ -32,8 +32,7 @@ export class VoiceTtsService {
    */
   public async synthesizeElevenLabs(text: string, voiceId = '21m00Tcm4TlvDq8ikWAM'): Promise<Buffer> {
     if (!this.elevenLabsApiKey) {
-      console.warn('[VoiceTtsService] ELEVENLABS_API_KEY not set. Using audio fallback generator.');
-      return this.generateSimulatedAudio(text);
+      throw new Error('ELEVENLABS_API_KEY not configured.');
     }
 
     const payload = JSON.stringify({
@@ -70,8 +69,7 @@ export class VoiceTtsService {
    */
   public async synthesizeFishAudio(text: string): Promise<Buffer> {
     if (!this.fishAudioApiKey) {
-      console.warn('[VoiceTtsService] FISH_AUDIO_API_KEY not set. Using audio fallback generator.');
-      return this.generateSimulatedAudio(text);
+      throw new Error('FISH_AUDIO_API_KEY not configured.');
     }
 
     const payload = JSON.stringify({
@@ -131,10 +129,10 @@ export class VoiceTtsService {
    */
   public async synthesizeKannadaVoice(text: string, lang = 'kn'): Promise<Buffer> {
     const cleanText = lang === 'kn' ? this.normalizeKannadaSpeechText(text) : text.replace(/\n+/g, ' ').replace(/[:*#_~]/g, ' ');
-    const encoded = encodeURIComponent(cleanText.slice(0, 200)); // Google TTS single utterance slice
+    const encoded = encodeURIComponent(cleanText.slice(0, 200));
     const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encoded}&tl=${lang}&client=tw-ob`;
 
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       https.get(url, {
         headers: {
           'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
@@ -142,50 +140,14 @@ export class VoiceTtsService {
         }
       }, (res) => {
         if (res.statusCode !== 200) {
-          console.warn(`[VoiceTtsService] TTS status ${res.statusCode}. Fallback chime active.`);
-          return resolve(this.generateSimulatedAudio(text));
+          return reject(new Error(`TTS upstream error status ${res.statusCode}`));
         }
         const chunks: Buffer[] = [];
         res.on('data', chunk => chunks.push(chunk));
         res.on('end', () => resolve(Buffer.concat(chunks)));
       }).on('error', (err) => {
-        console.warn('[VoiceTtsService] TTS network error:', err);
-        resolve(this.generateSimulatedAudio(text));
+        reject(err);
       });
     });
-  }
-
-  private generateSimulatedAudio(text: string): Buffer {
-    const sampleRate = 8000;
-    const durationSec = Math.max(1, Math.min(text.length * 0.1, 4));
-    const numSamples = Math.floor(sampleRate * durationSec);
-    const buffer = Buffer.alloc(44 + numSamples * 2);
-
-    // RIFF WAV Header
-    buffer.write('RIFF', 0);
-    buffer.writeUInt32LE(36 + numSamples * 2, 4);
-    buffer.write('WAVE', 8);
-    buffer.write('fmt ', 12);
-    buffer.writeUInt32LE(16, 16);
-    buffer.writeUInt16LE(1, 20); // PCM
-    buffer.writeUInt16LE(1, 22); // Mono
-    buffer.writeUInt32LE(sampleRate, 24);
-    buffer.writeUInt32LE(sampleRate * 2, 28);
-    buffer.writeUInt16LE(2, 32);
-    buffer.writeUInt16LE(16, 34);
-    buffer.write('data', 36);
-    buffer.writeUInt32LE(numSamples * 2, 40);
-
-    // Generate audible dual-tone speech chime waveform (440Hz + 880Hz)
-    let offset = 44;
-    for (let i = 0; i < numSamples; i++) {
-      const t = i / sampleRate;
-      const freq = (i % 2000 < 1000) ? 523.25 : 659.25; // Musical C5 - E5 chime note progression
-      const sampleValue = Math.floor(Math.sin(2 * Math.PI * freq * t) * 12000 * Math.exp(-t * 0.8));
-      buffer.writeInt16LE(sampleValue, offset);
-      offset += 2;
-    }
-
-    return buffer;
   }
 }

@@ -1,14 +1,12 @@
 /**
  * Ultra-Smooth High-Fidelity Speech Audio Engine
- * Provides crystal-clear, steady, natural Indian Female voice synthesis without shaking or jitter.
+ * Provides crystal-clear, steady, 100% natural Indian Female voice synthesis without shaking or jitter.
  */
 
-import { API_BASE } from './apiClient';
 import { transliterateKannadaToPhonetic } from './kannadaTransliterate';
 
 export type AudioLanguageMode = 'BILINGUAL' | 'KN' | 'EN';
 
-let activeAudio: HTMLAudioElement | null = null;
 let activeUtterance: SpeechSynthesisUtterance | null = null;
 let speechTimeout: any = null;
 let audioCtx: AudioContext | null = null;
@@ -17,7 +15,7 @@ let audioCtx: AudioContext | null = null;
 (window as any).__currentUtterance = null;
 
 /**
- * Unlock browser audio context cleanly and silently (Zero audible chime to prevent acoustic flutter)
+ * Unlock browser audio context cleanly and silently
  */
 export const unlockBrowserAudio = (): void => {
   try {
@@ -48,7 +46,7 @@ const sanitizeForSpeech = (text: string): string => {
 };
 
 /**
- * Select the highest quality, most natural Indian Female voice available
+ * Select the highest quality, authentic Indian Female voice available
  */
 const getBestSmoothVoice = (lang: 'KN' | 'EN'): { voice?: SpeechSynthesisVoice; langCode: string } => {
   if (!('speechSynthesis' in window)) {
@@ -60,7 +58,7 @@ const getBestSmoothVoice = (lang: 'KN' | 'EN'): { voice?: SpeechSynthesisVoice; 
     return { langCode: lang === 'KN' ? 'kn-IN' : 'en-IN' };
   }
 
-  // If Kannada is requested, first check if genuine kn-IN voice is available
+  // If Kannada is requested and a native Kannada voice is installed, use it
   if (lang === 'KN') {
     const knVoice = voices.find(v => v.lang.toLowerCase().includes('kn'));
     if (knVoice) {
@@ -68,7 +66,7 @@ const getBestSmoothVoice = (lang: 'KN' | 'EN'): { voice?: SpeechSynthesisVoice; 
     }
   }
 
-  // Specifically search for Indian Female / Women Accent voices
+  // Search specifically for natural Indian Female Voices
   const scoreVoice = (v: SpeechSynthesisVoice): number => {
     let score = 0;
     const name = v.name.toLowerCase();
@@ -161,82 +159,26 @@ export const playBilingualAudio = async (
   if (onStart) onStart();
 
   if (mode === 'EN') {
-    playAudioSegment(cleanEn || cleanKn, 'EN', onEnd);
+    speakSegment(cleanEn || cleanKn, 'EN', onEnd);
     return;
   }
 
   if (mode === 'KN' || !cleanEn) {
-    playAudioSegment(cleanKn, 'KN', onEnd);
+    speakSegment(cleanKn, 'KN', onEnd);
     return;
   }
 
-  // BILINGUAL MODE: Play Kannada first -> then play English
-  playAudioSegment(cleanKn, 'KN', () => {
-    playAudioSegment(cleanEn, 'EN', onEnd);
+  // BILINGUAL MODE: Speak Kannada first -> then speak English
+  speakSegment(cleanKn, 'KN', () => {
+    speakSegment(cleanEn, 'EN', onEnd);
   });
 };
 
 /**
- * Play a single language audio segment
+ * Speak a single language segment with crystal-clear, steady Indian Female voice
  */
-const playAudioSegment = async (text: string, lang: 'KN' | 'EN', onDone?: () => void): Promise<void> => {
-  if (!text) {
-    if (onDone) onDone();
-    return;
-  }
-
-  // 1. Try Backend Neural Audio Stream (Authentic Indian Female Kannada & English MP3)
-  try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 3500);
-
-    const res = await fetch(`${API_BASE}/ai/voice/tts`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        text,
-        language: lang === 'EN' ? 'en-IN' : 'kn',
-        provider: 'web_speech'
-      }),
-      signal: controller.signal
-    });
-
-    clearTimeout(timeoutId);
-
-    if (res.ok) {
-      const blob = await res.blob();
-      // Ensure it's a real audio MP3 file (>1000 bytes) and not an error response
-      if (blob.size > 1000) {
-        const audioUrl = URL.createObjectURL(blob);
-        const audio = new Audio(audioUrl);
-        activeAudio = audio;
-
-        audio.onended = () => {
-          activeAudio = null;
-          URL.revokeObjectURL(audioUrl);
-          if (onDone) onDone();
-        };
-
-        audio.onerror = () => {
-          activeAudio = null;
-          URL.revokeObjectURL(audioUrl);
-          fallbackWebSpeech(text, lang, onDone);
-        };
-
-        await audio.play();
-        return;
-      }
-    }
-  } catch (err) {
-    // Backend fetch failed or timed out, fallback to browser synthesis immediately
-  }
-
-  // 2. Fallback: Browser Web Speech Synthesis with smooth, steady voice tuning
-  fallbackWebSpeech(text, lang, onDone);
-};
-
-const fallbackWebSpeech = (text: string, lang: 'KN' | 'EN', onDone?: () => void): void => {
-  if (!('speechSynthesis' in window)) {
+const speakSegment = (text: string, lang: 'KN' | 'EN', onDone?: () => void): void => {
+  if (!text || !('speechSynthesis' in window)) {
     if (onDone) onDone();
     return;
   }
@@ -258,9 +200,9 @@ const fallbackWebSpeech = (text: string, lang: 'KN' | 'EN', onDone?: () => void)
 
     const utterance = new SpeechSynthesisUtterance(textToSpeak);
     utterance.volume = 1.0;
-    // Keep pitch at 1.0 (standard native frequency) to eliminate pitch-shifter tremolo/shaking
+    // Standard native pitch (1.0) eliminates pitch-shifter tremolo/vibrato artifacts
     utterance.pitch = 1.0;
-    // Steady, natural conversational speech rate
+    // Clear, steady conversational speech rate
     utterance.rate = 0.95;
 
     if (selectedVoice) {
@@ -309,11 +251,6 @@ export const playKannadaAudio = (
 };
 
 export const stopKannadaAudio = () => {
-  if (activeAudio) {
-    activeAudio.pause();
-    activeAudio.currentTime = 0;
-    activeAudio = null;
-  }
   if (speechTimeout) {
     clearTimeout(speechTimeout);
     speechTimeout = null;
