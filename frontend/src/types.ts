@@ -55,7 +55,7 @@ export interface Doctor {
 
 export interface DoctorApplication {
   id: string;
-  userId: string;
+  userId?: string;
   name: string;
   email: string;
   phone: string;
@@ -68,7 +68,7 @@ export interface DoctorApplication {
   registrationNumber: string;
   languages: string[];
   bio: string;
-  photoUrl: string;
+  photoUrl?: string;
   status: DoctorApplicationStatus;
   reviewedBy?: string;
   reviewedAt?: string;
@@ -106,11 +106,13 @@ export interface FacilityItem {
 
 export interface Appointment {
   id: string;
+  tokenNumber?: string;
   patientId?: string;
   createdAt: string;
-  updatedAt: string;
+  updatedAt?: string;
   patientName: string;
   patientPhone: string;
+  patientEmail?: string;
   departmentId: string;
   departmentName: string;
   doctorId: string;
@@ -120,14 +122,15 @@ export interface Appointment {
   reason: string;
   additionalMessage?: string;
   source: string;
-  language: 'KN' | 'EN';
+  language?: 'KN' | 'EN';
   status: AppointmentStatus;
-  notes: Array<{ id: string; text: string; author: string; createdAt: string }>;
+  notes?: any;
   agentSessionId?: string;
 }
 
 export interface AuthUser {
-  userId: string;
+  userId?: string;
+  id?: string;
   email: string;
   role: UserRole;
   name: string;
@@ -136,7 +139,8 @@ export interface AuthUser {
 
 export interface AuditLog {
   id: string;
-  actor: {
+  userId?: string;
+  actor?: {
     id: string;
     name: string;
     role: string;
@@ -144,7 +148,8 @@ export interface AuditLog {
   action: string;
   entity: string;
   entityId: string;
-  timestamp: string;
-  details?: Record<string, any>;
+  timestamp?: string;
+  createdAt?: string;
+  details?: any;
+  ipAddress?: string;
 }
-

@@ -1,4 +1,4 @@
-import { HospitalInfo, Department, Doctor, ServiceItem, FacilityItem } from '../types';
+import { HospitalInfo, Department, Doctor, ServiceItem, FacilityItem, Appointment, DoctorApplication, AuditLog, DoctorAvailability } from '../types';
 
 export const fallbackHospitalInfo: HospitalInfo = {
   name: "City Care Super Specialty Hospital",
@@ -52,18 +52,26 @@ export const fallbackDepartments: Department[] = [
   },
   {
     id: "dept-4",
-    name: "Pediatrics & Neonatology",
+    name: "Pediatrics & Neonatal Care",
     code: "PEDI",
-    description: "Specialized pediatric care, NICU facilities, childhood vaccination, and growth monitoring.",
+    description: "Holistic child healthcare, vaccinations, pediatric intensive care, and developmental wellness.",
     iconName: "Baby",
     active: true
   },
   {
     id: "dept-5",
     name: "General & Internal Medicine",
-    code: "MED",
-    description: "Holistic diagnosis and treatment of acute and chronic adult medical conditions.",
+    code: "GMED",
+    description: "Primary care, chronic disease management, diabetes, hypertension, and preventive health checks.",
     iconName: "Stethoscope",
+    active: true
+  },
+  {
+    id: "dept-6",
+    name: "Dermatology & Cosmetology",
+    code: "DERM",
+    description: "Clinical skin disorders, laser therapies, pediatric dermatology, and cosmetic procedures.",
+    iconName: "Sparkles",
     active: true
   }
 ];
@@ -71,32 +79,32 @@ export const fallbackDepartments: Department[] = [
 export const fallbackDoctors: Doctor[] = [
   {
     id: "doc-1",
-    name: "Dr. Ramesh H. S.",
-    qualification: "MBBS, MD, DM (Cardiology)",
-    designation: "Chief Interventional Cardiologist",
+    name: "Dr. Rajesh Kumar",
+    qualification: "MBBS, MD (General Medicine), DM (Cardiology)",
+    designation: "Chief Interventional Cardiologist & HOD",
     departmentId: "dept-1",
     departmentName: "Cardiology",
-    specialization: "Cardiology",
+    specialization: "Interventional Cardiology",
     experienceYears: 18,
     languages: ["Kannada", "English", "Hindi"],
     consultationFee: 700,
     photoUrl: "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=400",
-    bio: "Pioneer in transradial coronary angiography and structural heart interventions with over 18 years of clinical experience.",
+    bio: "Pioneer in complex radial angioplasty and structural heart interventions with over 15,000 successful procedures.",
     active: true
   },
   {
     id: "doc-2",
-    name: "Dr. Ananya Rao",
-    qualification: "MBBS, MS, MCh (Neurosurgery)",
+    name: "Dr. Ananya Sharma",
+    qualification: "MBBS, MS (General Surgery), MCh (Neurosurgery)",
     designation: "Senior Consultant Neurosurgeon",
     departmentId: "dept-2",
     departmentName: "Neurology & Neurosurgery",
-    specialization: "Neurology",
+    specialization: "Neurosurgery",
     experienceYears: 14,
     languages: ["Kannada", "English"],
     consultationFee: 800,
-    photoUrl: "https://images.unsplash.com/photo-1594824813639-4972d3e33f38?auto=format&fit=crop&q=80&w=400",
-    bio: "Specializes in minimally invasive skull base surgery and complex spinal reconstruction.",
+    photoUrl: "https://images.unsplash.com/photo-1594824813633-890438b37e65?auto=format&fit=crop&q=80&w=400",
+    bio: "Specialist in minimally invasive brain tumor resections, complex spinal stabilization, and stroke intervention.",
     active: true
   },
   {
@@ -113,8 +121,67 @@ export const fallbackDoctors: Doctor[] = [
     photoUrl: "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=400",
     bio: "Performed over 4,000 robotic knee and hip replacements with excellent patient recovery outcomes.",
     active: true
+  },
+  {
+    id: "doc-4",
+    name: "Dr. Meenakshi Sundaram",
+    qualification: "MBBS, MD (Pediatrics), Fellowship in Neonatology",
+    designation: "Senior Consultant Pediatrician",
+    departmentId: "dept-4",
+    departmentName: "Pediatrics & Neonatal Care",
+    specialization: "Pediatrics",
+    experienceYears: 12,
+    languages: ["Kannada", "English", "Tamil"],
+    consultationFee: 500,
+    photoUrl: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=400",
+    bio: "Compassionate pediatric care specialist focusing on neonatal ICU management and childhood developmental milestones.",
+    active: true
+  },
+  {
+    id: "doc-5",
+    name: "Dr. Suresh Patil",
+    qualification: "MBBS, MD (Internal Medicine)",
+    designation: "Consultant Physician & Diabetologist",
+    departmentId: "dept-5",
+    departmentName: "General & Internal Medicine",
+    specialization: "General Medicine",
+    experienceYears: 15,
+    languages: ["Kannada", "English", "Hindi"],
+    consultationFee: 500,
+    photoUrl: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=400",
+    bio: "Expert in complex diabetic management, lifestyle disorders, hypertension, and adult preventative wellness.",
+    active: true
+  },
+  {
+    id: "doc-6",
+    name: "Dr. Deepa Kulkarni",
+    qualification: "MBBS, MD (DVL - Dermatology & Venereology)",
+    designation: "Consultant Dermatologist & Cosmetologist",
+    departmentId: "dept-6",
+    departmentName: "Dermatology & Cosmetology",
+    specialization: "Dermatology",
+    experienceYears: 9,
+    languages: ["Kannada", "English", "Marathi"],
+    consultationFee: 600,
+    photoUrl: "https://images.unsplash.com/photo-1651008376811-b90baee60c1f?auto=format&fit=crop&q=80&w=400",
+    bio: "Specializing in advanced laser therapy, clinical dermatology, hair restoration, and allergy management.",
+    active: true
   }
 ];
+
+export const fallbackDoctorAvailability: DoctorAvailability = {
+  id: "avail-1",
+  doctorId: "doc-1",
+  weeklySchedule: [
+    { dayOfWeek: "Monday", slots: [{ startTime: "09:00 AM", endTime: "01:00 PM" }, { startTime: "04:00 PM", endTime: "07:00 PM" }] },
+    { dayOfWeek: "Tuesday", slots: [{ startTime: "09:00 AM", endTime: "01:00 PM" }, { startTime: "04:00 PM", endTime: "07:00 PM" }] },
+    { dayOfWeek: "Wednesday", slots: [{ startTime: "09:00 AM", endTime: "01:00 PM" }, { startTime: "04:00 PM", endTime: "07:00 PM" }] },
+    { dayOfWeek: "Thursday", slots: [{ startTime: "09:00 AM", endTime: "01:00 PM" }, { startTime: "04:00 PM", endTime: "07:00 PM" }] },
+    { dayOfWeek: "Friday", slots: [{ startTime: "09:00 AM", endTime: "01:00 PM" }, { startTime: "04:00 PM", endTime: "07:00 PM" }] },
+    { dayOfWeek: "Saturday", slots: [{ startTime: "09:00 AM", endTime: "02:00 PM" }] }
+  ],
+  unavailabilities: []
+};
 
 export const fallbackServices: ServiceItem[] = [
   {
@@ -172,3 +239,241 @@ export const fallbackFacilities: FacilityItem[] = [
     active: true
   }
 ];
+
+const today = new Date().toISOString().split('T')[0];
+const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
+
+export const fallbackAppointments: Appointment[] = [
+  {
+    id: "APT-2026-101",
+    tokenNumber: "T-01",
+    patientName: "Sohan Kumar",
+    patientPhone: "+91 9876543210",
+    patientEmail: "sohan.k@example.com",
+    departmentId: "dept-1",
+    departmentName: "Cardiology",
+    doctorId: "doc-1",
+    doctorName: "Dr. Rajesh Kumar",
+    preferredDate: today,
+    preferredTime: "10:30 AM",
+    reason: "Routine Cardiac Followup & ECG",
+    status: "CONFIRMED",
+    source: "VOICE_AI",
+    createdAt: new Date().toISOString()
+  },
+  {
+    id: "APT-2026-102",
+    tokenNumber: "T-02",
+    patientName: "Ramesh Sharma",
+    patientPhone: "+91 9845123456",
+    patientEmail: "ramesh.sharma@example.com",
+    departmentId: "dept-3",
+    departmentName: "Orthopedics & Joint Replacement",
+    doctorId: "doc-3",
+    doctorName: "Dr. Vikram Gowda",
+    preferredDate: today,
+    preferredTime: "11:15 AM",
+    reason: "Knee Joint Pain & X-Ray Review",
+    status: "CONFIRMED",
+    source: "VOICE_AI",
+    createdAt: new Date().toISOString()
+  },
+  {
+    id: "APT-2026-103",
+    tokenNumber: "T-03",
+    patientName: "Pooja Hegde",
+    patientPhone: "+91 9741234567",
+    patientEmail: "pooja.h@example.com",
+    departmentId: "dept-2",
+    departmentName: "Neurology & Neurosurgery",
+    doctorId: "doc-2",
+    doctorName: "Dr. Ananya Sharma",
+    preferredDate: today,
+    preferredTime: "02:30 PM",
+    reason: "Migraine & Neurological Consultation",
+    status: "NEW",
+    source: "WEB",
+    createdAt: new Date().toISOString()
+  },
+  {
+    id: "APT-2026-104",
+    tokenNumber: "T-04",
+    patientName: "Kavitha Reddy",
+    patientPhone: "+91 9900112233",
+    patientEmail: "kavitha.r@example.com",
+    departmentId: "dept-4",
+    departmentName: "Pediatrics & Neonatal Care",
+    doctorId: "doc-4",
+    doctorName: "Dr. Meenakshi Sundaram",
+    preferredDate: tomorrow,
+    preferredTime: "10:00 AM",
+    reason: "Child Immunization & Growth Check",
+    status: "CONFIRMED",
+    source: "VOICE_AI",
+    createdAt: new Date().toISOString()
+  },
+  {
+    id: "APT-2026-105",
+    tokenNumber: "T-05",
+    patientName: "Manjunath Rao",
+    patientPhone: "+91 9886554433",
+    patientEmail: "manjunath.rao@example.com",
+    departmentId: "dept-5",
+    departmentName: "General & Internal Medicine",
+    doctorId: "doc-5",
+    doctorName: "Dr. Suresh Patil",
+    preferredDate: tomorrow,
+    preferredTime: "11:45 AM",
+    reason: "Diabetes HbA1c Monitoring",
+    status: "CONFIRMED",
+    source: "WEB",
+    createdAt: new Date().toISOString()
+  },
+  {
+    id: "APT-2026-106",
+    tokenNumber: "T-06",
+    patientName: "Deepak Nayak",
+    patientPhone: "+91 9731009988",
+    patientEmail: "deepak.n@example.com",
+    departmentId: "dept-6",
+    departmentName: "Dermatology & Cosmetology",
+    doctorId: "doc-6",
+    doctorName: "Dr. Deepa Kulkarni",
+    preferredDate: tomorrow,
+    preferredTime: "04:00 PM",
+    reason: "Skin Allergy & Eczema Consultation",
+    status: "COMPLETED",
+    source: "VOICE_AI",
+    createdAt: new Date().toISOString()
+  }
+];
+
+export const fallbackDoctorApplications: DoctorApplication[] = [
+  {
+    id: "app-doc-1",
+    name: "Dr. Neha Rao",
+    email: "neha.rao@example.com",
+    phone: "+91 9845012345",
+    qualification: "MBBS, MD (Pulmonology), Fellowship in Sleep Medicine",
+    specialization: "Pulmonology & Respiratory Care",
+    designation: "Consultant Pulmonologist",
+    departmentId: "dept-5",
+    departmentName: "General & Internal Medicine",
+    experienceYears: 8,
+    registrationNumber: "KMC-89241",
+    languages: ["Kannada", "English", "Hindi"],
+    bio: "Expert in asthma management, bronchoscopy, pulmonary fibrosis, and post-COVID lung rehabilitation.",
+    status: "PENDING_VERIFICATION",
+    createdAt: new Date(Date.now() - 3600000 * 5).toISOString()
+  },
+  {
+    id: "app-doc-2",
+    name: "Dr. Anand Kulkarni",
+    email: "anand.kulkarni@example.com",
+    phone: "+91 9741098765",
+    qualification: "MBBS, MS (ENT), DNB",
+    specialization: "Otorhinolaryngology (ENT)",
+    designation: "Senior ENT & Head Neck Surgeon",
+    departmentId: "dept-5",
+    departmentName: "General & Internal Medicine",
+    experienceYears: 11,
+    registrationNumber: "KMC-77120",
+    languages: ["Kannada", "English", "Marathi"],
+    bio: "Specializing in endoscopic sinus surgery, micro-ear surgery, and cochlear implant evaluations.",
+    status: "PENDING_VERIFICATION",
+    createdAt: new Date(Date.now() - 3600000 * 24).toISOString()
+  },
+  {
+    id: "app-doc-3",
+    name: "Dr. Sneha Patil",
+    email: "sneha.patil@example.com",
+    phone: "+91 9900223344",
+    qualification: "MBBS, MD (Obstetrics & Gynecology)",
+    specialization: "High-Risk Obstetrics & Laparoscopic Gynecology",
+    designation: "Consultant Gynecologist",
+    departmentId: "dept-4",
+    departmentName: "Pediatrics & Neonatal Care",
+    experienceYears: 10,
+    registrationNumber: "KMC-94301",
+    languages: ["Kannada", "English"],
+    bio: "Painless normal deliveries, laparoscopic fibroid resections, and comprehensive adolescent wellness.",
+    status: "PENDING_VERIFICATION",
+    createdAt: new Date(Date.now() - 3600000 * 48).toISOString()
+  }
+];
+
+export const fallbackAuditLogs: AuditLog[] = [
+  {
+    id: "log-101",
+    userId: "ai-agent-v1",
+    actor: { id: "ai-agent-v1", name: "Bilingual AI Voice Agent", role: "VOICE_AI" },
+    action: "VOICE_APPOINTMENT_CONFIRMED",
+    entity: "APPOINTMENT",
+    entityId: "APT-2026-101",
+    details: "Bilingual AI Voice Agent successfully booked appointment for patient Sohan Kumar with Dr. Rajesh Kumar (Cardiology).",
+    ipAddress: "127.0.0.1 (Web Telephony)",
+    createdAt: new Date().toISOString()
+  },
+  {
+    id: "log-102",
+    userId: "admin-2",
+    actor: { id: "admin-2", name: "Priya Sharma", role: "HOSPITAL_ADMIN" },
+    action: "DOCTOR_SLOT_UPDATE",
+    entity: "AVAILABILITY",
+    entityId: "doc-1",
+    details: "Hospital Admin updated OPD slot capacity for Dr. Rajesh Kumar to 30 tokens.",
+    ipAddress: "192.168.1.104",
+    createdAt: new Date(Date.now() - 1800000).toISOString()
+  },
+  {
+    id: "log-103",
+    userId: "ai-agent-v1",
+    actor: { id: "ai-agent-v1", name: "Bilingual AI Voice Agent", role: "VOICE_AI" },
+    action: "VOICE_APPOINTMENT_CONFIRMED",
+    entity: "APPOINTMENT",
+    entityId: "APT-2026-102",
+    details: "Voice Agent verified Kannada input and confirmed Orthopedics slot for Ramesh Sharma.",
+    ipAddress: "127.0.0.1 (Web Telephony)",
+    createdAt: new Date(Date.now() - 3600000).toISOString()
+  },
+  {
+    id: "log-104",
+    userId: "admin-1",
+    actor: { id: "admin-1", name: "Dr. Ramesh Rao", role: "SUPER_ADMIN" },
+    action: "EMERGENCY_SYSTEM_TEST",
+    entity: "TELEPHONY",
+    entityId: "108-GUARDRAIL",
+    details: "Super Admin verified 108 Ambulance safety triage guardrail protocol in Kannada and English.",
+    ipAddress: "10.0.0.15",
+    createdAt: new Date(Date.now() - 7200000).toISOString()
+  },
+  {
+    id: "log-105",
+    userId: "superadmin-1",
+    actor: { id: "superadmin-1", name: "Super Admin", role: "SUPER_ADMIN" },
+    action: "DOCTOR_APPLICATION_SUBMITTED",
+    entity: "DOCTOR_APPLICATION",
+    entityId: "app-doc-1",
+    details: "New Doctor Application submitted by Dr. Neha Rao (Pulmonology). Status: PENDING review.",
+    ipAddress: "49.37.12.8",
+    createdAt: new Date(Date.now() - 14400000).toISOString()
+  }
+];
+
+export const fallbackManagementStats = {
+  totalAppointments: 148,
+  todayAppointments: 26,
+  activeDoctors: 18,
+  pendingDoctorApplications: 3,
+  totalPatients: 1420,
+  opdOccupancy: "88%",
+  voiceCallsHandled: 364,
+  voiceSatisfactionRate: "98.2%",
+  activeDepartments: 15,
+  telephonyStats: {
+    totalMinutes: "1,420 mins",
+    avgDuration: "1m 48s",
+    resolvedByAI: "94.6%",
+    bilingualRatio: "62% Kannada / 38% English"
+  }
+};
