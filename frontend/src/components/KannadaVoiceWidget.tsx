@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { apiClient } from '../services/apiClient';
-import { playKannadaAudio, stopKannadaAudio } from '../services/kannadaTts';
+import { playBilingualAudio, stopKannadaAudio, AudioLanguageMode } from '../services/kannadaTts';
 import { Mic, MicOff, Volume2, VolumeX, X, Send, AlertTriangle, CheckCircle2, RefreshCw, Languages, Play } from 'lucide-react';
 
 interface Props {
@@ -10,7 +10,7 @@ interface Props {
 
 export const KannadaVoiceWidget: React.FC<Props> = ({ isOpen, onClose }) => {
   const [sessionId, setSessionId] = useState<string>(`vsession-${Date.now()}`);
-  const [language, setLanguage] = useState<'KN' | 'EN'>('KN');
+  const [language, setLanguage] = useState<AudioLanguageMode>('BILINGUAL');
   const [voiceEngine, setVoiceEngine] = useState<'web_speech' | 'elevenlabs' | 'fish_audio'>('web_speech');
   const [isMuted, setIsMuted] = useState(false);
   const [messages, setMessages] = useState<Array<{ sender: 'bot' | 'user'; textKn: string; textEn?: string }>>([
@@ -36,8 +36,7 @@ export const KannadaVoiceWidget: React.FC<Props> = ({ isOpen, onClose }) => {
     if (isOpen && messages.length > 0 && !isMuted) {
       const latestMsg = messages[messages.length - 1];
       if (latestMsg.sender === 'bot') {
-        const textToSpeak = language === 'KN' ? latestMsg.textKn : (latestMsg.textEn || latestMsg.textKn);
-        speakPrompt(textToSpeak);
+        speakPrompt(latestMsg.textKn, latestMsg.textEn);
       }
     }
     return () => {
@@ -45,11 +44,13 @@ export const KannadaVoiceWidget: React.FC<Props> = ({ isOpen, onClose }) => {
     };
   }, [isOpen]);
 
-  // Speech Synthesis (Authentic Kannada Native Speech)
-  const speakPrompt = async (text: string) => {
+  // Speech Synthesis (Bilingual Kannada + English Speech)
+  const speakPrompt = async (textKn: string, textEn?: string) => {
     if (isMuted) return;
-    playKannadaAudio(
-      text,
+    playBilingualAudio(
+      textKn,
+      textEn,
+      language,
       () => setIsSpeaking(true),
       () => setIsSpeaking(false)
     );
@@ -65,7 +66,7 @@ export const KannadaVoiceWidget: React.FC<Props> = ({ isOpen, onClose }) => {
     }
 
     const recognition = new SpeechRecognition();
-    recognition.lang = language === 'KN' ? 'kn-IN' : 'en-US';
+    recognition.lang = language === 'KN' ? 'kn-IN' : 'en-IN';
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
 
@@ -101,8 +102,7 @@ export const KannadaVoiceWidget: React.FC<Props> = ({ isOpen, onClose }) => {
           textEn: res.promptEnglish
         }
       ]);
-      const textToRead = language === 'KN' ? res.promptKannada : res.promptEnglish;
-      speakPrompt(textToRead);
+      speakPrompt(res.promptKannada, res.promptEnglish);
     } catch (err: any) {
       setMessages(prev => [
         ...prev,
@@ -130,16 +130,14 @@ export const KannadaVoiceWidget: React.FC<Props> = ({ isOpen, onClose }) => {
     ];
     setMessages(initialMsgs);
     if (!isMuted) {
-      const textToRead = language === 'KN' ? initialMsgs[0].textKn : initialMsgs[0].textEn;
-      speakPrompt(textToRead);
+      speakPrompt(initialMsgs[0].textKn, initialMsgs[0].textEn);
     }
   };
 
   const replayLastMessage = () => {
     const lastBotMsg = [...messages].reverse().find(m => m.sender === 'bot');
     if (lastBotMsg) {
-      const textToRead = language === 'KN' ? lastBotMsg.textKn : (lastBotMsg.textEn || lastBotMsg.textKn);
-      speakPrompt(textToRead);
+      speakPrompt(lastBotMsg.textKn, lastBotMsg.textEn);
     }
   };
 
@@ -190,14 +188,15 @@ export const KannadaVoiceWidget: React.FC<Props> = ({ isOpen, onClose }) => {
           {/* Language Selector */}
           <button
             onClick={() => {
-              const nextLang = language === 'KN' ? 'EN' : 'KN';
-              setLanguage(nextLang);
+              const modes: AudioLanguageMode[] = ['BILINGUAL', 'KN', 'EN'];
+              const nextIdx = (modes.indexOf(language) + 1) % modes.length;
+              setLanguage(modes[nextIdx]);
             }}
-            title="Switch Language (KN / EN)"
-            className="p-1.5 text-xs font-bold text-blue-200 hover:text-white bg-white/10 hover:bg-white/20 rounded-lg transition-colors flex items-center gap-1"
+            title="Switch Language Mode (Bilingual / Kannada / English)"
+            className="p-1.5 text-xs font-bold text-blue-200 hover:text-white bg-white/10 hover:bg-white/20 rounded-lg transition-colors flex items-center gap-1 cursor-pointer border border-blue-400/30"
           >
-            <Languages className="w-3.5 h-3.5" />
-            <span>{language}</span>
+            <Languages className="w-3.5 h-3.5 text-blue-300" />
+            <span>{language === 'BILINGUAL' ? '🔊 KN + EN' : language === 'KN' ? 'ಕನ್ನಡ' : 'English'}</span>
           </button>
 
           {/* Mute/Unmute */}
@@ -264,10 +263,10 @@ export const KannadaVoiceWidget: React.FC<Props> = ({ isOpen, onClose }) => {
                   : 'bg-white border border-slate-200 text-slate-900 rounded-bl-none space-y-1.5'
               }`}
             >
-              <div className="font-semibold whitespace-pre-line">
-                {language === 'KN' ? m.textKn : (m.textEn || m.textKn)}
+              <div className="font-semibold whitespace-pre-line text-slate-900">
+                {language === 'EN' ? (m.textEn || m.textKn) : m.textKn}
               </div>
-              {language === 'KN' && m.textEn && (
+              {(language === 'BILINGUAL' || (language === 'KN' && m.sender === 'bot')) && m.textEn && (
                 <div className="text-[11px] text-slate-500 font-normal pt-1 border-t border-slate-100 whitespace-pre-line">
                   {m.textEn}
                 </div>
