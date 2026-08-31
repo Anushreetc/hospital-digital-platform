@@ -1,7 +1,6 @@
 /**
- * High-Fidelity Bilingual (Kannada + English) Speech Audio Engine
- * Plays authentic Kannada speech (using native Kannada voice or fluent phonetic vocalization)
- * followed by English speech on any browser/device.
+ * Ultra-Smooth High-Fidelity Speech Audio Engine
+ * Provides studio-clear, warm, natural speech synthesis in Kannada & English
  */
 
 import { API_BASE } from './apiClient';
@@ -51,13 +50,71 @@ export const unlockBrowserAudio = (): void => {
 const sanitizeForSpeech = (text: string): string => {
   if (!text) return '';
   return text
-    .replace(/[?؟]/g, '') // Strip question marks
-    .replace(/[:;!#*`_~]/g, ' ')
+    .replace(/[?؟]/g, '') // Strip question marks to prevent robot reading 'question mark'
+    .replace(/[:;!#*`_~]/g, ', ')
     .replace(/\(.*?\)/g, ' ')
     .replace(/\[.*?\]/g, ' ')
     .replace(/["'“”]/g, '')
     .replace(/\s+/g, ' ')
     .trim();
+};
+
+/**
+ * Select the highest quality, most natural female/warm neural voice available on the device
+ */
+const getBestSmoothVoice = (lang: 'KN' | 'EN'): { voice?: SpeechSynthesisVoice; langCode: string } => {
+  if (!('speechSynthesis' in window)) {
+    return { langCode: 'en-IN' };
+  }
+
+  const voices = window.speechSynthesis.getVoices();
+  if (!voices || voices.length === 0) {
+    return { langCode: lang === 'KN' ? 'kn-IN' : 'en-IN' };
+  }
+
+  // If Kannada is requested, first check if genuine kn-IN voice is available
+  if (lang === 'KN') {
+    const knVoice = voices.find(v => v.lang.toLowerCase().includes('kn'));
+    if (knVoice) {
+      return { voice: knVoice, langCode: knVoice.lang };
+    }
+  }
+
+  // Premium voice ranking score for clear, warm, smooth human speech
+  const scoreVoice = (v: SpeechSynthesisVoice): number => {
+    let score = 0;
+    const name = v.name.toLowerCase();
+    const voiceLang = v.lang.toLowerCase();
+
+    // Prefer Indian English or UK/US clear natural accents
+    if (voiceLang.includes('en-in')) score += 50;
+    else if (voiceLang.includes('en-gb') || voiceLang.includes('en-us')) score += 30;
+    else if (voiceLang.startsWith('en')) score += 20;
+
+    // Premium Neural / Enhanced voice tags
+    if (name.includes('natural') || name.includes('online')) score += 40;
+    if (name.includes('enhanced') || name.includes('premium')) score += 35;
+    if (name.includes('google')) score += 30;
+    if (name.includes('siri')) score += 25;
+
+    // High quality natural female/warm voices
+    if (name.includes('neerja') || name.includes('heera') || name.includes('veena') || name.includes('kavya')) score += 45;
+    if (name.includes('serena') || name.includes('ava') || name.includes('samantha') || name.includes('zoe') || name.includes('karen')) score += 25;
+    if (name.includes('rishi') || name.includes('prabhat')) score += 20;
+
+    // Penalize robotic/flat legacy voices
+    if (name.includes('compact') || name.includes('alex') || name.includes('fred')) score -= 30;
+
+    return score;
+  };
+
+  const sorted = [...voices].sort((a, b) => scoreVoice(b) - scoreVoice(a));
+  const bestVoice = sorted[0];
+
+  return {
+    voice: bestVoice,
+    langCode: bestVoice ? bestVoice.lang : (lang === 'KN' ? 'en-IN' : 'en-US')
+  };
 };
 
 /**
@@ -148,7 +205,7 @@ const playAudioSegment = async (text: string, lang: 'KN' | 'EN', onDone?: () => 
     // Backend fetch failed or timed out, fallback to browser synthesis immediately
   }
 
-  // 2. Fallback: Browser Web Speech Synthesis
+  // 2. Fallback: Browser Web Speech Synthesis with smooth voice tuning
   fallbackWebSpeech(text, lang, onDone);
 };
 
@@ -163,47 +220,28 @@ const fallbackWebSpeech = (text: string, lang: 'KN' | 'EN', onDone?: () => void)
       window.speechSynthesis.resume();
     }
 
-    const voices = window.speechSynthesis.getVoices();
-    let selectedVoice: SpeechSynthesisVoice | undefined = undefined;
+    const { voice: selectedVoice, langCode: targetLang } = getBestSmoothVoice(lang);
+
     let textToSpeak = text;
-    let targetLang = 'en-US';
-
     if (lang === 'KN') {
-      // Check if native Kannada voice is installed on OS
-      selectedVoice = voices.find(v => v.lang.toLowerCase().includes('kn'));
-
-      if (selectedVoice) {
-        // Native Kannada voice available: speak Kannada script
-        textToSpeak = text;
-        targetLang = selectedVoice.lang;
-      } else {
-        // No native Kannada voice: Transliterate Kannada script to phonetic Latin (Kanglish)
-        // so Indian English / default voice speaks fluent, natural Kannada!
+      // If no native Kannada voice is installed, convert to smooth phonetic speech
+      if (!selectedVoice || !selectedVoice.lang.toLowerCase().includes('kn')) {
         textToSpeak = transliterateKannadaToPhonetic(text);
-        selectedVoice = voices.find(v => v.lang.toLowerCase().includes('en-in')) ||
-                        voices.find(v => v.lang.toLowerCase().includes('en-us')) ||
-                        voices.find(v => v.lang.toLowerCase().startsWith('en')) ||
-                        voices[0];
-        targetLang = selectedVoice ? selectedVoice.lang : 'en-IN';
       }
-    } else {
-      // English text
-      textToSpeak = text;
-      selectedVoice = voices.find(v => v.lang.toLowerCase().includes('en-in')) ||
-                      voices.find(v => v.lang.toLowerCase().includes('en-us')) ||
-                      voices.find(v => v.lang.toLowerCase().startsWith('en')) ||
-                      voices[0];
-      targetLang = selectedVoice ? selectedVoice.lang : 'en-US';
     }
 
-    const utterance = new SpeechSynthesisUtterance(textToSpeak);
+    // Format text with gentle cadence pauses
+    const formattedText = textToSpeak.replace(/,/g, ', ').replace(/\./g, '. ');
+
+    const utterance = new SpeechSynthesisUtterance(formattedText);
     utterance.volume = 1.0;
-    utterance.pitch = 1.0;
+    utterance.pitch = 1.02; // Warm, friendly hospital receptionist pitch
+    utterance.rate = lang === 'KN' ? 0.90 : 0.93; // Smooth, clear, relaxed cadence
+
     if (selectedVoice) {
       utterance.voice = selectedVoice;
     }
     utterance.lang = targetLang;
-    utterance.rate = lang === 'KN' ? 0.90 : 1.0;
 
     activeUtterance = utterance;
     (window as any).__currentUtterance = utterance;
@@ -225,7 +263,7 @@ const fallbackWebSpeech = (text: string, lang: 'KN' | 'EN', onDone?: () => void)
     utterance.onerror = () => finish();
 
     // Safety timeout
-    const estimatedDuration = Math.max(3000, (textToSpeak.length / 7) * 1000);
+    const estimatedDuration = Math.max(3000, (formattedText.length / 6) * 1000);
     speechTimeout = setTimeout(() => {
       finish();
     }, estimatedDuration);
