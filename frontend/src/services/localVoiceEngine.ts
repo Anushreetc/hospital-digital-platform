@@ -184,13 +184,21 @@ export function processLocalVoiceUtterance(sessionId: string, query: string): Lo
       };
     }
 
-    // Extract Name cleanly
-    const extractedName = clean
-      .replace(/^(ನನ್ನ ಹೆಸರು|ನನ್ನ ಹೆಸ್ರು|ಹೆಸರು|my name is|i am|iam|im|this is|call me)\s*/i, '')
-      .replace(/[.,!]/g, '')
+    // Extract Name cleanly (strip greetings, filler phrases, and question echoes)
+    let extractedName = clean
+      .replace(/^(ನನ್ನ ಹೆಸರು|ನನ್ನ ಹೆಸ್ರು|ಹೆಸರು|my name is|i am|iam|im|this is|call me|myself)\s*/i, '')
+      .replace(/(welcome to city care hospital|what is your full name|for the appointment|please provide your 10 digit|mobile number|namaskara|hello|ಧನ್ಯವಾದಗಳು|ಸಿಟಿ ಕೇರ್ ಆಸ್ಪತ್ರೆಗೆ ಸುಸ್ವಾಗತ|ನಿಮ್ಮ ಹೆಸರು ಏನು)/gi, '')
+      .replace(/[.,!?:;()]/g, '')
+      .replace(/\s+/g, ' ')
       .trim();
 
-    session.slots.patientName = extractedName || clean;
+    // If string still has too many words, grab first 2-3 words (real name)
+    const words = extractedName.split(' ');
+    if (words.length > 3) {
+      extractedName = words.slice(0, 2).join(' ');
+    }
+
+    session.slots.patientName = extractedName || 'ಸ್ನೇಹಿತರೆ';
   }
 
   // Step 2: Need Phone Number

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { apiClient } from '../services/apiClient';
 import { playBilingualAudio, stopKannadaAudio, AudioLanguageMode } from '../services/kannadaTts';
-import { Mic, MicOff, Volume2, VolumeX, X, Send, AlertTriangle, CheckCircle2, RefreshCw, Languages, Play } from 'lucide-react';
+import { Mic, MicOff, Volume2, VolumeX, X, Send, AlertTriangle, CheckCircle2, RefreshCw, Languages, Play, PhoneOff } from 'lucide-react';
 
 interface Props {
   isOpen: boolean;
@@ -218,6 +218,19 @@ export const KannadaVoiceWidget: React.FC<Props> = ({ isOpen, onClose }) => {
             className="p-2 text-slate-300 hover:text-white hover:bg-white/10 rounded-full transition-colors"
           >
             <RefreshCw className="w-4 h-4" />
+          </button>
+
+          {/* End Call */}
+          <button
+            onClick={() => {
+              stopKannadaAudio();
+              onClose();
+            }}
+            title="End Call"
+            className="px-2.5 py-1 bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs rounded-lg transition-colors flex items-center gap-1 cursor-pointer shadow-sm active:scale-95"
+          >
+            <PhoneOff className="w-3.5 h-3.5" />
+            <span>End Call</span>
           </button>
 
           {/* Close */}
