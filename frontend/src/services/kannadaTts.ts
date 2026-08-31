@@ -1,6 +1,6 @@
 /**
  * Ultra-Smooth High-Fidelity Speech Audio Engine
- * Provides studio-clear, warm, natural speech synthesis in Kannada & English
+ * Provides crystal-clear, steady, natural Indian Female voice synthesis without shaking or jitter.
  */
 
 import { API_BASE } from './apiClient';
@@ -17,7 +17,7 @@ let audioCtx: AudioContext | null = null;
 (window as any).__currentUtterance = null;
 
 /**
- * Unlock browser audio context on any user click
+ * Unlock browser audio context cleanly and silently (Zero audible chime to prevent acoustic flutter)
  */
 export const unlockBrowserAudio = (): void => {
   try {
@@ -30,18 +30,6 @@ export const unlockBrowserAudio = (): void => {
     if (audioCtx && audioCtx.state === 'suspended') {
       audioCtx.resume();
     }
-    if (audioCtx) {
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5 note
-      gain.gain.setValueAtTime(0.01, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.05);
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      osc.start();
-      osc.stop(audioCtx.currentTime + 0.05);
-    }
   } catch (e) {
     // Ignore audio context errors
   }
@@ -50,8 +38,8 @@ export const unlockBrowserAudio = (): void => {
 const sanitizeForSpeech = (text: string): string => {
   if (!text) return '';
   return text
-    .replace(/[?؟]/g, '') // Strip question marks to prevent robot reading 'question mark'
-    .replace(/[:;!#*`_~]/g, ', ')
+    .replace(/[?؟]/g, '') // Strip question marks
+    .replace(/[:;!#*`_~]/g, ' ')
     .replace(/\(.*?\)/g, ' ')
     .replace(/\[.*?\]/g, ' ')
     .replace(/["'“”]/g, '')
@@ -60,7 +48,7 @@ const sanitizeForSpeech = (text: string): string => {
 };
 
 /**
- * Select the highest quality, most natural female/warm neural voice available on the device
+ * Select the highest quality, most natural Indian Female voice available
  */
 const getBestSmoothVoice = (lang: 'KN' | 'EN'): { voice?: SpeechSynthesisVoice; langCode: string } => {
   if (!('speechSynthesis' in window)) {
@@ -80,13 +68,13 @@ const getBestSmoothVoice = (lang: 'KN' | 'EN'): { voice?: SpeechSynthesisVoice; 
     }
   }
 
-  // Specifically search for Indian Female / Women Accent voices (Veena, Neerja, Heera, Kavya, Lekha, Aditi, Swara)
+  // Specifically search for Indian Female / Women Accent voices
   const scoreVoice = (v: SpeechSynthesisVoice): number => {
     let score = 0;
     const name = v.name.toLowerCase();
     const voiceLang = v.lang.toLowerCase();
 
-    // 1. Absolute Top Priority: Celebrated Indian Female / Women Voices
+    // 1. Celebrated Indian Female / Women Voices
     // Veena (Apple Indian Female), Neerja (Microsoft Indian Female Natural), Heera (Windows Indian Female), Aditi / Kavya / Lekha / Swara / Isha
     if (
       name.includes('veena') ||
@@ -118,7 +106,7 @@ const getBestSmoothVoice = (lang: 'KN' | 'EN'): { voice?: SpeechSynthesisVoice; 
     if (name.includes('enhanced') || name.includes('premium')) score += 60;
     if (name.includes('google')) score += 40;
 
-    // 4. Disqualify / heavily penalize Male voices to guarantee an authentic Female voice
+    // 4. Disqualify male voices to guarantee female voice
     if (
       name.includes('rishi') ||
       name.includes('prabhat') ||
@@ -189,7 +177,7 @@ export const playBilingualAudio = async (
 };
 
 /**
- * Play a single language audio segment via Backend Neural MP3 or Web Speech
+ * Play a single language audio segment
  */
 const playAudioSegment = async (text: string, lang: 'KN' | 'EN', onDone?: () => void): Promise<void> => {
   if (!text) {
@@ -217,7 +205,8 @@ const playAudioSegment = async (text: string, lang: 'KN' | 'EN', onDone?: () => 
 
     if (res.ok) {
       const blob = await res.blob();
-      if (blob.size > 200) {
+      // Ensure it's a real audio MP3 file (>1000 bytes) and not an error response
+      if (blob.size > 1000) {
         const audioUrl = URL.createObjectURL(blob);
         const audio = new Audio(audioUrl);
         activeAudio = audio;
@@ -242,7 +231,7 @@ const playAudioSegment = async (text: string, lang: 'KN' | 'EN', onDone?: () => 
     // Backend fetch failed or timed out, fallback to browser synthesis immediately
   }
 
-  // 2. Fallback: Browser Web Speech Synthesis with smooth Indian female voice tuning
+  // 2. Fallback: Browser Web Speech Synthesis with smooth, steady voice tuning
   fallbackWebSpeech(text, lang, onDone);
 };
 
@@ -267,13 +256,12 @@ const fallbackWebSpeech = (text: string, lang: 'KN' | 'EN', onDone?: () => void)
       }
     }
 
-    // Format text with gentle cadence pauses
-    const formattedText = textToSpeak.replace(/,/g, ', ').replace(/\./g, '. ');
-
-    const utterance = new SpeechSynthesisUtterance(formattedText);
+    const utterance = new SpeechSynthesisUtterance(textToSpeak);
     utterance.volume = 1.0;
-    utterance.pitch = 1.08; // Smooth, clear, warm Indian female receptionist pitch
-    utterance.rate = 0.90; // Natural, unhurried, articulate cadence
+    // Keep pitch at 1.0 (standard native frequency) to eliminate pitch-shifter tremolo/shaking
+    utterance.pitch = 1.0;
+    // Steady, natural conversational speech rate
+    utterance.rate = 0.95;
 
     if (selectedVoice) {
       utterance.voice = selectedVoice;
@@ -300,7 +288,7 @@ const fallbackWebSpeech = (text: string, lang: 'KN' | 'EN', onDone?: () => void)
     utterance.onerror = () => finish();
 
     // Safety timeout
-    const estimatedDuration = Math.max(3000, (formattedText.length / 6) * 1000);
+    const estimatedDuration = Math.max(3000, (textToSpeak.length / 5) * 1000);
     speechTimeout = setTimeout(() => {
       finish();
     }, estimatedDuration);
