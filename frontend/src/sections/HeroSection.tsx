@@ -62,7 +62,7 @@ export const HeroSection: React.FC<Props> = ({
                 className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-3.5 rounded-xl font-bold text-sm sm:text-base shadow-lg shadow-emerald-600/20 hover:shadow-emerald-600/30 transition-all flex items-center justify-center gap-2 active:scale-95 cursor-pointer"
               >
                 <PhoneCall className="w-5 h-5 text-white animate-pulse" />
-                <span>📞 Call AI Assistant</span>
+                <span>Call AI Assistant</span>
               </a>
 
               <button

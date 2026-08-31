@@ -1,78 +1,73 @@
 import React, { useState, useEffect } from 'react';
-import { HospitalInfo, Department, ServiceItem, FacilityItem, Doctor, DoctorAvailability, AuthUser } from './types';
+import { HospitalInfo, Department, Doctor, ServiceItem, FacilityItem, DoctorAvailability, AuthUser } from './types';
 import { apiClient } from './services/apiClient';
-import { Mic } from 'lucide-react';
-
 import { Navbar } from './components/Navbar';
 import { HeroSection } from './sections/HeroSection';
 import { AboutSection } from './sections/AboutSection';
 import { DepartmentsSection } from './sections/DepartmentsSection';
-import { ServicesSection } from './sections/ServicesSection';
 import { DoctorsSection } from './sections/DoctorsSection';
-import { DoctorDetailModal } from './components/DoctorDetailModal';
-import { AvailabilitySection } from './sections/AvailabilitySection';
+import { ServicesSection } from './sections/ServicesSection';
 import { FacilitiesSection } from './sections/FacilitiesSection';
+import { AvailabilitySection } from './sections/AvailabilitySection';
 import { AppointmentSection } from './sections/AppointmentSection';
-import { ContactSection } from './sections/ContactSection';
 import { FaqSection } from './sections/FaqSection';
+import { ContactSection } from './sections/ContactSection';
 import { Footer } from './sections/Footer';
+import { DoctorDetailModal } from './components/DoctorDetailModal';
 import { VoiceAgentWidget } from './components/VoiceAgentWidget';
 import { VapiVoiceModal } from './components/VapiVoiceModal';
 import { AuthRoleModal } from './components/AuthRoleModal';
-
 import { AuthPages } from './pages/AuthPages';
-import { PatientDashboard } from './pages/PatientDashboard';
-import { DoctorDashboard } from './pages/DoctorDashboard';
 import { ManagementDashboard } from './pages/ManagementDashboard';
-import {
-  fallbackHospitalInfo,
-  fallbackDepartments,
-  fallbackDoctors,
-  fallbackServices,
-  fallbackFacilities
-} from './services/mockData';
+import { DoctorDashboard } from './pages/DoctorDashboard';
+import { PatientDashboard } from './pages/PatientDashboard';
+import { Mic, Loader2 } from 'lucide-react';
 
 export const App: React.FC = () => {
-  const [hospitalInfo, setHospitalInfo] = useState<HospitalInfo>(fallbackHospitalInfo);
-  const [departments, setDepartments] = useState<Department[]>(fallbackDepartments);
-  const [services, setServices] = useState<ServiceItem[]>(fallbackServices);
-  const [facilities, setFacilities] = useState<FacilityItem[]>(fallbackFacilities);
-  const [doctors, setDoctors] = useState<Doctor[]>(fallbackDoctors);
+  // Main Data States
+  const [hospitalInfo, setHospitalInfo] = useState<HospitalInfo | null>(null);
+  const [departments, setDepartments] = useState<Department[]>([]);
+  const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [services, setServices] = useState<ServiceItem[]>([]);
+  const [facilities, setFacilities] = useState<FacilityItem[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
-  // Modals & Navigation
+  // UI Interactive States
   const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
   const [doctorAvail, setDoctorAvail] = useState<DoctorAvailability | null>(null);
   const [preselectedDoctorId, setPreselectedDoctorId] = useState<string | undefined>(undefined);
+  const [voiceWidgetOpen, setVoiceWidgetOpen] = useState<boolean>(false);
+  const [vapiModalOpen, setVapiModalOpen] = useState<boolean>(false);
+  const [authModalOpen, setAuthModalOpen] = useState<boolean>(false);
 
-  const [authModalOpen, setAuthModalOpen] = useState(false);
-  const [voiceWidgetOpen, setVoiceWidgetOpen] = useState(false);
-  const [vapiModalOpen, setVapiModalOpen] = useState(false);
-
-  // Auth State
-  const [activeAuthRole, setActiveAuthRole] = useState<'PATIENT' | 'DOCTOR' | 'MANAGEMENT' | null>(null);
-  const [currentUser, setCurrentUser] = useState<AuthUser | null>(null);
-  const [currentView, setCurrentView] = useState<'PUBLIC' | 'AUTH' | 'PORTAL'>('PUBLIC');
+  // Portal & Auth State
+  const [activePortalRole, setActivePortalRole] = useState<'PATIENT' | 'DOCTOR' | 'MANAGEMENT' | null>(null);
+  const [authenticatedUser, setAuthenticatedUser] = useState<AuthUser | null>(null);
+  const [authToken, setAuthToken] = useState<string | null>(localStorage.getItem('hospital_auth_token'));
 
   useEffect(() => {
     loadPublicData();
   }, []);
 
   const loadPublicData = async () => {
+    setLoading(true);
     try {
-      const [info, depts, srvs, facs, docs] = await Promise.allSettled([
+      const [info, depts, docs, srvs, facs] = await Promise.all([
         apiClient.getHospitalInfo(),
         apiClient.getDepartments(),
+        apiClient.getDoctors(),
         apiClient.getServices(),
         apiClient.getFacilities(),
-        apiClient.getDoctors()
       ]);
-      if (info.status === 'fulfilled') setHospitalInfo(info.value);
-      if (depts.status === 'fulfilled') setDepartments(depts.value);
-      if (srvs.status === 'fulfilled') setServices(srvs.value);
-      if (facs.status === 'fulfilled') setFacilities(facs.value);
-      if (docs.status === 'fulfilled') setDoctors(docs.value);
+      setHospitalInfo(info);
+      setDepartments(depts);
+      setDoctors(docs);
+      setServices(srvs);
+      setFacilities(facs);
     } catch (err) {
       console.warn('Backend loading in background:', err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -94,77 +89,89 @@ export const App: React.FC = () => {
     }
   };
 
-  const handleSelectRoleFromModal = (role: 'PATIENT' | 'DOCTOR' | 'MANAGEMENT') => {
-    setAuthModalOpen(false);
-    setActiveAuthRole(role);
-    setCurrentView('AUTH');
+  const handleNavigateToAppointment = () => {
+    const element = document.getElementById('appointment');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
-  const handleLoginSuccess = (token: string, user: any, role: string) => {
-    setCurrentUser({
+  const handleSelectRoleFromModal = (role: 'PATIENT' | 'DOCTOR' | 'MANAGEMENT') => {
+    setAuthModalOpen(false);
+    setActivePortalRole(role);
+  };
+
+  const handleSuccessLogin = (token: string, user: any, role: string) => {
+    setAuthToken(token);
+    setAuthenticatedUser({
+      id: user.id || user.userId,
       userId: user.id || user.userId,
-      email: user.email || user.username,
+      name: user.name || 'User',
+      email: user.email,
       role: role as any,
-      name: user.name
+      doctorId: user.doctorId
     });
-    setCurrentView('PORTAL');
   };
 
   const handleLogout = () => {
     localStorage.removeItem('hospital_auth_token');
-    setCurrentUser(null);
-    setActiveAuthRole(null);
-    setCurrentView('PUBLIC');
+    setAuthToken(null);
+    setAuthenticatedUser(null);
+    setActivePortalRole(null);
   };
 
-  if (!hospitalInfo) {
+  // If user is authenticated in a dashboard
+  if (authenticatedUser) {
+    if (authenticatedUser.role === 'SUPER_ADMIN' || authenticatedUser.role === 'HOSPITAL_ADMIN' || authenticatedUser.role === 'RECEPTIONIST') {
+      return <ManagementDashboard user={authenticatedUser} onLogout={handleLogout} onNavigateHome={handleLogout} />;
+    }
+    if (authenticatedUser.role === 'DOCTOR') {
+      return <DoctorDashboard user={authenticatedUser} onLogout={handleLogout} onNavigateHome={handleLogout} />;
+    }
+    if (authenticatedUser.role === 'PATIENT') {
+      return <PatientDashboard user={authenticatedUser} onLogout={handleLogout} onNavigateHome={handleLogout} />;
+    }
+  }
+
+  // If user is on an Auth Login / Registration Page
+  if (activePortalRole) {
     return (
-      <div className="min-h-screen bg-slate-900 text-white flex items-center justify-center">
-        <div className="text-center space-y-3">
-          <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <div className="text-sm font-bold tracking-wide">Loading Hospital Digital Platform...</div>
+      <AuthPages
+        role={activePortalRole}
+        onSuccessLogin={handleSuccessLogin}
+        onBackToWebsite={() => setActivePortalRole(null)}
+      />
+    );
+  }
+
+  if (loading || !hospitalInfo) {
+    return (
+      <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center text-white space-y-4">
+        <Loader2 className="w-12 h-12 text-blue-500 animate-spin" />
+        <div className="text-center">
+          <div className="text-lg font-bold">Loading City Care Digital Platform...</div>
+          <div className="text-xs text-slate-400 mt-1">Connecting to NABH Hospital Services & Voice Engines</div>
         </div>
       </div>
     );
   }
 
-  // Render Portal Views
-  if (currentView === 'PORTAL' && currentUser) {
-    if (currentUser.role === 'PATIENT') {
-      return <PatientDashboard user={currentUser} onLogout={handleLogout} onNavigateHome={() => setCurrentView('PUBLIC')} />;
-    } else if (currentUser.role === 'DOCTOR') {
-      return <DoctorDashboard user={currentUser} onLogout={handleLogout} onNavigateHome={() => setCurrentView('PUBLIC')} />;
-    } else {
-      return <ManagementDashboard user={currentUser} onLogout={handleLogout} onNavigateHome={() => setCurrentView('PUBLIC')} />;
-    }
-  }
-
-  // Render Auth Forms
-  if (currentView === 'AUTH' && activeAuthRole) {
-    return (
-      <AuthPages
-        role={activeAuthRole}
-        onSuccessLogin={handleLoginSuccess}
-        onBackToWebsite={() => setCurrentView('PUBLIC')}
-      />
-    );
-  }
-
-  // Render Main Public Website
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 font-sans text-slate-900 selection:bg-blue-600 selection:text-white">
+      {/* Main Public Navigation Bar */}
       <Navbar
         hospitalInfo={hospitalInfo}
         onOpenAuthModal={() => setAuthModalOpen(true)}
         onOpenVoiceWidget={() => setVoiceWidgetOpen(true)}
-        onNavigateToAppointment={() => handleBookDoctorDirectly('')}
+        onNavigateToAppointment={handleNavigateToAppointment}
       />
 
+      {/* Main Content Sections */}
       <main className="flex-1">
         <HeroSection
           hospitalInfo={hospitalInfo}
-          onBookClick={() => handleBookDoctorDirectly('')}
-          onVoiceClick={() => setVapiModalOpen(true)}
+          onBookClick={handleNavigateToAppointment}
+          onVoiceClick={() => setVoiceWidgetOpen(true)}
           onFindDoctorClick={() => {
             const el = document.getElementById('doctors');
             if (el) el.scrollIntoView({ behavior: 'smooth' });
@@ -176,15 +183,10 @@ export const App: React.FC = () => {
         <DepartmentsSection
           departments={departments}
           doctors={doctors}
-          onSelectDepartment={(deptId) => {
+          onSelectDepartment={() => {
             const el = document.getElementById('doctors');
             if (el) el.scrollIntoView({ behavior: 'smooth' });
           }}
-        />
-
-        <ServicesSection
-          services={services}
-          onBookService={() => handleBookDoctorDirectly('')}
         />
 
         <DoctorsSection
@@ -194,13 +196,18 @@ export const App: React.FC = () => {
           onBookDoctor={handleBookDoctorDirectly}
         />
 
-        <AvailabilitySection
-          doctors={doctors}
-          departments={departments}
-          onBookDoctorSlot={handleBookDoctorDirectly}
+        <ServicesSection
+          services={services}
+          onBookService={handleNavigateToAppointment}
         />
 
         <FacilitiesSection facilities={facilities} />
+
+        <AvailabilitySection
+          doctors={doctors}
+          departments={departments}
+          onBookDoctorSlot={(doctorId) => handleBookDoctorDirectly(doctorId)}
+        />
 
         <AppointmentSection
           departments={departments}
@@ -208,11 +215,12 @@ export const App: React.FC = () => {
           preselectedDoctorId={preselectedDoctorId}
         />
 
-        <ContactSection hospitalInfo={hospitalInfo} />
-
         <FaqSection />
+
+        <ContactSection hospitalInfo={hospitalInfo} />
       </main>
 
+      {/* Global Footer */}
       <Footer
         hospitalInfo={hospitalInfo}
         onOpenAuthModal={() => setAuthModalOpen(true)}
@@ -245,15 +253,15 @@ export const App: React.FC = () => {
         hospitalInfo={hospitalInfo}
       />
 
-      {/* Floating Voice Agent Trigger Button */}
+      {/* Floating Voice Agent Trigger Button - Mobile & Laptop Optimized */}
       {!voiceWidgetOpen && (
         <button
           onClick={() => setVoiceWidgetOpen(true)}
-          className="fixed bottom-6 right-6 z-40 bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-white px-5 py-3.5 rounded-full shadow-2xl hover:shadow-emerald-500/30 flex items-center gap-2.5 font-bold text-sm transition-all transform hover:scale-105 active:scale-95 group"
+          className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40 bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-white px-3.5 py-2.5 sm:px-5 sm:py-3.5 rounded-full shadow-2xl hover:shadow-emerald-500/30 flex items-center gap-2 sm:gap-2.5 font-bold text-xs sm:text-sm transition-all transform hover:scale-105 active:scale-95 group cursor-pointer"
           title="Open Voice Assistant"
         >
-          <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
-            <Mic className="w-4 h-4 text-white animate-pulse" />
+          <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-white/20 flex items-center justify-center">
+            <Mic className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white animate-pulse" />
           </div>
           <span>ಕನ್ನಡ / Voice Assistant</span>
         </button>
