@@ -236,7 +236,7 @@ export const createAiRouter = (
       } else if (provider === 'elevenlabs') {
         audioBuffer = await ttsService.synthesizeElevenLabs(text, voiceId);
       } else {
-        const langCode = language === 'EN' ? 'en' : 'kn';
+        const langCode = (language === 'EN' || language === 'en') ? 'en-IN' : 'kn';
         audioBuffer = await ttsService.synthesizeKannadaVoice(text, langCode);
       }
 

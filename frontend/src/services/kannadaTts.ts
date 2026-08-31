@@ -80,30 +80,38 @@ const getBestSmoothVoice = (lang: 'KN' | 'EN'): { voice?: SpeechSynthesisVoice; 
     }
   }
 
-  // Premium voice ranking score for clear, warm, smooth human speech
+  // Specifically search for Indian Accent voices (en-IN, Veena, Neerja, Rishi, Heera, etc.)
   const scoreVoice = (v: SpeechSynthesisVoice): number => {
     let score = 0;
     const name = v.name.toLowerCase();
     const voiceLang = v.lang.toLowerCase();
 
-    // Prefer Indian English or UK/US clear natural accents
-    if (voiceLang.includes('en-in')) score += 50;
-    else if (voiceLang.includes('en-gb') || voiceLang.includes('en-us')) score += 30;
-    else if (voiceLang.startsWith('en')) score += 20;
+    // 1. Mandatory Top Priority: Indian Accent Voice
+    if (voiceLang.includes('en-in') || voiceLang.includes('kn-in') || voiceLang.includes('hi-in') || voiceLang.includes('te-in') || voiceLang.includes('ta-in')) {
+      score += 300;
+    }
+    if (name.includes('india') || name.includes('indian')) {
+      score += 250;
+    }
 
-    // Premium Neural / Enhanced voice tags
-    if (name.includes('natural') || name.includes('online')) score += 40;
-    if (name.includes('enhanced') || name.includes('premium')) score += 35;
+    // Specific Indian Voice Profiles across Windows, macOS, Android, Chrome & iOS
+    if (name.includes('veena') || name.includes('neerja') || name.includes('heera') || name.includes('kavya') || name.includes('lekha') || name.includes('aditi')) {
+      score += 200;
+    }
+    if (name.includes('rishi') || name.includes('prabhat')) {
+      score += 180;
+    }
+
+    // Premium / Natural / Neural tags
+    if (name.includes('natural') || name.includes('online')) score += 50;
+    if (name.includes('enhanced') || name.includes('premium')) score += 40;
     if (name.includes('google')) score += 30;
-    if (name.includes('siri')) score += 25;
 
-    // High quality natural female/warm voices
-    if (name.includes('neerja') || name.includes('heera') || name.includes('veena') || name.includes('kavya')) score += 45;
-    if (name.includes('serena') || name.includes('ava') || name.includes('samantha') || name.includes('zoe') || name.includes('karen')) score += 25;
-    if (name.includes('rishi') || name.includes('prabhat')) score += 20;
+    // Fallback English if no Indian voice installed
+    if (voiceLang.startsWith('en')) score += 10;
 
-    // Penalize robotic/flat legacy voices
-    if (name.includes('compact') || name.includes('alex') || name.includes('fred')) score -= 30;
+    // Penalize robotic voices
+    if (name.includes('compact') || name.includes('alex') || name.includes('fred')) score -= 50;
 
     return score;
   };
@@ -113,7 +121,7 @@ const getBestSmoothVoice = (lang: 'KN' | 'EN'): { voice?: SpeechSynthesisVoice; 
 
   return {
     voice: bestVoice,
-    langCode: bestVoice ? bestVoice.lang : (lang === 'KN' ? 'en-IN' : 'en-US')
+    langCode: bestVoice ? bestVoice.lang : 'en-IN'
   };
 };
 
