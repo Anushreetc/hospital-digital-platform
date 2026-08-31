@@ -1,20 +1,22 @@
 /**
- * Bulletproof Bilingual Speech Synthesis & Web Audio Engine
- * Features Web Audio API unlock chime + safe browser SpeechSynthesis
+ * High-Fidelity Bilingual (Kannada + English) Speech Audio Engine
+ * Plays authentic native MP3 audio from backend proxy with Web Speech fallback
  */
+
+import { API_BASE } from './apiClient';
 
 export type AudioLanguageMode = 'BILINGUAL' | 'KN' | 'EN';
 
+let activeAudio: HTMLAudioElement | null = null;
 let activeUtterance: SpeechSynthesisUtterance | null = null;
 let speechTimeout: any = null;
 let audioCtx: AudioContext | null = null;
 
-// Keep global reference on window to prevent Chrome garbage-collection speech cutoff bug
+// Keep global reference to prevent Chrome garbage collection
 (window as any).__currentUtterance = null;
 
 /**
- * Play a subtle 0.08s soft audio chime using WebAudio API
- * This immediately unlocks browser audio playback policies on macOS, Windows, Chrome & Safari
+ * Unlock browser audio context on any user click
  */
 export const unlockBrowserAudio = (): void => {
   try {
@@ -32,22 +34,22 @@ export const unlockBrowserAudio = (): void => {
       const gain = audioCtx.createGain();
       osc.type = 'sine';
       osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5 note
-      gain.gain.setValueAtTime(0.01, audioCtx.currentTime); // Very soft
-      gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.08);
+      gain.gain.setValueAtTime(0.01, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.05);
       osc.connect(gain);
       gain.connect(audioCtx.destination);
       osc.start();
-      osc.stop(audioCtx.currentTime + 0.08);
+      osc.stop(audioCtx.currentTime + 0.05);
     }
   } catch (e) {
-    // Ignore audio context errors silently
+    // Ignore audio context errors
   }
 };
 
 const sanitizeForSpeech = (text: string): string => {
   if (!text) return '';
   return text
-    .replace(/[?؟]/g, '') // Completely remove question mark symbol so it never says "question mark"
+    .replace(/[?؟]/g, '') // Strip question marks
     .replace(/[:;!#*`_~]/g, ' ')
     .replace(/\(.*?\)/g, ' ')
     .replace(/\[.*?\]/g, ' ')
@@ -56,13 +58,16 @@ const sanitizeForSpeech = (text: string): string => {
     .trim();
 };
 
-export const playBilingualAudio = (
+/**
+ * Main Bilingual Audio Player
+ */
+export const playBilingualAudio = async (
   textKn: string,
   textEn?: string,
   mode: AudioLanguageMode = 'BILINGUAL',
   onStart?: () => void,
   onEnd?: () => void
-): void => {
+): Promise<void> => {
   stopKannadaAudio();
   unlockBrowserAudio();
 
@@ -71,50 +76,100 @@ export const playBilingualAudio = (
 
   if (onStart) onStart();
 
-  if (!('speechSynthesis' in window)) {
-    console.warn('SpeechSynthesis is not supported in this browser.');
-    if (onEnd) onEnd();
-    return;
-  }
-
-  // Resume paused synthesis queue (Chrome policy recovery)
-  if (window.speechSynthesis.paused) {
-    window.speechSynthesis.resume();
-  }
-
   if (mode === 'EN') {
-    speakText(cleanEn || cleanKn, 'en-US', onEnd);
+    playAudioSegment(cleanEn || cleanKn, 'EN', onEnd);
     return;
   }
 
   if (mode === 'KN' || !cleanEn) {
-    speakText(cleanKn, 'kn-IN', onEnd);
+    playAudioSegment(cleanKn, 'KN', onEnd);
     return;
   }
 
-  // BILINGUAL MODE: Always speak both prompts!
-  // Speak Kannada segment first, then English segment
-  speakText(cleanKn, 'kn-IN', () => {
-    speakText(cleanEn, 'en-US', onEnd);
+  // BILINGUAL MODE: Play Kannada first -> then play English
+  playAudioSegment(cleanKn, 'KN', () => {
+    playAudioSegment(cleanEn, 'EN', onEnd);
   });
 };
 
-const speakText = (text: string, preferredLang: string, onDone?: () => void): void => {
+/**
+ * Play a single language audio segment via Backend Neural MP3 or Web Speech
+ */
+const playAudioSegment = async (text: string, lang: 'KN' | 'EN', onDone?: () => void): Promise<void> => {
   if (!text) {
     if (onDone) onDone();
     return;
   }
 
+  // 1. Try Backend Neural Audio Stream (Authentic Kannada & English MP3)
   try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 4000);
+
+    const res = await fetch(`${API_BASE}/ai/voice/tts`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        text,
+        language: lang,
+        provider: 'web_speech'
+      }),
+      signal: controller.signal
+    });
+
+    clearTimeout(timeoutId);
+
+    if (res.ok) {
+      const blob = await res.blob();
+      if (blob.size > 200) {
+        const audioUrl = URL.createObjectURL(blob);
+        const audio = new Audio(audioUrl);
+        activeAudio = audio;
+
+        audio.onended = () => {
+          activeAudio = null;
+          URL.revokeObjectURL(audioUrl);
+          if (onDone) onDone();
+        };
+
+        audio.onerror = () => {
+          activeAudio = null;
+          URL.revokeObjectURL(audioUrl);
+          fallbackWebSpeech(text, lang, onDone);
+        };
+
+        await audio.play();
+        return;
+      }
+    }
+  } catch (err) {
+    console.warn('[TTS Proxy] Backend audio fetch error, using Web Speech fallback:', err);
+  }
+
+  // 2. Fallback: Browser Web Speech Synthesis
+  fallbackWebSpeech(text, lang, onDone);
+};
+
+const fallbackWebSpeech = (text: string, lang: 'KN' | 'EN', onDone?: () => void): void => {
+  if (!('speechSynthesis' in window)) {
+    if (onDone) onDone();
+    return;
+  }
+
+  try {
+    if (window.speechSynthesis.paused) {
+      window.speechSynthesis.resume();
+    }
+
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.pitch = 1.0;
     utterance.volume = 1.0;
+    utterance.pitch = 1.0;
 
     const voices = window.speechSynthesis.getVoices();
     let selectedVoice: SpeechSynthesisVoice | undefined = undefined;
 
     if (voices && voices.length > 0) {
-      if (preferredLang.startsWith('kn')) {
+      if (lang === 'KN') {
         selectedVoice = voices.find(v => v.lang.toLowerCase().includes('kn'));
       }
       if (!selectedVoice) {
@@ -131,10 +186,10 @@ const speakText = (text: string, preferredLang: string, onDone?: () => void): vo
       utterance.voice = selectedVoice;
       utterance.lang = selectedVoice.lang;
     } else {
-      utterance.lang = preferredLang.startsWith('kn') ? 'kn-IN' : 'en-US';
+      utterance.lang = lang === 'KN' ? 'kn-IN' : 'en-US';
     }
 
-    utterance.rate = utterance.lang.startsWith('kn') ? 0.88 : 1.0;
+    utterance.rate = lang === 'KN' ? 0.88 : 1.0;
 
     activeUtterance = utterance;
     (window as any).__currentUtterance = utterance;
@@ -153,12 +208,9 @@ const speakText = (text: string, preferredLang: string, onDone?: () => void): vo
     };
 
     utterance.onend = () => finish();
-    utterance.onerror = (e) => {
-      console.warn('SpeechSynthesis Utterance error:', e);
-      finish();
-    };
+    utterance.onerror = () => finish();
 
-    // Safety timeout: Never hang UI if browser speech stalls
+    // Safety timeout
     const estimatedDuration = Math.max(3000, (text.length / 8) * 1000);
     speechTimeout = setTimeout(() => {
       finish();
@@ -180,6 +232,11 @@ export const playKannadaAudio = (
 };
 
 export const stopKannadaAudio = () => {
+  if (activeAudio) {
+    activeAudio.pause();
+    activeAudio.currentTime = 0;
+    activeAudio = null;
+  }
   if (speechTimeout) {
     clearTimeout(speechTimeout);
     speechTimeout = null;

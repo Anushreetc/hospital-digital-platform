@@ -10,8 +10,9 @@ import {
   AuthUser
 } from '../types';
 
-const envBase = ((import.meta as any).env?.VITE_API_URL || '').replace(/\/$/, '');
-const API_BASE = envBase ? `${envBase}/api` : '/api';
+const defaultRemoteUrl = 'https://hospital-digital-platform-1.onrender.com';
+const envBase = ((import.meta as any).env?.VITE_API_URL || (typeof window !== 'undefined' && window.location.hostname.includes('vercel.app') ? defaultRemoteUrl : '')).replace(/\/$/, '');
+export const API_BASE = envBase ? `${envBase}/api` : '/api';
 
 const getHeaders = () => {
   const token = localStorage.getItem('hospital_auth_token');
