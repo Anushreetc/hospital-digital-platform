@@ -29,24 +29,43 @@ export const VoiceAgentWidget: React.FC<Props> = ({ isOpen, onClose }) => {
   const [isListening, setIsListening] = useState<boolean>(false);
   const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const [confirmedAppointment, setConfirmedAppointment] = useState<any | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, loading, isSpeaking, isListening]);
+  }, [messages, loading, isSpeaking, isListening, confirmedAppointment]);
 
-  // Call Duration Timer
+  // Call Duration Timer & Auto-Greeting on Open
   useEffect(() => {
     let timer: any;
+    let speakTimer: any;
     if (isOpen) {
+      unlockBrowserAudio();
+      setIsAudioStarted(true);
       timer = setInterval(() => setCallSeconds(s => s + 1), 1000);
+      speakTimer = setTimeout(() => {
+        if (!isMuted && messages.length > 0) {
+          const firstMsg = messages[0];
+          playBilingualAudio(
+            firstMsg.textKn,
+            firstMsg.textEn,
+            language,
+            () => setIsSpeaking(true),
+            () => setIsSpeaking(false)
+          );
+        }
+      }, 400);
     } else {
       setCallSeconds(0);
       stopKannadaAudio();
     }
-    return () => clearInterval(timer);
+    return () => {
+      clearInterval(timer);
+      clearTimeout(speakTimer);
+    };
   }, [isOpen]);
 
   const formatCallTime = (secs: number) => {
@@ -56,6 +75,7 @@ export const VoiceAgentWidget: React.FC<Props> = ({ isOpen, onClose }) => {
   };
 
   const startAudioSession = () => {
+    unlockBrowserAudio();
     setIsAudioStarted(true);
     if (messages.length > 0 && !isMuted) {
       const latestMsg = messages[messages.length - 1];
@@ -181,6 +201,9 @@ export const VoiceAgentWidget: React.FC<Props> = ({ isOpen, onClose }) => {
 
     try {
       const res = await apiClient.processVoiceUtterance(sessionId, query);
+      if (res.appointment) {
+        setConfirmedAppointment(res.appointment);
+      }
       setMessages(prev => [
         ...prev,
         {
@@ -206,6 +229,7 @@ export const VoiceAgentWidget: React.FC<Props> = ({ isOpen, onClose }) => {
 
   const resetSession = () => {
     stopSpeaking();
+    setConfirmedAppointment(null);
     const newId = `vsession-${Date.now()}`;
     setSessionId(newId);
     const initialMsg = [
@@ -468,11 +492,25 @@ export const VoiceAgentWidget: React.FC<Props> = ({ isOpen, onClose }) => {
               </div>
             </div>
           ))}
-          {loading && (
-            <div className="flex justify-start">
-              <div className="bg-slate-800 text-slate-400 rounded-2xl p-3 text-xs flex items-center gap-2 border border-slate-700">
-                <span className="w-2 h-2 rounded-full bg-blue-500 animate-ping" />
-                <span>Processing response in {language === 'KN' ? 'Kannada' : 'English'}...</span>
+          {confirmedAppointment && (
+            <div className="bg-gradient-to-r from-emerald-950 via-slate-900 to-emerald-950 border-2 border-emerald-500/50 rounded-2xl p-4 shadow-xl text-emerald-200 animate-in zoom-in-95 space-y-2.5 my-2">
+              <div className="flex items-center justify-between">
+                <div className="font-extrabold text-xs sm:text-sm text-emerald-300 flex items-center gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping" />
+                  <span>✅ Stored on Receptionist Screen</span>
+                </div>
+                <span className="bg-emerald-500 text-slate-950 font-black text-[11px] px-2.5 py-0.5 rounded-full shadow-sm">
+                  Token: {confirmedAppointment.tokenNumber || 'T-01'}
+                </span>
+              </div>
+              <div className="grid grid-cols-2 gap-2 text-[11px] bg-slate-950/70 p-2.5 rounded-xl border border-emerald-500/20 text-slate-300">
+                <div><span className="text-slate-400">Patient:</span> <strong className="text-white ml-1">{confirmedAppointment.patientName}</strong></div>
+                <div><span className="text-slate-400">Phone:</span> <strong className="text-white ml-1">{confirmedAppointment.patientPhone}</strong></div>
+                <div><span className="text-slate-400">Doctor:</span> <strong className="text-emerald-300 ml-1">{confirmedAppointment.doctorName}</strong></div>
+                <div><span className="text-slate-400">Slot:</span> <strong className="text-white ml-1">{confirmedAppointment.preferredDate} {confirmedAppointment.preferredTime}</strong></div>
+              </div>
+              <div className="text-[10px] text-emerald-400 font-semibold flex items-center gap-1">
+                <span>📡 Live Receptionist Status: <span className="underline">CONFIRMED (🎙️ Voice AI)</span></span>
               </div>
             </div>
           )}

@@ -46,9 +46,35 @@ async function handleResponse<T>(res: Response): Promise<T> {
   return json.data as T;
 }
 
-// In-memory runtime state for local actions
-let localAppointments = [...fallbackAppointments];
+// In-memory runtime state with localStorage persistence for instant Receptionist sync
+const getInitialAppointments = (): Appointment[] => {
+  try {
+    const saved = localStorage.getItem('hospital_local_appointments');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch (e) {}
+  return [...fallbackAppointments];
+};
+
+let localAppointments = getInitialAppointments();
 let localDoctorApplications = [...fallbackDoctorApplications];
+
+export const saveAndNotifyAppointment = (newApt: Appointment) => {
+  const existingIdx = localAppointments.findIndex(a => a.id === newApt.id);
+  if (existingIdx >= 0) {
+    localAppointments[existingIdx] = newApt;
+  } else {
+    localAppointments.unshift(newApt);
+  }
+  try {
+    localStorage.setItem('hospital_local_appointments', JSON.stringify(localAppointments));
+  } catch (e) {}
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('hospital_appointments_updated', { detail: newApt }));
+  }
+};
 
 export const apiClient = {
   // Public
@@ -80,7 +106,12 @@ export const apiClient = {
       method: 'POST',
       headers,
       body: JSON.stringify(data)
-    }).then(res => handleResponse<Appointment>(res)).catch(() => {
+    }).then(res => {
+      return handleResponse<Appointment>(res).then(saved => {
+        saveAndNotifyAppointment(saved);
+        return saved;
+      });
+    }).catch(() => {
       const newApt: Appointment = {
         id: `APT-${Date.now().toString().slice(-4)}`,
         tokenNumber: `T-0${localAppointments.length + 1}`,
@@ -95,10 +126,10 @@ export const apiClient = {
         preferredTime: data.preferredTime || '10:00 AM',
         reason: data.reason || 'General Consultation',
         status: 'CONFIRMED',
-        source: 'WEB',
+        source: data.source || 'WEB',
         createdAt: new Date().toISOString()
       };
-      localAppointments.unshift(newApt);
+      saveAndNotifyAppointment(newApt);
       return newApt;
     });
   },
@@ -117,11 +148,23 @@ export const apiClient = {
 
       clearTimeout(timeoutId);
       if (res.ok) {
-        return await handleResponse<any>(res);
+        const data = await handleResponse<any>(res);
+        if (data.appointment) {
+          saveAndNotifyAppointment(data.appointment);
+        }
+        return data;
       }
-      return processLocalVoiceUtterance(sessionId, utterance);
+      const localResult = processLocalVoiceUtterance(sessionId, utterance);
+      if (localResult.appointment) {
+        saveAndNotifyAppointment(localResult.appointment);
+      }
+      return localResult;
     } catch (err) {
-      return processLocalVoiceUtterance(sessionId, utterance);
+      const localResult = processLocalVoiceUtterance(sessionId, utterance);
+      if (localResult.appointment) {
+        saveAndNotifyAppointment(localResult.appointment);
+      }
+      return localResult;
     }
   },
 

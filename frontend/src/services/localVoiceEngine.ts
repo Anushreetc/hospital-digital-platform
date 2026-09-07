@@ -283,24 +283,32 @@ export function processLocalVoiceUtterance(sessionId: string, query: string): Lo
 
   // Step 6: Create Confirmed Appointment
   const apptId = `APT-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${Math.floor(1000 + Math.random() * 9000)}`;
+  const tokenNumber = `T-${Math.floor(10 + Math.random() * 90)}`;
   session.state = 'CONFIRM_SUCCESS';
   const createdAppt = {
     id: apptId,
+    tokenNumber: tokenNumber,
     patientName: session.slots.patientName,
-    patientPhone: session.slots.patientPhone,
-    doctorName: session.slots.doctorName || 'Dr. Ramesh H. S.',
+    patientPhone: session.slots.patientPhone ? (session.slots.patientPhone.startsWith('+91') ? session.slots.patientPhone : `+91 ${session.slots.patientPhone}`) : '+91 9876543210',
+    patientEmail: `${(session.slots.patientName || 'patient').toLowerCase().replace(/\s+/g, '.')}@patient.citycare.in`,
+    doctorId: session.slots.doctorId || 'doc-1',
+    doctorName: session.slots.doctorName || 'Dr. Rajesh Kumar',
+    departmentId: session.slots.departmentId || 'dept-1',
     departmentName: session.slots.departmentName || 'Cardiology',
-    preferredDate: session.slots.preferredDate,
-    preferredTime: session.slots.preferredTime,
+    preferredDate: session.slots.preferredDate || new Date().toISOString().split('T')[0],
+    preferredTime: session.slots.preferredTime || '10:00 AM',
+    reason: session.slots.reason || 'OPD Consultation via Voice AI Call',
     status: 'CONFIRMED',
+    source: 'VOICE_AI',
+    notes: `Booked via Voice Call Assistant (Session: ${sessionId})`,
     createdAt: new Date().toISOString()
   };
 
   return {
     sessionId,
     state: 'CONFIRM_SUCCESS',
-    promptKannada: `ಅಭಿನಂದನೆಗಳು! ನಿಮ್ಮ ಅಪಾಯಿಂಟ್‌ಮೆಂಟ್ ಯಶಸ್ವಿಯಾಗಿ ಕಾಯ್ದಿರಿಸಲಾಗಿದೆ. ನಿಮ್ಮ ಅಪಾಯಿಂಟ್‌ಮೆಂಟ್ ID: ${apptId}. ದಯವಿಟ್ಟು 15 ನಿಮಿಷ ಮುಂಚಿತವಾಗಿ ತಲುಪಿ. ಧನ್ಯವಾದಗಳು!`,
-    promptEnglish: `Congratulations! Your appointment has been successfully booked. Your Appointment ID is ${apptId}. Please arrive 15 minutes before your slot. Thank you!`,
+    promptKannada: `ಅಭಿನಂದನೆಗಳು! ನಿಮ್ಮ ಅಪಾಯಿಂಟ್‌ಮೆಂಟ್ ಯಶಸ್ವಿಯಾಗಿ ಕಾಯ್ದಿರಿಸಲಾಗಿದೆ. ನಿಮ್ಮ ಟೋಕನ್ ಸಂಖ್ಯೆ: ${tokenNumber}, ಅಪಾಯಿಂಟ್‌ಮೆಂಟ್ ID: ${apptId}. ದಯವಿಟ್ಟು 15 ನಿಮಿಷ ಮುಂಚಿತವಾಗಿ ತಲುಪಿ. ಧನ್ಯವಾದಗಳು!`,
+    promptEnglish: `Congratulations! Your appointment has been booked. Token Number: ${tokenNumber}, Appointment ID: ${apptId}. Please arrive 15 minutes before your slot. Thank you!`,
     collectedSlots: session.slots,
     appointment: createdAppt,
     isCompleted: true

@@ -22,6 +22,28 @@ export const ManagementDashboard: React.FC<Props> = ({ user, onLogout, onNavigat
 
   useEffect(() => {
     loadManagementData();
+
+    const handleSync = (e: any) => {
+      const newApt = e.detail;
+      if (newApt) {
+        setAppointments(prev => {
+          const idx = prev.findIndex(a => a.id === newApt.id);
+          if (idx >= 0) {
+            const next = [...prev];
+            next[idx] = newApt;
+            return next;
+          }
+          return [newApt, ...prev];
+        });
+      }
+    };
+
+    window.addEventListener('hospital_appointments_updated', handleSync);
+    window.addEventListener('storage', loadManagementData);
+    return () => {
+      window.removeEventListener('hospital_appointments_updated', handleSync);
+      window.removeEventListener('storage', loadManagementData);
+    };
   }, []);
 
   const loadManagementData = async () => {

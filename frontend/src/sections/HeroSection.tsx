@@ -1,6 +1,7 @@
 import React from 'react';
 import { HospitalInfo } from '../types';
 import { CalendarCheck, Mic, PhoneCall, Search, ShieldCheck, Award, Clock } from 'lucide-react';
+import { unlockBrowserAudio } from '../services/kannadaTts';
 
 interface Props {
   hospitalInfo: HospitalInfo;
@@ -15,6 +16,11 @@ export const HeroSection: React.FC<Props> = ({
   onVoiceClick,
   onFindDoctorClick
 }) => {
+  const handleVoiceCallClick = () => {
+    unlockBrowserAudio();
+    onVoiceClick();
+  };
+
   return (
     <section id="home" className="relative pt-6 pb-12 sm:pt-12 sm:pb-20 md:pt-16 md:pb-24 overflow-hidden bg-gradient-to-b from-slate-100/60 via-slate-50 to-white">
       {/* Background Subtle Gradient Blobs */}
@@ -51,19 +57,13 @@ export const HeroSection: React.FC<Props> = ({
                 <span>Book Appointment</span>
               </button>
 
-              <a
-                href={`tel:${hospitalInfo.phone || '+918023456789'}`}
-                onClick={(e) => {
-                  if (!window.navigator.userAgent.match(/Mobi|Android|iPhone/i)) {
-                    e.preventDefault();
-                    onVoiceClick();
-                  }
-                }}
+              <button
+                onClick={handleVoiceCallClick}
                 className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-3.5 rounded-xl font-bold text-sm sm:text-base shadow-lg shadow-emerald-600/20 hover:shadow-emerald-600/30 transition-all flex items-center justify-center gap-2 active:scale-95 cursor-pointer"
               >
                 <PhoneCall className="w-5 h-5 text-white animate-pulse" />
-                <span>Call AI Assistant</span>
-              </a>
+                <span>🎙️ Call AI Assistant (ಕನ್ನಡ / EN)</span>
+              </button>
 
               <button
                 onClick={onFindDoctorClick}

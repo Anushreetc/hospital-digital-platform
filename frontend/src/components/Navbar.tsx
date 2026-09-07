@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { HospitalInfo } from '../types';
 import { HeartPulse, PhoneCall, Mic, Menu, X, UserCheck, CalendarCheck } from 'lucide-react';
+import { unlockBrowserAudio } from '../services/kannadaTts';
 
 interface Props {
   hospitalInfo: HospitalInfo;
@@ -17,26 +18,32 @@ export const Navbar: React.FC<Props> = ({
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  const handleVoiceCallClick = () => {
+    unlockBrowserAudio();
+    onOpenVoiceWidget();
+  };
+
   const primaryNavLinks = [
     { name: 'Home', href: '#home' },
     { name: 'About', href: '#about' },
     { name: 'Departments', href: '#departments' },
     { name: 'Doctors', href: '#doctors' },
     { name: 'Services', href: '#services' },
-    { name: 'Contact', href: '#contact' },
+    { name: 'Facilities', href: '#facilities' },
+    { name: 'Availability', href: '#availability' },
+    { name: 'Appointment', href: '#appointment' }
   ];
 
   const secondaryNavLinks = [
-    { name: 'Availability', href: '#availability' },
-    { name: 'Facilities', href: '#facilities' },
     { name: 'FAQ', href: '#faq' },
+    { name: 'Contact', href: '#contact' }
   ];
 
   const allNavLinks = [...primaryNavLinks, ...secondaryNavLinks];
 
   return (
-    <header className="sticky top-0 z-40 w-full glass-panel shadow-sm border-b border-slate-200/80">
-      {/* Top Banner for Emergency */}
+    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm transition-all">
+      {/* Top Banner (NABH + Emergency + Voice Trigger) */}
       <div className="bg-slate-900 text-slate-200 text-[11px] sm:text-xs py-1.5 px-3 sm:px-4">
         <div className="max-w-7xl mx-auto flex justify-between items-center gap-2">
           <div className="flex items-center space-x-2 sm:space-x-3 overflow-hidden">
@@ -45,44 +52,44 @@ export const Navbar: React.FC<Props> = ({
               24/7 OPD
             </span>
             <span className="text-slate-600">|</span>
-            <a href={`tel:${hospitalInfo.emergencyPhone || '+918023459999'}`} className="hover:text-white transition-colors font-semibold text-rose-400 truncate">
+            <span className="text-rose-400 font-semibold truncate">
               🚨 Emergency: {hospitalInfo.emergencyPhone || '+91 80 2345 9999'}
-            </a>
+            </span>
           </div>
 
           <div className="flex items-center space-x-2 shrink-0">
             <span className="hidden md:inline text-slate-400 text-[11px]">NABH Accredited</span>
             <button
-              onClick={onOpenVoiceWidget}
+              onClick={handleVoiceCallClick}
               className="bg-blue-600/40 hover:bg-blue-600/70 text-blue-300 hover:text-white px-2 sm:px-2.5 py-0.5 rounded-full border border-blue-400/30 transition-all text-[10px] sm:text-[11px] flex items-center gap-1 shrink-0 cursor-pointer"
             >
               <Mic className="w-3 h-3 text-blue-400 animate-pulse" />
-              <span>ಕನ್ನಡ ಅಸಿಸ್ಟೆಂಟ್</span>
+              <span>ಕನ್ನಡ Voice AI</span>
             </button>
           </div>
         </div>
       </div>
 
-      {/* Main Navigation */}
+      {/* Main Navbar */}
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center py-2 sm:py-2.5 min-h-[3.75rem] gap-2">
-          {/* Logo & Name */}
-          <a href="#home" className="flex items-center space-x-2 group shrink-0 max-w-[170px] sm:max-w-xs md:max-w-sm">
-            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-tr from-blue-700 to-blue-500 text-white rounded-xl flex items-center justify-center shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform shrink-0">
-              <HeartPulse className="w-4 h-4 sm:w-5 sm:h-5" />
+        <div className="flex items-center justify-between h-16 md:h-20 gap-2">
+          {/* Logo & Brand */}
+          <a href="#home" className="flex items-center space-x-2.5 shrink-0 group">
+            <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
+              <HeartPulse className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
             </div>
-            <div className="flex flex-col justify-center min-w-0">
-              <span className="text-xs sm:text-sm lg:text-base font-black tracking-tight text-slate-900 leading-tight truncate">
-                City Care Hospital
+            <div className="flex flex-col">
+              <span className="font-extrabold text-sm sm:text-lg text-slate-900 leading-tight tracking-tight">
+                {hospitalInfo.name || "City Care Hospital"}
               </span>
-              <span className="text-[10px] text-slate-500 font-medium tracking-wide truncate hidden md:block">
-                Super Specialty & Research Institute
+              <span className="text-[10px] sm:text-xs text-blue-600 font-semibold tracking-wide uppercase">
+                Super Specialty & Research
               </span>
             </div>
           </a>
 
-          {/* Desktop Nav Links */}
-          <nav className="hidden xl:flex items-center space-x-2 2xl:space-x-4 text-xs font-semibold text-slate-700 shrink">
+          {/* Desktop Navigation Links */}
+          <nav className="hidden xl:flex items-center space-x-5 text-xs font-bold text-slate-700">
             {primaryNavLinks.map((link) => (
               <a
                 key={link.name}
@@ -92,34 +99,19 @@ export const Navbar: React.FC<Props> = ({
                 {link.name}
               </a>
             ))}
-            {secondaryNavLinks.map((link) => (
-              <a
-                key={link.name}
-                href={link.href}
-                className="hidden 2xl:inline-block hover:text-blue-600 transition-colors py-1 relative whitespace-nowrap"
-              >
-                {link.name}
-              </a>
-            ))}
           </nav>
 
           {/* Action CTAs */}
           <div className="flex items-center space-x-1 sm:space-x-2 shrink-0">
-            <a
-              href={`tel:${hospitalInfo.phone || '+918023456789'}`}
-              onClick={(e) => {
-                if (!window.navigator.userAgent.match(/Mobi|Android|iPhone/i)) {
-                  e.preventDefault();
-                  onOpenVoiceWidget();
-                }
-              }}
+            <button
+              onClick={handleVoiceCallClick}
               aria-label="Call AI Assistant"
-              className="bg-emerald-600 hover:bg-emerald-700 text-white px-2 sm:px-2.5 py-1.5 rounded-xl font-bold text-xs shadow-sm transition-all flex items-center gap-1 shrink-0 active:scale-95 cursor-pointer"
+              className="bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl font-bold text-xs shadow-sm transition-all flex items-center gap-1.5 shrink-0 active:scale-95 cursor-pointer"
             >
               <PhoneCall className="w-3.5 h-3.5 text-white animate-pulse" />
               <span className="hidden sm:inline">Call AI Assistant</span>
               <span className="sm:hidden text-[11px]">AI Call</span>
-            </a>
+            </button>
 
             <button
               onClick={onOpenAuthModal}
@@ -167,6 +159,16 @@ export const Navbar: React.FC<Props> = ({
             ))}
           </div>
           <div className="pt-2 border-t border-slate-100 space-y-2">
+            <button
+              onClick={() => {
+                setMobileMenuOpen(false);
+                handleVoiceCallClick();
+              }}
+              className="w-full text-center py-3 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-md cursor-pointer flex items-center justify-center gap-1.5"
+            >
+              <PhoneCall className="w-4 h-4 text-white animate-pulse" />
+              <span>🎙️ Talk to AI Voice Assistant (ಕನ್ನಡ / EN)</span>
+            </button>
             <button
               onClick={() => {
                 setMobileMenuOpen(false);
