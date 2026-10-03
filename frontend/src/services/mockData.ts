@@ -1,76 +1,193 @@
 import { HospitalInfo, Department, Doctor, ServiceItem, FacilityItem, Appointment, DoctorApplication, AuditLog, DoctorAvailability } from '../types';
 
 export const fallbackHospitalInfo: HospitalInfo = {
-  name: "City Care Super Specialty Hospital",
-  tagline: "Advanced Healthcare with Compassion & Excellence",
-  address: "123 Healthcare Boulevard, Medical District, Bengaluru, Karnataka - 560001",
-  phone: "+91 80 2345 6789",
-  emergencyPhone: "+91 80 2345 9999",
-  email: "care@citycarehospital.example.com",
-  operatingHours: "24/7 Emergency & OPD (Mon-Sat 8:00 AM - 8:00 PM)",
-  mapEmbedUrl: "https://maps.google.com/maps?q=Bengaluru&t=&z=13&ie=UTF8&iwloc=&output=embed",
-  whatsAppNumber: "+919876543210",
-  certifications: ["NABH Accredited", "ISO 9001:2015 Certified", "NABL Laboratory"],
+  name: "We Care Multispeciality Hospital and ICU Doddaballapura",
+  tagline: "24/7 Emergency, ICU & Multi-Specialty Care in Doddaballapura",
+  address: "We Care Multispeciality Hospital and ICU, D Cross main Rd, near Federal Bank, Doddaballapura, Karnataka - 561203",
+  phone: "+1 307 414 9229",
+  emergencyPhone: "+1 307 414 9229",
+  ambulancePhone: "+91 93530 61993",
+  email: "nandiwecare0@gmail.com",
+  operatingHours: "24/7 Open (Round-the-clock Emergency, ICU & Pharmacy)",
+  mapEmbedUrl: "https://maps.google.com/maps?q=We+Care+Multispeciality+Hospital+and+ICU+Doddaballapura&t=&z=16&ie=UTF8&iwloc=&output=embed",
+  whatsAppNumber: "+1 307 414 9229",
+  certifications: [
+    "24/7 Availability of Doctors",
+    "24/7 Emergency & ICU Care",
+    "Karnataka-Wide 24/7 Ambulance Fleet",
+    "Friendly & Caring Medical Staff"
+  ],
   statistics: [
-    { label: "Specialty Departments", value: "15+" },
-    { label: "Expert Doctors", value: "45+" },
-    { label: "Bed Capacity", value: "200+" },
-    { label: "Satisfied Patients", value: "50,000+" }
+    { label: "Medical Disciplines", value: "12" },
+    { label: "Specialist Doctors", value: "13+" },
+    { label: "Hospital Bed Capacity", value: "28" },
+    { label: "Doctor & ICU Care", value: "24/7" }
   ],
   socials: {
-    facebook: "https://facebook.com/example",
-    twitter: "https://twitter.com/example",
-    instagram: "https://instagram.com/example",
-    linkedin: "https://linkedin.com/example"
+    facebook: "https://facebook.com/nandiwecare",
+    twitter: "https://twitter.com/nandiwecare",
+    instagram: "https://instagram.com/nandiwecare",
+    linkedin: "https://linkedin.com/company/nandiwecare"
+  },
+  establishedYear: 2023,
+  totalBeds: 28,
+  directorName: "Mr. Vishnuvardhan (Director)",
+  supportedLanguages: [
+    "English",
+    "Kannada (ಕನ್ನಡ)",
+    "Hindi (हिंदी)",
+    "Tamil (தமிழ்)",
+    "Telugu (తెలుగు)",
+    "Malayalam (മലയാളം)",
+    "Urdu (اردو)"
+  ],
+  roomTariffs: [
+    {
+      category: "General Ward",
+      pricePerDay: 2500,
+      description: "Comfortable and hygienic inpatient ward with round-the-clock nursing supervision.",
+      features: ["24/7 Nursing Care", "Patient Bed & Bedside Locker", "Shared Washroom", "Vital Monitoring"]
+    },
+    {
+      category: "Semi-Private Room",
+      pricePerDay: 3500,
+      description: "Twin-sharing air-conditioned room with attendant accommodation.",
+      features: ["Air Conditioning (AC)", "Dedicated Attendant Bed", "Curtained Privacy", "Regular Doctor Rounds"]
+    },
+    {
+      category: "Private Room",
+      pricePerDay: 4000,
+      description: "Independent air-conditioned private suite with dedicated patient amenities.",
+      features: ["Air Conditioning (AC)", "Attendant Bed", "Private Attached Bathroom", "Television & Nurse Call"]
+    },
+    {
+      category: "Intensive Care Unit (ICU)",
+      pricePerDay: 6000,
+      description: "Advanced critical care unit managed by multidisciplinary intensivists and high nurse-to-patient ratio.",
+      features: ["Air Conditioning (AC)", "Multidisciplinary Critical Care Team", "Advanced Continuous Hemodynamic Monitoring", "High Staff-to-Patient Ratio"]
+    }
+  ],
+  visitingHours: {
+    general: "9:00 AM – 11:00 AM & 6:00 PM – 7:00 PM",
+    icu: "5:00 PM – 6:00 PM",
+    maxVisitors: 2,
+    restrictions: [
+      "Visitors above 12 years only permitted in inpatient areas",
+      "Electric gadgets and flammable items are strictly restricted",
+      "All visitors must maintain strict hospital hygiene protocols",
+      "Maximum of 2 visitors permitted per patient at any time"
+    ]
+  },
+  insuranceInfo: {
+    acceptedTPAs: ["MD India Health Insurance TPA", "Cashless Hospitalization Network"],
+    cashlessAvailable: true,
+    preAuthRequired: true,
+    documentsRequired: [
+      "Identity Proof (Aadhaar Card, Voter ID, Passport)",
+      "Address Proof",
+      "Age Proof",
+      "Previous Medical Records & Doctor Prescription",
+      "Passport Size Photographs",
+      "Duly Filled Insurance Pre-Authorization / Proposal Form"
+    ],
+    paymentMethods: ["Cash", "UPI (GPay / PhonePe / Paytm)", "Debit Card", "Credit Card", "Net Banking"]
   }
 };
 
 export const fallbackDepartments: Department[] = [
   {
-    id: "dept-1",
-    name: "Cardiology",
-    code: "CARD",
-    description: "Comprehensive cardiovascular diagnosis, angioplasty, cardiac rehabilitation, and heart care.",
-    iconName: "HeartPulse",
-    active: true
-  },
-  {
-    id: "dept-2",
-    name: "Neurology & Neurosurgery",
-    code: "NEUR",
-    description: "Advanced brain and nerve care, stroke management, spine surgery, and neurological rehabilitation.",
-    iconName: "Brain",
-    active: true
-  },
-  {
-    id: "dept-3",
-    name: "Orthopedics & Joint Replacement",
+    id: "dept-ortho",
+    name: "Department of Orthopaedics",
     code: "ORTH",
-    description: "Joint replacement, fracture care, sports injury management, and arthroscopic surgery.",
+    description: "Expert care for bone fractures, joint pain, arthritis, spinal care, and orthopedic surgical interventions.",
     iconName: "Bone",
     active: true
   },
   {
-    id: "dept-4",
-    name: "Pediatrics & Neonatal Care",
+    id: "dept-gynaec",
+    name: "Department of Gynaecology & Obstetrics",
+    code: "GYNA",
+    description: "Comprehensive maternity services, antenatal & postnatal care, normal deliveries, and women's wellness.",
+    iconName: "UserPlus",
+    active: true
+  },
+  {
+    id: "dept-pulmo",
+    name: "Department of Pulmonology",
+    code: "PULM",
+    description: "Specialized treatment for asthma, COPD, chronic cough, respiratory infections, and lung conditions.",
+    iconName: "Wind",
+    active: true
+  },
+  {
+    id: "dept-gastro",
+    name: "Department of Gastroenterology",
+    code: "GAST",
+    description: "Digestive health, liver disease management, abdominal pain, gastrointestinal disorders, and endoscopy evaluations.",
+    iconName: "Activity",
+    active: true
+  },
+  {
+    id: "dept-pedia",
+    name: "Department of Pediatrics",
     code: "PEDI",
-    description: "Holistic child healthcare, vaccinations, pediatric intensive care, and developmental wellness.",
+    description: "Dedicated child healthcare, pediatric illness management, newborn follow-up, and routine vaccination schedules.",
     iconName: "Baby",
     active: true
   },
   {
-    id: "dept-5",
-    name: "General & Internal Medicine",
+    id: "dept-nephro",
+    name: "Department of Nephrology",
+    code: "NEPH",
+    description: "Kidney disease management, renal assessments, hypertension-related kidney disorders, and clinical nephrology.",
+    iconName: "Shield",
+    active: true
+  },
+  {
+    id: "dept-ent",
+    name: "Department of ENT",
+    code: "ENT",
+    description: "Diagnosis and treatments for ear infections, hearing problems, nasal blockage, sinusitis, and throat conditions.",
+    iconName: "Headphones",
+    active: true
+  },
+  {
+    id: "dept-neuro",
+    name: "Department of Neurology & Neurosurgery",
+    code: "NEUR",
+    description: "Advanced management for stroke, headache, epilepsy, neuropathy, spine disorders, and neurosurgical emergencies.",
+    iconName: "Brain",
+    active: true
+  },
+  {
+    id: "dept-gensurg",
+    name: "Department of General Surgery",
+    code: "GSUR",
+    description: "General and emergency surgical care, hernia repair, appendicitis, trauma care, and wound management.",
+    iconName: "Scissors",
+    active: true
+  },
+  {
+    id: "dept-genmed",
+    name: "Department of General Medicine",
     code: "GMED",
-    description: "Primary care, chronic disease management, diabetes, hypertension, and preventive health checks.",
+    description: "Comprehensive primary and internal medicine, fevers, diabetes, hypertension, and preventive health screenings.",
     iconName: "Stethoscope",
     active: true
   },
   {
-    id: "dept-6",
-    name: "Dermatology & Cosmetology",
+    id: "dept-uro",
+    name: "Department of Urology",
+    code: "UROL",
+    description: "Urinary tract infections, kidney stones, prostate disorders, bladder issues, and urological surgical care.",
+    iconName: "Droplets",
+    active: true
+  },
+  {
+    id: "dept-derm",
+    name: "Department of Dermatology",
     code: "DERM",
-    description: "Clinical skin disorders, laser therapies, pediatric dermatology, and cosmetic procedures.",
+    description: "Clinical skin condition management, acne, psoriasis, allergies, fungal infections, hair, and nail treatments.",
     iconName: "Sparkles",
     active: true
   }
@@ -78,107 +195,212 @@ export const fallbackDepartments: Department[] = [
 
 export const fallbackDoctors: Doctor[] = [
   {
-    id: "doc-1",
-    name: "Dr. Rajesh Kumar",
-    qualification: "MBBS, MD (General Medicine), DM (Cardiology)",
-    designation: "Chief Interventional Cardiologist & HOD",
-    departmentId: "dept-1",
-    departmentName: "Cardiology",
-    specialization: "Interventional Cardiology",
-    experienceYears: 18,
+    id: "doc-101",
+    name: "Dr. Chiranjeevi Ks",
+    qualification: "MBBS, DNB",
+    designation: "Consultant Physician",
+    departmentId: "dept-genmed",
+    departmentName: "Department of General Medicine",
+    specialization: "General Medicine & Internal Care",
+    experienceYears: 10,
+    languages: ["Kannada", "English", "Hindi"],
+    consultationFee: 400,
+    photoUrl: "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=400",
+    bio: "Dr. Chiranjeevi Ks brings extensive clinical experience in general medicine, acute fevers, metabolic care, and adult primary care.",
+    active: true
+  },
+  {
+    id: "doc-102",
+    name: "Dr. Rameshwari",
+    qualification: "MBBS, DCH, DNB, PGPN",
+    designation: "Consultant Pediatrician",
+    departmentId: "dept-pedia",
+    departmentName: "Department of Pediatrics",
+    specialization: "Pediatric Care & Child Nutrition",
+    experienceYears: 12,
+    languages: ["Kannada", "English", "Telugu"],
+    consultationFee: 450,
+    photoUrl: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=400",
+    bio: "Specialist in pediatric developmental health, infant nutrition, pediatric infectious diseases, and childhood immunization.",
+    active: true
+  },
+  {
+    id: "doc-103",
+    name: "Dr. Rajeev",
+    qualification: "MBBS, MS (Ortho)",
+    designation: "Consultant Orthopedic Surgeon",
+    departmentId: "dept-ortho",
+    departmentName: "Department of Orthopaedics",
+    specialization: "Orthopedic Surgery & Trauma Care",
+    experienceYears: 14,
+    languages: ["Kannada", "English", "Hindi"],
+    consultationFee: 500,
+    photoUrl: "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=400",
+    bio: "Experienced orthopedic surgeon specializing in trauma fracture management, joint care, and musculoskeletal emergencies.",
+    active: true
+  },
+  {
+    id: "doc-104",
+    name: "Dr. Sri Harsha",
+    qualification: "MBBS, MS, DNB",
+    designation: "Consultant General & Laparoscopic Surgeon",
+    departmentId: "dept-gensurg",
+    departmentName: "Department of General Surgery",
+    specialization: "General & Laparoscopic Surgery",
+    experienceYears: 11,
+    languages: ["Kannada", "English", "Telugu"],
+    consultationFee: 500,
+    photoUrl: "https://images.unsplash.com/photo-1582750433449-648ed127bb54?auto=format&fit=crop&q=80&w=400",
+    bio: "Specializes in abdominal surgical interventions, hernia repair, appendectomy, emergency surgery, and wound management.",
+    active: true
+  },
+  {
+    id: "doc-105",
+    name: "Dr. Manasa",
+    qualification: "MBBS, DGO / MS (OBG)",
+    designation: "Consultant Gynaecologist & Obstetrician",
+    departmentId: "dept-gynaec",
+    departmentName: "Department of Gynaecology & Obstetrics",
+    specialization: "Obstetrics, Maternity & Women's Health",
+    experienceYears: 9,
+    languages: ["Kannada", "English", "Hindi"],
+    consultationFee: 450,
+    photoUrl: "https://images.unsplash.com/photo-1527613426441-4da17471b66d?auto=format&fit=crop&q=80&w=400",
+    bio: "Devoted to high-quality antenatal care, normal delivery assistance, reproductive wellness, and adolescent gynecological care.",
+    active: true
+  },
+  {
+    id: "doc-106",
+    name: "Dr. Swarag",
+    qualification: "MBBS, MS (ENT)",
+    designation: "Consultant ENT Surgeon",
+    departmentId: "dept-ent",
+    departmentName: "Department of ENT",
+    specialization: "Ear, Nose & Throat Disorders",
+    experienceYears: 8,
+    languages: ["Kannada", "English"],
+    consultationFee: 400,
+    photoUrl: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=400",
+    bio: "Expertise in managing sinusitis, allergic rhinitis, ear infections, throat disorders, and pediatric ENT consultations.",
+    active: true
+  },
+  {
+    id: "doc-107",
+    name: "Dr. Ravikiran",
+    qualification: "MBBS, MD, DM",
+    designation: "Consultant Nephrologist & Super Specialist",
+    departmentId: "dept-nephro",
+    departmentName: "Department of Nephrology",
+    specialization: "Nephrology & Renal Medicine",
+    experienceYears: 15,
+    languages: ["Kannada", "English", "Hindi"],
+    consultationFee: 650,
+    photoUrl: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&q=80&w=400",
+    bio: "Super specialist handling complex kidney conditions, chronic renal disorders, electrolyte abnormalities, and hypertension.",
+    active: true
+  },
+  {
+    id: "doc-108",
+    name: "Dr. Amod",
+    qualification: "MBBS, MD, IDCCM",
+    designation: "Critical Care Specialist & Intensivist",
+    departmentId: "dept-genmed",
+    departmentName: "Department of General Medicine",
+    specialization: "Critical Care Medicine & ICU Lead",
+    experienceYears: 13,
+    languages: ["Kannada", "English", "Hindi", "Marathi"],
+    consultationFee: 600,
+    photoUrl: "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=400",
+    bio: "Intensive care expert overseeing multi-disciplinary ICU admissions, mechanical ventilation, and hemodynamic stabilization.",
+    active: true
+  },
+  {
+    id: "doc-109",
+    name: "Dr. Sudarshan",
+    qualification: "MBBS, MD (Dermatology)",
+    designation: "Consultant Dermatologist",
+    departmentId: "dept-derm",
+    departmentName: "Department of Dermatology",
+    specialization: "Clinical Dermatology & Skin Disorders",
+    experienceYears: 10,
+    languages: ["Kannada", "English"],
+    consultationFee: 400,
+    photoUrl: "https://images.unsplash.com/photo-1594824813566-88855ce78c00?auto=format&fit=crop&q=80&w=400",
+    bio: "Skilled dermatologist treating psoriasis, eczema, skin infections, hair loss, and cosmetic skin care.",
+    active: true
+  },
+  {
+    id: "doc-110",
+    name: "Dr. Ramya Reddy",
+    qualification: "BDS, MDS",
+    designation: "Dental & Maxillofacial Specialist",
+    departmentId: "dept-gensurg",
+    departmentName: "Department of General Surgery",
+    specialization: "Oral & Maxillofacial Care",
+    experienceYears: 9,
+    languages: ["Kannada", "English", "Telugu"],
+    consultationFee: 350,
+    photoUrl: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=400",
+    bio: "Specializes in comprehensive oral health, facial trauma assessments, dental procedures, and surgical extractions.",
+    active: true
+  },
+  {
+    id: "doc-111",
+    name: "Dr. Vishwanth",
+    qualification: "MBBS, MS, MCH (Urology)",
+    designation: "Consultant Urologist & Andrologist",
+    departmentId: "dept-uro",
+    departmentName: "Department of Urology",
+    specialization: "Urological Surgery & Stone Management",
+    experienceYears: 16,
     languages: ["Kannada", "English", "Hindi"],
     consultationFee: 700,
     photoUrl: "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=400",
-    bio: "Pioneer in complex radial angioplasty and structural heart interventions with over 15,000 successful procedures.",
+    bio: "Super specialist surgeon for kidney stone extraction, prostate disease treatment, and reconstructive urology.",
     active: true
   },
   {
-    id: "doc-2",
-    name: "Dr. Ananya Sharma",
-    qualification: "MBBS, MS (General Surgery), MCh (Neurosurgery)",
-    designation: "Senior Consultant Neurosurgeon",
-    departmentId: "dept-2",
-    departmentName: "Neurology & Neurosurgery",
-    specialization: "Neurosurgery",
-    experienceYears: 14,
-    languages: ["Kannada", "English"],
-    consultationFee: 800,
-    photoUrl: "https://images.unsplash.com/photo-1594824813633-890438b37e65?auto=format&fit=crop&q=80&w=400",
-    bio: "Specialist in minimally invasive brain tumor resections, complex spinal stabilization, and stroke intervention.",
-    active: true
-  },
-  {
-    id: "doc-3",
-    name: "Dr. Vikram Gowda",
-    qualification: "MBBS, MS (Ortho), Fellowship in Joint Replacement",
-    designation: "Head of Orthopedics & Joint Reconstruction",
-    departmentId: "dept-3",
-    departmentName: "Orthopedics & Joint Replacement",
-    specialization: "Orthopedics",
-    experienceYears: 16,
-    languages: ["Kannada", "English", "Telugu"],
-    consultationFee: 650,
-    photoUrl: "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=400",
-    bio: "Performed over 4,000 robotic knee and hip replacements with excellent patient recovery outcomes.",
-    active: true
-  },
-  {
-    id: "doc-4",
-    name: "Dr. Meenakshi Sundaram",
-    qualification: "MBBS, MD (Pediatrics), Fellowship in Neonatology",
-    designation: "Senior Consultant Pediatrician",
-    departmentId: "dept-4",
-    departmentName: "Pediatrics & Neonatal Care",
-    specialization: "Pediatrics",
+    id: "doc-112",
+    name: "Dr. Ganesh Prathap",
+    qualification: "MBBS, DTCD / DNB (Resp)",
+    designation: "Consultant Pulmonologist",
+    departmentId: "dept-pulmo",
+    departmentName: "Department of Pulmonology",
+    specialization: "Pulmonology & Chest Medicine",
     experienceYears: 12,
-    languages: ["Kannada", "English", "Tamil"],
-    consultationFee: 500,
-    photoUrl: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=400",
-    bio: "Compassionate pediatric care specialist focusing on neonatal ICU management and childhood developmental milestones.",
-    active: true
-  },
-  {
-    id: "doc-5",
-    name: "Dr. Suresh Patil",
-    qualification: "MBBS, MD (Internal Medicine)",
-    designation: "Consultant Physician & Diabetologist",
-    departmentId: "dept-5",
-    departmentName: "General & Internal Medicine",
-    specialization: "General Medicine",
-    experienceYears: 15,
     languages: ["Kannada", "English", "Hindi"],
     consultationFee: 500,
     photoUrl: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=400",
-    bio: "Expert in complex diabetic management, lifestyle disorders, hypertension, and adult preventative wellness.",
+    bio: "Experienced chest physician diagnosing respiratory distress, allergic asthma, sleep apnea, and lung diseases.",
     active: true
   },
   {
-    id: "doc-6",
-    name: "Dr. Deepa Kulkarni",
-    qualification: "MBBS, MD (DVL - Dermatology & Venereology)",
-    designation: "Consultant Dermatologist & Cosmetologist",
-    departmentId: "dept-6",
-    departmentName: "Dermatology & Cosmetology",
-    specialization: "Dermatology",
-    experienceYears: 9,
-    languages: ["Kannada", "English", "Marathi"],
-    consultationFee: 600,
-    photoUrl: "https://images.unsplash.com/photo-1651008376811-b90baee60c1f?auto=format&fit=crop&q=80&w=400",
-    bio: "Specializing in advanced laser therapy, clinical dermatology, hair restoration, and allergy management.",
+    id: "doc-113",
+    name: "Dr. Hariprakash",
+    qualification: "MBBS, M.Ch (Neurosurgery)",
+    designation: "Consultant Neurosurgeon",
+    departmentId: "dept-neuro",
+    departmentName: "Department of Neurology & Neurosurgery",
+    specialization: "Neurosurgery & Neurotrauma",
+    experienceYears: 15,
+    languages: ["Kannada", "English"],
+    consultationFee: 700,
+    photoUrl: "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=400",
+    bio: "Consultant neurosurgeon with extensive expertise in head injury management, spine care, and critical neurosurgical emergencies.",
     active: true
   }
 ];
 
 export const fallbackDoctorAvailability: DoctorAvailability = {
-  id: "avail-1",
-  doctorId: "doc-1",
+  id: "avail-101",
+  doctorId: "doc-101",
   weeklySchedule: [
-    { dayOfWeek: "Monday", slots: [{ startTime: "09:00 AM", endTime: "01:00 PM" }, { startTime: "04:00 PM", endTime: "07:00 PM" }] },
-    { dayOfWeek: "Tuesday", slots: [{ startTime: "09:00 AM", endTime: "01:00 PM" }, { startTime: "04:00 PM", endTime: "07:00 PM" }] },
-    { dayOfWeek: "Wednesday", slots: [{ startTime: "09:00 AM", endTime: "01:00 PM" }, { startTime: "04:00 PM", endTime: "07:00 PM" }] },
-    { dayOfWeek: "Thursday", slots: [{ startTime: "09:00 AM", endTime: "01:00 PM" }, { startTime: "04:00 PM", endTime: "07:00 PM" }] },
-    { dayOfWeek: "Friday", slots: [{ startTime: "09:00 AM", endTime: "01:00 PM" }, { startTime: "04:00 PM", endTime: "07:00 PM" }] },
-    { dayOfWeek: "Saturday", slots: [{ startTime: "09:00 AM", endTime: "02:00 PM" }] }
+    { dayOfWeek: "Monday", slots: [{ startTime: "09:00 AM", endTime: "01:00 PM" }, { startTime: "05:00 PM", endTime: "08:00 PM" }] },
+    { dayOfWeek: "Tuesday", slots: [{ startTime: "09:00 AM", endTime: "01:00 PM" }] },
+    { dayOfWeek: "Wednesday", slots: [{ startTime: "09:00 AM", endTime: "01:00 PM" }, { startTime: "05:00 PM", endTime: "08:00 PM" }] },
+    { dayOfWeek: "Thursday", slots: [{ startTime: "09:00 AM", endTime: "01:00 PM" }] },
+    { dayOfWeek: "Friday", slots: [{ startTime: "09:00 AM", endTime: "01:00 PM" }, { startTime: "05:00 PM", endTime: "08:00 PM" }] },
+    { dayOfWeek: "Saturday", slots: [{ startTime: "10:00 AM", endTime: "02:00 PM" }] }
   ],
   unavailabilities: []
 };
@@ -186,29 +408,65 @@ export const fallbackDoctorAvailability: DoctorAvailability = {
 export const fallbackServices: ServiceItem[] = [
   {
     id: "srv-1",
-    name: "Emergency & Trauma Care",
-    shortDescription: "24/7 rapid response trauma center with dedicated resuscitation bays.",
-    fullDescription: "Fully equipped with advanced life support ambulances, triaging protocols, and board-certified trauma surgeons.",
-    iconName: "Siren",
+    name: "24/7 Emergency & Casualty Care",
+    shortDescription: "Immediate emergency triage, trauma resuscitation, burns care, and emergency surgery around the clock.",
+    fullDescription: "Operates 24/7 to deliver rapid assessment, stabilization, and multidisciplinary treatment for critical illnesses and major traumas with on-call specialists.",
+    iconName: "Ambulance",
     displayOrder: 1,
     active: true
   },
   {
     id: "srv-2",
-    name: "Advanced Diagnostic Radiology",
-    shortDescription: "3T MRI, 128-Slice CT, Digital X-Ray, and 4D Ultrasound.",
-    fullDescription: "Round-the-clock radiology reporting with zero-delay picture archiving systems (PACS).",
-    iconName: "Scan",
+    name: "ICU & Critical Care Unit",
+    shortDescription: "Multi-disciplinary 24/7 intensive care with advanced hemodynamic monitoring and high nurse-to-patient ratio.",
+    fullDescription: "Dedicated critical care infrastructure staffed by trained intensivists for post-operative recovery, cardiac crises, and critical respiratory emergencies.",
+    iconName: "Activity",
     displayOrder: 2,
     active: true
   },
   {
     id: "srv-3",
-    name: "Modular Operation Theatres",
-    shortDescription: "Laminar airflow surgical suites with HEPA filtration.",
-    fullDescription: "Designed to minimize surgical site infections with cutting-edge laparoscopic and robotic surgical towers.",
-    iconName: "Activity",
+    name: "General & Emergency Surgery",
+    shortDescription: "Modular Operation Theatre for emergency surgery, appendectomy, hernia, and acute surgical interventions.",
+    fullDescription: "Infection-controlled operating environment equipped for abdominal, orthopedic, urological, and trauma surgical procedures.",
+    iconName: "Syringe",
     displayOrder: 3,
+    active: true
+  },
+  {
+    id: "srv-4",
+    name: "Maternity & Obstetrics Care",
+    shortDescription: "Safe deliveries, prenatal and postnatal monitoring, and comprehensive mother-child care.",
+    fullDescription: "Compassionate maternal healthcare supporting antenatal visits, fetal heart tracking, labor suites, and postnatal infant guidance.",
+    iconName: "Baby",
+    displayOrder: 4,
+    active: true
+  },
+  {
+    id: "srv-5",
+    name: "Child Vaccination & Preventive Health",
+    shortDescription: "Pediatric immunizations, infant growth tracking, and complete preventive health checkup packages.",
+    fullDescription: "Full range of government and optional childhood vaccines, wellness assessments, diabetes screening, and routine health evaluations.",
+    iconName: "Shield",
+    displayOrder: 5,
+    active: true
+  },
+  {
+    id: "srv-6",
+    name: "24/7 Diagnostic Pathology & Lab",
+    shortDescription: "In-house blood and urine diagnostic tests with guaranteed Same-Day digital report delivery.",
+    fullDescription: "Equipped for complete blood counts, biochemical profiles, renal and liver function panels, urinalysis, and emergency cardiac biomarkers.",
+    iconName: "Microscope",
+    displayOrder: 6,
+    active: true
+  },
+  {
+    id: "srv-7",
+    name: "Digital X-Ray & ECG Diagnostics",
+    shortDescription: "High-resolution digital radiology and 12-lead ECG evaluations available 24/7.",
+    fullDescription: "Immediate imaging for bone fractures, chest diagnostics, abdominal conditions, and rapid ECG readings for cardiac symptoms.",
+    iconName: "Activity",
+    displayOrder: 7,
     active: true
   }
 ];
@@ -216,26 +474,42 @@ export const fallbackServices: ServiceItem[] = [
 export const fallbackFacilities: FacilityItem[] = [
   {
     id: "fac-1",
-    name: "24/7 In-House Pharmacy",
-    description: "Complete stock of life-saving critical care medications, injectables, and surgical consumables.",
-    imageUrl: "https://images.unsplash.com/photo-1587854692152-cbe660dbde88?auto=format&fit=crop&q=80&w=600",
+    name: "Intensive Care Unit (ICU)",
+    description: "24/7 multi-disciplinary ICU with continuous physiological monitoring, ventilators, and high nurse-to-patient ratio.",
+    imageUrl: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=600",
     displayOrder: 1,
     active: true
   },
   {
     id: "fac-2",
-    name: "ICU, CCU & NICU Units",
-    description: "Multidisciplinary intensive care units monitored 1:1 by critical care intensivists.",
-    imageUrl: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=600",
+    name: "Modern Operation Theatre (OT)",
+    description: "Infection-controlled surgical suite designed for elective, trauma, and round-the-clock emergency surgical procedures.",
+    imageUrl: "https://images.unsplash.com/photo-1551076805-e1869033e561?auto=format&fit=crop&q=80&w=600",
     displayOrder: 2,
     active: true
   },
   {
     id: "fac-3",
-    name: "24/7 Cardiac Catheterization Lab",
-    description: "Ultra-modern flat-panel cath lab for emergent primary PCI and stroke thrombectomy.",
-    imageUrl: "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&q=80&w=600",
+    name: "In-House 24/7 Pharmacy",
+    description: "Fully stocked round-the-clock medical store dispensing authentic prescriptions, emergency injectables, and surgical consumables.",
+    imageUrl: "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&q=80&w=600",
     displayOrder: 3,
+    active: true
+  },
+  {
+    id: "fac-4",
+    name: "24/7 Ambulance Fleet (Karnataka-Wide)",
+    description: "Emergency ambulance service available 24/7 covering Doddaballapura and all across Karnataka (Call: +91 93530 61993).",
+    imageUrl: "https://images.unsplash.com/photo-1587745416684-47953f16f02f?auto=format&fit=crop&q=80&w=600",
+    displayOrder: 4,
+    active: true
+  },
+  {
+    id: "fac-5",
+    name: "Patient Amenities & Full Accessibility",
+    description: "Dedicated patient parking, wheelchair ramps, elevators, accessible restrooms, and comfortable air-conditioned waiting lounges.",
+    imageUrl: "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&q=80&w=600",
+    displayOrder: 5,
     active: true
   }
 ];
@@ -250,13 +524,13 @@ export const fallbackAppointments: Appointment[] = [
     patientName: "Sohan Kumar",
     patientPhone: "+91 9876543210",
     patientEmail: "sohan.k@example.com",
-    departmentId: "dept-1",
-    departmentName: "Cardiology",
-    doctorId: "doc-1",
-    doctorName: "Dr. Rajesh Kumar",
+    departmentId: "dept-genmed",
+    departmentName: "Department of General Medicine",
+    doctorId: "doc-101",
+    doctorName: "Dr. Chiranjeevi Ks",
     preferredDate: today,
     preferredTime: "10:30 AM",
-    reason: "Routine Cardiac Followup & ECG",
+    reason: "Fever & General Health Checkup",
     status: "CONFIRMED",
     source: "VOICE_AI",
     createdAt: new Date().toISOString()
@@ -267,13 +541,13 @@ export const fallbackAppointments: Appointment[] = [
     patientName: "Ramesh Sharma",
     patientPhone: "+91 9845123456",
     patientEmail: "ramesh.sharma@example.com",
-    departmentId: "dept-3",
-    departmentName: "Orthopedics & Joint Replacement",
-    doctorId: "doc-3",
-    doctorName: "Dr. Vikram Gowda",
+    departmentId: "dept-ortho",
+    departmentName: "Department of Orthopaedics",
+    doctorId: "doc-103",
+    doctorName: "Dr. Rajeev",
     preferredDate: today,
     preferredTime: "11:15 AM",
-    reason: "Knee Joint Pain & X-Ray Review",
+    reason: "Joint Pain & X-Ray Consultation",
     status: "CONFIRMED",
     source: "VOICE_AI",
     createdAt: new Date().toISOString()
@@ -284,13 +558,13 @@ export const fallbackAppointments: Appointment[] = [
     patientName: "Pooja Hegde",
     patientPhone: "+91 9741234567",
     patientEmail: "pooja.h@example.com",
-    departmentId: "dept-2",
-    departmentName: "Neurology & Neurosurgery",
-    doctorId: "doc-2",
-    doctorName: "Dr. Ananya Sharma",
+    departmentId: "dept-pedia",
+    departmentName: "Department of Pediatrics",
+    doctorId: "doc-102",
+    doctorName: "Dr. Rameshwari",
     preferredDate: today,
     preferredTime: "02:30 PM",
-    reason: "Migraine & Neurological Consultation",
+    reason: "Child Vaccination & Growth Review",
     status: "NEW",
     source: "WEB",
     createdAt: new Date().toISOString()
@@ -301,106 +575,20 @@ export const fallbackAppointments: Appointment[] = [
     patientName: "Kavitha Reddy",
     patientPhone: "+91 9900112233",
     patientEmail: "kavitha.r@example.com",
-    departmentId: "dept-4",
-    departmentName: "Pediatrics & Neonatal Care",
-    doctorId: "doc-4",
-    doctorName: "Dr. Meenakshi Sundaram",
+    departmentId: "dept-gynaec",
+    departmentName: "Department of Gynaecology & Obstetrics",
+    doctorId: "doc-105",
+    doctorName: "Dr. Manasa",
     preferredDate: tomorrow,
     preferredTime: "10:00 AM",
-    reason: "Child Immunization & Growth Check",
+    reason: "Antenatal Consultation",
     status: "CONFIRMED",
-    source: "VOICE_AI",
-    createdAt: new Date().toISOString()
-  },
-  {
-    id: "APT-2026-105",
-    tokenNumber: "T-05",
-    patientName: "Manjunath Rao",
-    patientPhone: "+91 9886554433",
-    patientEmail: "manjunath.rao@example.com",
-    departmentId: "dept-5",
-    departmentName: "General & Internal Medicine",
-    doctorId: "doc-5",
-    doctorName: "Dr. Suresh Patil",
-    preferredDate: tomorrow,
-    preferredTime: "11:45 AM",
-    reason: "Diabetes HbA1c Monitoring",
-    status: "CONFIRMED",
-    source: "WEB",
-    createdAt: new Date().toISOString()
-  },
-  {
-    id: "APT-2026-106",
-    tokenNumber: "T-06",
-    patientName: "Deepak Nayak",
-    patientPhone: "+91 9731009988",
-    patientEmail: "deepak.n@example.com",
-    departmentId: "dept-6",
-    departmentName: "Dermatology & Cosmetology",
-    doctorId: "doc-6",
-    doctorName: "Dr. Deepa Kulkarni",
-    preferredDate: tomorrow,
-    preferredTime: "04:00 PM",
-    reason: "Skin Allergy & Eczema Consultation",
-    status: "COMPLETED",
     source: "VOICE_AI",
     createdAt: new Date().toISOString()
   }
 ];
 
-export const fallbackDoctorApplications: DoctorApplication[] = [
-  {
-    id: "app-doc-1",
-    name: "Dr. Neha Rao",
-    email: "neha.rao@example.com",
-    phone: "+91 9845012345",
-    qualification: "MBBS, MD (Pulmonology), Fellowship in Sleep Medicine",
-    specialization: "Pulmonology & Respiratory Care",
-    designation: "Consultant Pulmonologist",
-    departmentId: "dept-5",
-    departmentName: "General & Internal Medicine",
-    experienceYears: 8,
-    registrationNumber: "KMC-89241",
-    languages: ["Kannada", "English", "Hindi"],
-    bio: "Expert in asthma management, bronchoscopy, pulmonary fibrosis, and post-COVID lung rehabilitation.",
-    status: "PENDING_VERIFICATION",
-    createdAt: new Date(Date.now() - 3600000 * 5).toISOString()
-  },
-  {
-    id: "app-doc-2",
-    name: "Dr. Anand Kulkarni",
-    email: "anand.kulkarni@example.com",
-    phone: "+91 9741098765",
-    qualification: "MBBS, MS (ENT), DNB",
-    specialization: "Otorhinolaryngology (ENT)",
-    designation: "Senior ENT & Head Neck Surgeon",
-    departmentId: "dept-5",
-    departmentName: "General & Internal Medicine",
-    experienceYears: 11,
-    registrationNumber: "KMC-77120",
-    languages: ["Kannada", "English", "Marathi"],
-    bio: "Specializing in endoscopic sinus surgery, micro-ear surgery, and cochlear implant evaluations.",
-    status: "PENDING_VERIFICATION",
-    createdAt: new Date(Date.now() - 3600000 * 24).toISOString()
-  },
-  {
-    id: "app-doc-3",
-    name: "Dr. Sneha Patil",
-    email: "sneha.patil@example.com",
-    phone: "+91 9900223344",
-    qualification: "MBBS, MD (Obstetrics & Gynecology)",
-    specialization: "High-Risk Obstetrics & Laparoscopic Gynecology",
-    designation: "Consultant Gynecologist",
-    departmentId: "dept-4",
-    departmentName: "Pediatrics & Neonatal Care",
-    experienceYears: 10,
-    registrationNumber: "KMC-94301",
-    languages: ["Kannada", "English"],
-    bio: "Painless normal deliveries, laparoscopic fibroid resections, and comprehensive adolescent wellness.",
-    status: "PENDING_VERIFICATION",
-    createdAt: new Date(Date.now() - 3600000 * 48).toISOString()
-  }
-];
+export const fallbackDoctorApplications: DoctorApplication[] = [];
 
 export const fallbackAuditLogs: AuditLog[] = [
   {
@@ -410,70 +598,37 @@ export const fallbackAuditLogs: AuditLog[] = [
     action: "VOICE_APPOINTMENT_CONFIRMED",
     entity: "APPOINTMENT",
     entityId: "APT-2026-101",
-    details: "Bilingual AI Voice Agent successfully booked appointment for patient Sohan Kumar with Dr. Rajesh Kumar (Cardiology).",
+    details: "Voice Agent verified patient details and confirmed General Medicine slot for Sohan Kumar with Dr. Chiranjeevi Ks.",
     ipAddress: "127.0.0.1 (Web Telephony)",
     createdAt: new Date().toISOString()
   },
   {
     id: "log-102",
     userId: "admin-2",
-    actor: { id: "admin-2", name: "Priya Sharma", role: "HOSPITAL_ADMIN" },
-    action: "DOCTOR_SLOT_UPDATE",
-    entity: "AVAILABILITY",
-    entityId: "doc-1",
-    details: "Hospital Admin updated OPD slot capacity for Dr. Rajesh Kumar to 30 tokens.",
+    actor: { id: "admin-2", name: "Hospital Director", role: "HOSPITAL_ADMIN" },
+    action: "AMBULANCE_DISPATCH_READY",
+    entity: "AMBULANCE",
+    entityId: "AMB-KA-01",
+    details: "Ambulance hotline +91 93530 61993 tested for 24/7 Karnataka-wide dispatch.",
     ipAddress: "192.168.1.104",
     createdAt: new Date(Date.now() - 1800000).toISOString()
-  },
-  {
-    id: "log-103",
-    userId: "ai-agent-v1",
-    actor: { id: "ai-agent-v1", name: "Bilingual AI Voice Agent", role: "VOICE_AI" },
-    action: "VOICE_APPOINTMENT_CONFIRMED",
-    entity: "APPOINTMENT",
-    entityId: "APT-2026-102",
-    details: "Voice Agent verified Kannada input and confirmed Orthopedics slot for Ramesh Sharma.",
-    ipAddress: "127.0.0.1 (Web Telephony)",
-    createdAt: new Date(Date.now() - 3600000).toISOString()
-  },
-  {
-    id: "log-104",
-    userId: "admin-1",
-    actor: { id: "admin-1", name: "Dr. Ramesh Rao", role: "SUPER_ADMIN" },
-    action: "EMERGENCY_SYSTEM_TEST",
-    entity: "TELEPHONY",
-    entityId: "108-GUARDRAIL",
-    details: "Super Admin verified 108 Ambulance safety triage guardrail protocol in Kannada and English.",
-    ipAddress: "10.0.0.15",
-    createdAt: new Date(Date.now() - 7200000).toISOString()
-  },
-  {
-    id: "log-105",
-    userId: "superadmin-1",
-    actor: { id: "superadmin-1", name: "Super Admin", role: "SUPER_ADMIN" },
-    action: "DOCTOR_APPLICATION_SUBMITTED",
-    entity: "DOCTOR_APPLICATION",
-    entityId: "app-doc-1",
-    details: "New Doctor Application submitted by Dr. Neha Rao (Pulmonology). Status: PENDING review.",
-    ipAddress: "49.37.12.8",
-    createdAt: new Date(Date.now() - 14400000).toISOString()
   }
 ];
 
 export const fallbackManagementStats = {
   totalAppointments: 148,
   todayAppointments: 26,
-  activeDoctors: 18,
-  pendingDoctorApplications: 3,
+  activeDoctors: 13,
+  pendingDoctorApplications: 0,
   totalPatients: 1420,
   opdOccupancy: "88%",
   voiceCallsHandled: 364,
   voiceSatisfactionRate: "98.2%",
-  activeDepartments: 15,
+  activeDepartments: 12,
   telephonyStats: {
     totalMinutes: "1,420 mins",
     avgDuration: "1m 48s",
     resolvedByAI: "94.6%",
-    bilingualRatio: "62% Kannada / 38% English"
+    bilingualRatio: "68% Kannada / 32% English"
   }
 };

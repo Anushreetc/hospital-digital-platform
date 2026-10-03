@@ -1,47 +1,65 @@
 [
   {
     "id": "srv-1",
-    "name": "24/7 Emergency & Trauma Care",
-    "shortDescription": "Immediate medical response with ACLS ambulances and advanced life support ICUs.",
-    "fullDescription": "Our emergency medicine department is equipped with fully monitored resuscitation bays, emergency operating theaters, and round-the-clock trauma specialists.",
+    "name": "24/7 Emergency & Casualty Care",
+    "shortDescription": "Immediate emergency triage, trauma resuscitation, burns care, and emergency surgery around the clock.",
+    "fullDescription": "Operates 24/7 to deliver rapid assessment, stabilization, and multidisciplinary treatment for critical illnesses and major traumas with on-call specialists.",
     "iconName": "Ambulance",
     "displayOrder": 1,
     "active": true
   },
   {
     "id": "srv-2",
-    "name": "Comprehensive Diagnostics & Pathology",
-    "shortDescription": "NABL certified diagnostic lab, 128-slice CT, 3T MRI, and digital X-ray services.",
-    "fullDescription": "Accurate and rapid diagnostic imaging and blood testing services with digital report access.",
-    "iconName": "Microscope",
+    "name": "ICU & Critical Care Unit",
+    "shortDescription": "Multi-disciplinary 24/7 intensive care with advanced hemodynamic monitoring and high nurse-to-patient ratio.",
+    "fullDescription": "Dedicated critical care infrastructure staffed by trained intensivists for post-operative recovery, cardiac crises, and critical respiratory emergencies.",
+    "iconName": "Activity",
     "displayOrder": 2,
     "active": true
   },
   {
     "id": "srv-3",
-    "name": "Advanced Surgical Suites",
-    "shortDescription": "Modular Operation Theatres with HEPA filters and laminar airflow systems.",
-    "fullDescription": "Equipped for minimally invasive laparoscopic, neurosurgical, cardiac, and orthopedic surgeries.",
+    "name": "General & Emergency Surgery",
+    "shortDescription": "Modular Operation Theatre for emergency surgery, appendectomy, hernia, and acute surgical interventions.",
+    "fullDescription": "Infection-controlled operating environment equipped for abdominal, orthopedic, urological, and trauma surgical procedures.",
     "iconName": "Syringe",
     "displayOrder": 3,
     "active": true
   },
   {
     "id": "srv-4",
-    "name": "Intensive Care Units (ICU / NICU)",
-    "shortDescription": "State-of-the-art multi-disciplinary ICU, Cardiac ICU, and Neonatal Intensive Care.",
-    "fullDescription": "1:1 nursing care ratio for critical patients with invasive monitoring and advanced ventilator support.",
-    "iconName": "Activity",
+    "name": "Maternity & Obstetrics Care",
+    "shortDescription": "Safe deliveries, prenatal and postnatal monitoring, and comprehensive mother-child care.",
+    "fullDescription": "Compassionate maternal healthcare supporting antenatal visits, fetal heart tracking, labor suites, and postnatal infant guidance.",
+    "iconName": "Baby",
     "displayOrder": 4,
     "active": true
   },
   {
     "id": "srv-5",
-    "name": "In-House 24/7 Pharmacy",
-    "shortDescription": "Genuine medicines, temperature-controlled storage, and bed-side delivery.",
-    "fullDescription": "Complete prescription pharmacy stocked with critical care, oncology, and daily maintenance drugs.",
-    "iconName": "Pill",
+    "name": "Child Vaccination & Preventive Health",
+    "shortDescription": "Pediatric immunizations, infant growth tracking, and complete preventive health checkup packages.",
+    "fullDescription": "Full range of government and optional childhood vaccines, wellness assessments, diabetes screening, and routine health evaluations.",
+    "iconName": "Shield",
     "displayOrder": 5,
+    "active": true
+  },
+  {
+    "id": "srv-6",
+    "name": "24/7 Diagnostic Pathology & Lab",
+    "shortDescription": "In-house blood and urine diagnostic tests with guaranteed Same-Day digital report delivery.",
+    "fullDescription": "Equipped for complete blood counts, biochemical profiles, renal and liver function panels, urinalysis, and emergency cardiac biomarkers.",
+    "iconName": "Microscope",
+    "displayOrder": 6,
+    "active": true
+  },
+  {
+    "id": "srv-7",
+    "name": "Digital X-Ray & ECG Diagnostics",
+    "shortDescription": "High-resolution digital radiology and 12-lead ECG evaluations available 24/7.",
+    "fullDescription": "Immediate imaging for bone fractures, chest diagnostics, abdominal conditions, and rapid ECG readings for cardiac symptoms.",
+    "iconName": "Activity",
+    "displayOrder": 7,
     "active": true
   }
 ]

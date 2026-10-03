@@ -11,6 +11,8 @@
   "dependencies": {
     "@livekit/components-react": "^2.9.24",
     "@livekit/components-styles": "^1.2.0",
+    "@n8n/chat": "^1.39.2",
+    "@supabase/supabase-js": "^2.117.2",
     "@vapi-ai/web": "^2.7.0",
     "livekit-client": "^2.22.1",
     "lucide-react": "^0.395.0",
@@ -22,8 +24,10 @@
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",
     "autoprefixer": "^10.4.19",
+    "dotenv": "^18.0.4",
     "postcss": "^8.4.38",
     "tailwindcss": "^3.4.4",
+    "tsx": "^4.23.15",
     "typescript": "^5.4.5",
     "vite": "^5.2.13"
   }

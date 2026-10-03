@@ -16,8 +16,8 @@ export const KannadaVoiceWidget: React.FC<Props> = ({ isOpen, onClose }) => {
   const [messages, setMessages] = useState<Array<{ sender: 'bot' | 'user'; textKn: string; textEn?: string }>>([
     {
       sender: 'bot',
-      textKn: "ನಮಸ್ಕಾರ! ಸಿಟಿ ಕೇರ್ ಆಸ್ಪತ್ರೆಗೆ ಸುಸ್ವಾಗತ. ಅಪಾಯಿಂಟ್‌ಮೆಂಟ್ ಕಾಯ್ದಿರಿಸಲು ನಿಮ್ಮ ಹೆಸರು ಏನು?",
-      textEn: "Hello! Welcome to City Care Hospital. What is your full name for the appointment?"
+      textKn: "ನಮಸ್ಕಾರ! ವೀ ಕೇರ್ ಮಲ್ಟಿಸ್ಪೆಷಾಲಿಟಿ ಆಸ್ಪತ್ರೆಗೆ ಸುಸ್ವಾಗತ. ಅಪಾಯಿಂಟ್‌ಮೆಂಟ್ ಕಾಯ್ದಿರಿಸಲು ನಿಮ್ಮ ಹೆಸರು ಏನು?",
+      textEn: "Hello! Welcome to We Care Multispeciality Hospital and ICU Doddaballapura. What is your full name for the appointment?"
     }
   ]);
   const [inputText, setInputText] = useState('');
@@ -124,8 +124,8 @@ export const KannadaVoiceWidget: React.FC<Props> = ({ isOpen, onClose }) => {
     const initialMsgs = [
       {
         sender: 'bot' as const,
-        textKn: "ನಮಸ್ಕಾರ! ಸಿಟಿ ಕೇರ್ ಆಸ್ಪತ್ರೆಗೆ ಸುಸ್ವಾಗತ. ಅಪಾಯಿಂಟ್‌ಮೆಂಟ್ ಕಾಯ್ದಿರಿಸಲು ನಿಮ್ಮ ಹೆಸರು ಏನು?",
-        textEn: "Hello! Welcome to City Care Hospital. What is your full name for the appointment?"
+        textKn: "ನಮಸ್ಕಾರ! ವೀ ಕೇರ್ ಮಲ್ಟಿಸ್ಪೆಷಾಲಿಟಿ ಆಸ್ಪತ್ರೆಗೆ ಸುಸ್ವಾಗತ. ಅಪಾಯಿಂಟ್‌ಮೆಂಟ್ ಕಾಯ್ದಿರಿಸಲು ನಿಮ್ಮ ಹೆಸರು ಏನು?",
+        textEn: "Hello! Welcome to We Care Multispeciality Hospital and ICU Doddaballapura. What is your full name for the appointment?"
       }
     ];
     setMessages(initialMsgs);

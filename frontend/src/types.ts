@@ -4,12 +4,20 @@ export type DoctorApplicationStatus = 'PENDING_VERIFICATION' | 'UNDER_REVIEW' | 
 
 export type AppointmentStatus = 'NEW' | 'CONTACTED' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED' | 'NO_SHOW';
 
+export interface RoomTariff {
+  category: string;
+  pricePerDay: number;
+  description: string;
+  features: string[];
+}
+
 export interface HospitalInfo {
   name: string;
   tagline: string;
   address: string;
   phone: string;
   emergencyPhone: string;
+  ambulancePhone?: string;
   email: string;
   operatingHours: string;
   mapEmbedUrl: string;
@@ -21,6 +29,24 @@ export interface HospitalInfo {
     twitter?: string;
     instagram?: string;
     linkedin?: string;
+  };
+  establishedYear?: number;
+  totalBeds?: number;
+  directorName?: string;
+  supportedLanguages?: string[];
+  roomTariffs?: RoomTariff[];
+  visitingHours?: {
+    general: string;
+    icu: string;
+    maxVisitors: number;
+    restrictions: string[];
+  };
+  insuranceInfo?: {
+    acceptedTPAs: string[];
+    cashlessAvailable: boolean;
+    preAuthRequired: boolean;
+    documentsRequired: string[];
+    paymentMethods: string[];
   };
 }
 
@@ -152,4 +178,52 @@ export interface AuditLog {
   createdAt?: string;
   details?: any;
   ipAddress?: string;
+}
+
+export type VoiceCallOutcome =
+  | 'INFORMATION_PROVIDED'
+  | 'APPOINTMENT_CREATED'
+  | 'HUMAN_HANDOFF'
+  | 'EMERGENCY_ESCALATED'
+  | 'TECHNICAL_FAILURE'
+  | 'CALL_ENDED';
+
+export interface DialogueTurn {
+  speaker: 'AI_RECEPTIONIST' | 'PATIENT';
+  text: string;
+  timestamp: string;
+}
+
+export type VoiceCaseStatus = 'NEW' | 'UNDER_REVIEW' | 'ACTION_TAKEN' | 'CLOSED';
+
+export interface VoiceCall {
+  id: string;
+  callId: string;
+  callerName?: string;
+  phoneNumber: string;
+  startedAt: string;
+  endedAt?: string;
+  durationSeconds?: number;
+  language: 'KN' | 'EN' | 'KANGLISH' | 'BILINGUAL';
+  status: 'QUEUED' | 'IN_PROGRESS' | 'COMPLETED' | 'FAILED';
+  caseStatus?: VoiceCaseStatus;
+  intent?: 'APPOINTMENT_BOOKING' | 'EMERGENCY_QUERY' | 'GENERAL_OPD' | 'DOCTOR_ENQUIRY';
+  appointmentId?: string;
+  bookedAppointmentDetails?: {
+    id: string;
+    doctorName: string;
+    departmentName: string;
+    date: string;
+    time: string;
+    reason?: string;
+  };
+  outcome: VoiceCallOutcome;
+  summary?: string;
+  transcript?: string;
+  dialogueTurns?: DialogueTurn[];
+  assignedReceptionist?: string;
+  receptionistNotes?: string;
+  closedAt?: string;
+  closedBy?: string;
+  createdAt: string;
 }

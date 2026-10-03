@@ -397,6 +397,85 @@ export const createApiRouter = (
     sendSuccess(res, safe);
   });
 
+  // AI Receptionist Call Transcripts & Case Management
+  router.get('/management/calls', authenticate, requireRoles('RECEPTIONIST', 'HOSPITAL_ADMIN', 'SUPER_ADMIN'), (req, res) => {
+    const { status, caseStatus, search, language } = req.query as Record<string, string>;
+    let calls = fileRepo.getVoiceCalls();
+
+    if (caseStatus && caseStatus !== 'ALL') {
+      calls = calls.filter(c => c.caseStatus === caseStatus);
+    }
+    if (status && status !== 'ALL') {
+      calls = calls.filter(c => c.status === status);
+    }
+    if (language && language !== 'ALL') {
+      calls = calls.filter(c => c.language === language);
+    }
+    if (search) {
+      const q = search.toLowerCase().trim();
+      calls = calls.filter(c =>
+        (c.callerName && c.callerName.toLowerCase().includes(q)) ||
+        c.phoneNumber.includes(q) ||
+        (c.appointmentId && c.appointmentId.toLowerCase().includes(q)) ||
+        (c.summary && c.summary.toLowerCase().includes(q)) ||
+        (c.transcript && c.transcript.toLowerCase().includes(q)) ||
+        (c.receptionistNotes && c.receptionistNotes.toLowerCase().includes(q))
+      );
+    }
+
+    sendSuccess(res, calls);
+  });
+
+  router.patch('/management/calls/:id', authenticate, requireRoles('RECEPTIONIST', 'HOSPITAL_ADMIN', 'SUPER_ADMIN'), (req: AuthenticatedRequest, res) => {
+    const existing = fileRepo.getVoiceCallById(req.params.id);
+    if (!existing) return sendError(res, { code: 'NOT_FOUND', message: 'Call record not found' });
+
+    const updated = fileRepo.saveVoiceCall({
+      ...existing,
+      ...req.body,
+      id: existing.id,
+      callId: existing.callId
+    });
+
+    fileRepo.addAuditLog({
+      id: `audit-${Date.now()}`,
+      actor: { id: req.user!.userId, name: req.user!.name, role: req.user!.role },
+      action: 'UPDATE_VOICE_CALL_CASE',
+      entity: 'VoiceCall',
+      entityId: existing.id,
+      timestamp: new Date().toISOString(),
+      details: req.body
+    });
+
+    sendSuccess(res, updated);
+  });
+
+  router.post('/management/calls/:id/close', authenticate, requireRoles('RECEPTIONIST', 'HOSPITAL_ADMIN', 'SUPER_ADMIN'), (req: AuthenticatedRequest, res) => {
+    const existing = fileRepo.getVoiceCallById(req.params.id);
+    if (!existing) return sendError(res, { code: 'NOT_FOUND', message: 'Call record not found' });
+
+    const { resolutionNotes } = req.body;
+    const updated = fileRepo.saveVoiceCall({
+      ...existing,
+      caseStatus: 'CLOSED',
+      receptionistNotes: resolutionNotes || existing.receptionistNotes || 'Case reviewed and closed.',
+      closedAt: new Date().toISOString(),
+      closedBy: req.user!.name
+    });
+
+    fileRepo.addAuditLog({
+      id: `audit-${Date.now()}`,
+      actor: { id: req.user!.userId, name: req.user!.name, role: req.user!.role },
+      action: 'CLOSE_VOICE_CALL_CASE',
+      entity: 'VoiceCall',
+      entityId: existing.id,
+      timestamp: new Date().toISOString(),
+      details: { resolutionNotes }
+    });
+
+    sendSuccess(res, updated);
+  });
+
   router.get('/management/audit-logs', authenticate, requireRoles('SUPER_ADMIN'), (_req, res) => sendSuccess(res, fileRepo.getAuditLogs()));
 
   return router;

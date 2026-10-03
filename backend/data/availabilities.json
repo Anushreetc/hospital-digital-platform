@@ -1,6 +1,6 @@
 [
   {
-    "id": "avail-101",
+    "id": "avail-doc-101",
     "doctorId": "doc-101",
     "weeklySchedule": [
       {
@@ -11,8 +11,8 @@
             "endTime": "01:00 PM"
           },
           {
-            "startTime": "04:00 PM",
-            "endTime": "07:00 PM"
+            "startTime": "05:00 PM",
+            "endTime": "08:00 PM"
           }
         ]
       },
@@ -33,8 +33,8 @@
             "endTime": "01:00 PM"
           },
           {
-            "startTime": "04:00 PM",
-            "endTime": "07:00 PM"
+            "startTime": "05:00 PM",
+            "endTime": "08:00 PM"
           }
         ]
       },
@@ -55,8 +55,8 @@
             "endTime": "01:00 PM"
           },
           {
-            "startTime": "04:00 PM",
-            "endTime": "07:00 PM"
+            "startTime": "05:00 PM",
+            "endTime": "08:00 PM"
           }
         ]
       },
@@ -73,7 +73,7 @@
     "unavailabilities": []
   },
   {
-    "id": "avail-102",
+    "id": "avail-doc-102",
     "doctorId": "doc-102",
     "weeklySchedule": [
       {
@@ -82,11 +82,37 @@
           {
             "startTime": "10:00 AM",
             "endTime": "02:00 PM"
+          },
+          {
+            "startTime": "05:00 PM",
+            "endTime": "08:00 PM"
+          }
+        ]
+      },
+      {
+        "dayOfWeek": "Tuesday",
+        "slots": [
+          {
+            "startTime": "10:00 AM",
+            "endTime": "02:00 PM"
           }
         ]
       },
       {
         "dayOfWeek": "Wednesday",
+        "slots": [
+          {
+            "startTime": "10:00 AM",
+            "endTime": "02:00 PM"
+          },
+          {
+            "startTime": "05:00 PM",
+            "endTime": "08:00 PM"
+          }
+        ]
+      },
+      {
+        "dayOfWeek": "Thursday",
         "slots": [
           {
             "startTime": "10:00 AM",
@@ -100,6 +126,10 @@
           {
             "startTime": "10:00 AM",
             "endTime": "02:00 PM"
+          },
+          {
+            "startTime": "05:00 PM",
+            "endTime": "08:00 PM"
           }
         ]
       },
@@ -107,8 +137,8 @@
         "dayOfWeek": "Saturday",
         "slots": [
           {
-            "startTime": "03:00 PM",
-            "endTime": "06:00 PM"
+            "startTime": "10:00 AM",
+            "endTime": "02:00 PM"
           }
         ]
       }
@@ -116,15 +146,41 @@
     "unavailabilities": []
   },
   {
-    "id": "avail-103",
+    "id": "avail-doc-103",
     "doctorId": "doc-103",
     "weeklySchedule": [
+      {
+        "dayOfWeek": "Monday",
+        "slots": [
+          {
+            "startTime": "09:00 AM",
+            "endTime": "01:00 PM"
+          },
+          {
+            "startTime": "05:00 PM",
+            "endTime": "08:00 PM"
+          }
+        ]
+      },
       {
         "dayOfWeek": "Tuesday",
         "slots": [
           {
-            "startTime": "11:00 AM",
-            "endTime": "03:00 PM"
+            "startTime": "09:00 AM",
+            "endTime": "01:00 PM"
+          }
+        ]
+      },
+      {
+        "dayOfWeek": "Wednesday",
+        "slots": [
+          {
+            "startTime": "09:00 AM",
+            "endTime": "01:00 PM"
+          },
+          {
+            "startTime": "05:00 PM",
+            "endTime": "08:00 PM"
           }
         ]
       },
@@ -132,8 +188,21 @@
         "dayOfWeek": "Thursday",
         "slots": [
           {
-            "startTime": "11:00 AM",
-            "endTime": "03:00 PM"
+            "startTime": "09:00 AM",
+            "endTime": "01:00 PM"
+          }
+        ]
+      },
+      {
+        "dayOfWeek": "Friday",
+        "slots": [
+          {
+            "startTime": "09:00 AM",
+            "endTime": "01:00 PM"
+          },
+          {
+            "startTime": "05:00 PM",
+            "endTime": "08:00 PM"
           }
         ]
       },
@@ -141,8 +210,8 @@
         "dayOfWeek": "Saturday",
         "slots": [
           {
-            "startTime": "11:00 AM",
-            "endTime": "03:00 PM"
+            "startTime": "10:00 AM",
+            "endTime": "02:00 PM"
           }
         ]
       }
@@ -150,13 +219,86 @@
     "unavailabilities": []
   },
   {
-    "id": "avail-104",
+    "id": "avail-doc-104",
     "doctorId": "doc-104",
     "weeklySchedule": [
       {
         "dayOfWeek": "Monday",
         "slots": [
           {
+            "startTime": "10:00 AM",
+            "endTime": "02:00 PM"
+          },
+          {
+            "startTime": "05:00 PM",
+            "endTime": "08:00 PM"
+          }
+        ]
+      },
+      {
+        "dayOfWeek": "Tuesday",
+        "slots": [
+          {
+            "startTime": "10:00 AM",
+            "endTime": "02:00 PM"
+          }
+        ]
+      },
+      {
+        "dayOfWeek": "Wednesday",
+        "slots": [
+          {
+            "startTime": "10:00 AM",
+            "endTime": "02:00 PM"
+          },
+          {
+            "startTime": "05:00 PM",
+            "endTime": "08:00 PM"
+          }
+        ]
+      },
+      {
+        "dayOfWeek": "Thursday",
+        "slots": [
+          {
+            "startTime": "10:00 AM",
+            "endTime": "02:00 PM"
+          }
+        ]
+      },
+      {
+        "dayOfWeek": "Friday",
+        "slots": [
+          {
+            "startTime": "10:00 AM",
+            "endTime": "02:00 PM"
+          },
+          {
+            "startTime": "05:00 PM",
+            "endTime": "08:00 PM"
+          }
+        ]
+      },
+      {
+        "dayOfWeek": "Saturday",
+        "slots": [
+          {
+            "startTime": "10:00 AM",
+            "endTime": "02:00 PM"
+          }
+        ]
+      }
+    ],
+    "unavailabilities": []
+  },
+  {
+    "id": "avail-doc-105",
+    "doctorId": "doc-105",
+    "weeklySchedule": [
+      {
+        "dayOfWeek": "Monday",
+        "slots": [
+          {
             "startTime": "09:00 AM",
             "endTime": "01:00 PM"
           },
@@ -209,13 +351,22 @@
             "endTime": "08:00 PM"
           }
         ]
+      },
+      {
+        "dayOfWeek": "Saturday",
+        "slots": [
+          {
+            "startTime": "10:00 AM",
+            "endTime": "02:00 PM"
+          }
+        ]
       }
     ],
     "unavailabilities": []
   },
   {
-    "id": "avail-105",
-    "doctorId": "doc-105",
+    "id": "avail-doc-106",
+    "doctorId": "doc-106",
     "weeklySchedule": [
       {
         "dayOfWeek": "Monday",
@@ -223,6 +374,10 @@
           {
             "startTime": "10:00 AM",
             "endTime": "02:00 PM"
+          },
+          {
+            "startTime": "05:00 PM",
+            "endTime": "08:00 PM"
           }
         ]
       },
@@ -230,8 +385,8 @@
         "dayOfWeek": "Tuesday",
         "slots": [
           {
-            "startTime": "04:00 PM",
-            "endTime": "07:00 PM"
+            "startTime": "10:00 AM",
+            "endTime": "02:00 PM"
           }
         ]
       },
@@ -241,11 +396,548 @@
           {
             "startTime": "10:00 AM",
             "endTime": "02:00 PM"
+          },
+          {
+            "startTime": "05:00 PM",
+            "endTime": "08:00 PM"
+          }
+        ]
+      },
+      {
+        "dayOfWeek": "Thursday",
+        "slots": [
+          {
+            "startTime": "10:00 AM",
+            "endTime": "02:00 PM"
           }
         ]
       },
       {
         "dayOfWeek": "Friday",
+        "slots": [
+          {
+            "startTime": "10:00 AM",
+            "endTime": "02:00 PM"
+          },
+          {
+            "startTime": "05:00 PM",
+            "endTime": "08:00 PM"
+          }
+        ]
+      },
+      {
+        "dayOfWeek": "Saturday",
+        "slots": [
+          {
+            "startTime": "10:00 AM",
+            "endTime": "02:00 PM"
+          }
+        ]
+      }
+    ],
+    "unavailabilities": []
+  },
+  {
+    "id": "avail-doc-107",
+    "doctorId": "doc-107",
+    "weeklySchedule": [
+      {
+        "dayOfWeek": "Monday",
+        "slots": [
+          {
+            "startTime": "09:00 AM",
+            "endTime": "01:00 PM"
+          },
+          {
+            "startTime": "05:00 PM",
+            "endTime": "08:00 PM"
+          }
+        ]
+      },
+      {
+        "dayOfWeek": "Tuesday",
+        "slots": [
+          {
+            "startTime": "09:00 AM",
+            "endTime": "01:00 PM"
+          }
+        ]
+      },
+      {
+        "dayOfWeek": "Wednesday",
+        "slots": [
+          {
+            "startTime": "09:00 AM",
+            "endTime": "01:00 PM"
+          },
+          {
+            "startTime": "05:00 PM",
+            "endTime": "08:00 PM"
+          }
+        ]
+      },
+      {
+        "dayOfWeek": "Thursday",
+        "slots": [
+          {
+            "startTime": "09:00 AM",
+            "endTime": "01:00 PM"
+          }
+        ]
+      },
+      {
+        "dayOfWeek": "Friday",
+        "slots": [
+          {
+            "startTime": "09:00 AM",
+            "endTime": "01:00 PM"
+          },
+          {
+            "startTime": "05:00 PM",
+            "endTime": "08:00 PM"
+          }
+        ]
+      },
+      {
+        "dayOfWeek": "Saturday",
+        "slots": [
+          {
+            "startTime": "10:00 AM",
+            "endTime": "02:00 PM"
+          }
+        ]
+      }
+    ],
+    "unavailabilities": []
+  },
+  {
+    "id": "avail-doc-108",
+    "doctorId": "doc-108",
+    "weeklySchedule": [
+      {
+        "dayOfWeek": "Monday",
+        "slots": [
+          {
+            "startTime": "10:00 AM",
+            "endTime": "02:00 PM"
+          },
+          {
+            "startTime": "05:00 PM",
+            "endTime": "08:00 PM"
+          }
+        ]
+      },
+      {
+        "dayOfWeek": "Tuesday",
+        "slots": [
+          {
+            "startTime": "10:00 AM",
+            "endTime": "02:00 PM"
+          }
+        ]
+      },
+      {
+        "dayOfWeek": "Wednesday",
+        "slots": [
+          {
+            "startTime": "10:00 AM",
+            "endTime": "02:00 PM"
+          },
+          {
+            "startTime": "05:00 PM",
+            "endTime": "08:00 PM"
+          }
+        ]
+      },
+      {
+        "dayOfWeek": "Thursday",
+        "slots": [
+          {
+            "startTime": "10:00 AM",
+            "endTime": "02:00 PM"
+          }
+        ]
+      },
+      {
+        "dayOfWeek": "Friday",
+        "slots": [
+          {
+            "startTime": "10:00 AM",
+            "endTime": "02:00 PM"
+          },
+          {
+            "startTime": "05:00 PM",
+            "endTime": "08:00 PM"
+          }
+        ]
+      },
+      {
+        "dayOfWeek": "Saturday",
+        "slots": [
+          {
+            "startTime": "10:00 AM",
+            "endTime": "02:00 PM"
+          }
+        ]
+      }
+    ],
+    "unavailabilities": []
+  },
+  {
+    "id": "avail-doc-109",
+    "doctorId": "doc-109",
+    "weeklySchedule": [
+      {
+        "dayOfWeek": "Monday",
+        "slots": [
+          {
+            "startTime": "09:00 AM",
+            "endTime": "01:00 PM"
+          },
+          {
+            "startTime": "05:00 PM",
+            "endTime": "08:00 PM"
+          }
+        ]
+      },
+      {
+        "dayOfWeek": "Tuesday",
+        "slots": [
+          {
+            "startTime": "09:00 AM",
+            "endTime": "01:00 PM"
+          }
+        ]
+      },
+      {
+        "dayOfWeek": "Wednesday",
+        "slots": [
+          {
+            "startTime": "09:00 AM",
+            "endTime": "01:00 PM"
+          },
+          {
+            "startTime": "05:00 PM",
+            "endTime": "08:00 PM"
+          }
+        ]
+      },
+      {
+        "dayOfWeek": "Thursday",
+        "slots": [
+          {
+            "startTime": "09:00 AM",
+            "endTime": "01:00 PM"
+          }
+        ]
+      },
+      {
+        "dayOfWeek": "Friday",
+        "slots": [
+          {
+            "startTime": "09:00 AM",
+            "endTime": "01:00 PM"
+          },
+          {
+            "startTime": "05:00 PM",
+            "endTime": "08:00 PM"
+          }
+        ]
+      },
+      {
+        "dayOfWeek": "Saturday",
+        "slots": [
+          {
+            "startTime": "10:00 AM",
+            "endTime": "02:00 PM"
+          }
+        ]
+      }
+    ],
+    "unavailabilities": []
+  },
+  {
+    "id": "avail-doc-110",
+    "doctorId": "doc-110",
+    "weeklySchedule": [
+      {
+        "dayOfWeek": "Monday",
+        "slots": [
+          {
+            "startTime": "10:00 AM",
+            "endTime": "02:00 PM"
+          },
+          {
+            "startTime": "05:00 PM",
+            "endTime": "08:00 PM"
+          }
+        ]
+      },
+      {
+        "dayOfWeek": "Tuesday",
+        "slots": [
+          {
+            "startTime": "10:00 AM",
+            "endTime": "02:00 PM"
+          }
+        ]
+      },
+      {
+        "dayOfWeek": "Wednesday",
+        "slots": [
+          {
+            "startTime": "10:00 AM",
+            "endTime": "02:00 PM"
+          },
+          {
+            "startTime": "05:00 PM",
+            "endTime": "08:00 PM"
+          }
+        ]
+      },
+      {
+        "dayOfWeek": "Thursday",
+        "slots": [
+          {
+            "startTime": "10:00 AM",
+            "endTime": "02:00 PM"
+          }
+        ]
+      },
+      {
+        "dayOfWeek": "Friday",
+        "slots": [
+          {
+            "startTime": "10:00 AM",
+            "endTime": "02:00 PM"
+          },
+          {
+            "startTime": "05:00 PM",
+            "endTime": "08:00 PM"
+          }
+        ]
+      },
+      {
+        "dayOfWeek": "Saturday",
+        "slots": [
+          {
+            "startTime": "10:00 AM",
+            "endTime": "02:00 PM"
+          }
+        ]
+      }
+    ],
+    "unavailabilities": []
+  },
+  {
+    "id": "avail-doc-111",
+    "doctorId": "doc-111",
+    "weeklySchedule": [
+      {
+        "dayOfWeek": "Monday",
+        "slots": [
+          {
+            "startTime": "09:00 AM",
+            "endTime": "01:00 PM"
+          },
+          {
+            "startTime": "05:00 PM",
+            "endTime": "08:00 PM"
+          }
+        ]
+      },
+      {
+        "dayOfWeek": "Tuesday",
+        "slots": [
+          {
+            "startTime": "09:00 AM",
+            "endTime": "01:00 PM"
+          }
+        ]
+      },
+      {
+        "dayOfWeek": "Wednesday",
+        "slots": [
+          {
+            "startTime": "09:00 AM",
+            "endTime": "01:00 PM"
+          },
+          {
+            "startTime": "05:00 PM",
+            "endTime": "08:00 PM"
+          }
+        ]
+      },
+      {
+        "dayOfWeek": "Thursday",
+        "slots": [
+          {
+            "startTime": "09:00 AM",
+            "endTime": "01:00 PM"
+          }
+        ]
+      },
+      {
+        "dayOfWeek": "Friday",
+        "slots": [
+          {
+            "startTime": "09:00 AM",
+            "endTime": "01:00 PM"
+          },
+          {
+            "startTime": "05:00 PM",
+            "endTime": "08:00 PM"
+          }
+        ]
+      },
+      {
+        "dayOfWeek": "Saturday",
+        "slots": [
+          {
+            "startTime": "10:00 AM",
+            "endTime": "02:00 PM"
+          }
+        ]
+      }
+    ],
+    "unavailabilities": []
+  },
+  {
+    "id": "avail-doc-112",
+    "doctorId": "doc-112",
+    "weeklySchedule": [
+      {
+        "dayOfWeek": "Monday",
+        "slots": [
+          {
+            "startTime": "10:00 AM",
+            "endTime": "02:00 PM"
+          },
+          {
+            "startTime": "05:00 PM",
+            "endTime": "08:00 PM"
+          }
+        ]
+      },
+      {
+        "dayOfWeek": "Tuesday",
+        "slots": [
+          {
+            "startTime": "10:00 AM",
+            "endTime": "02:00 PM"
+          }
+        ]
+      },
+      {
+        "dayOfWeek": "Wednesday",
+        "slots": [
+          {
+            "startTime": "10:00 AM",
+            "endTime": "02:00 PM"
+          },
+          {
+            "startTime": "05:00 PM",
+            "endTime": "08:00 PM"
+          }
+        ]
+      },
+      {
+        "dayOfWeek": "Thursday",
+        "slots": [
+          {
+            "startTime": "10:00 AM",
+            "endTime": "02:00 PM"
+          }
+        ]
+      },
+      {
+        "dayOfWeek": "Friday",
+        "slots": [
+          {
+            "startTime": "10:00 AM",
+            "endTime": "02:00 PM"
+          },
+          {
+            "startTime": "05:00 PM",
+            "endTime": "08:00 PM"
+          }
+        ]
+      },
+      {
+        "dayOfWeek": "Saturday",
+        "slots": [
+          {
+            "startTime": "10:00 AM",
+            "endTime": "02:00 PM"
+          }
+        ]
+      }
+    ],
+    "unavailabilities": []
+  },
+  {
+    "id": "avail-doc-113",
+    "doctorId": "doc-113",
+    "weeklySchedule": [
+      {
+        "dayOfWeek": "Monday",
+        "slots": [
+          {
+            "startTime": "09:00 AM",
+            "endTime": "01:00 PM"
+          },
+          {
+            "startTime": "05:00 PM",
+            "endTime": "08:00 PM"
+          }
+        ]
+      },
+      {
+        "dayOfWeek": "Tuesday",
+        "slots": [
+          {
+            "startTime": "09:00 AM",
+            "endTime": "01:00 PM"
+          }
+        ]
+      },
+      {
+        "dayOfWeek": "Wednesday",
+        "slots": [
+          {
+            "startTime": "09:00 AM",
+            "endTime": "01:00 PM"
+          },
+          {
+            "startTime": "05:00 PM",
+            "endTime": "08:00 PM"
+          }
+        ]
+      },
+      {
+        "dayOfWeek": "Thursday",
+        "slots": [
+          {
+            "startTime": "09:00 AM",
+            "endTime": "01:00 PM"
+          }
+        ]
+      },
+      {
+        "dayOfWeek": "Friday",
+        "slots": [
+          {
+            "startTime": "09:00 AM",
+            "endTime": "01:00 PM"
+          },
+          {
+            "startTime": "05:00 PM",
+            "endTime": "08:00 PM"
+          }
+        ]
+      },
+      {
+        "dayOfWeek": "Saturday",
         "slots": [
           {
             "startTime": "10:00 AM",

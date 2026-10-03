@@ -6,12 +6,14 @@
 
 const CONVERSATIONAL_KANNADA_PHRASES: Record<string, string> = {
   // Greetings & Introductions
-  'ನಮಸ್ಕಾರ! ಸಿಟಿ ಕೇರ್ ಆಸ್ಪತ್ರೆಗೆ ಸುಸ್ವಾಗತ. ಅಪಾಯಿಂಟ್‌ಮೆಂಟ್ ಕಾಯ್ದಿರಿಸಲು ನಿಮ್ಮ ಹೆಸರು ಏನು?':
-    'Namaskara, City Care hospital ge susvaagatha. Appointment book madalu, nimma hesaru yenu?',
-  'ನಮಸ್ಕಾರ! ಸಿಟಿ ಕೇರ್ ಆಸ್ಪತ್ರೆಗೆ ಸುಸ್ವಾಗತ':
-    'Namaskara, City Care hospital ge susvaagatha.',
+  'ನಮಸ್ಕಾರ! ವೀ ಕೇರ್ ಮಲ್ಟಿಸ್ಪೆಷಾಲಿಟಿ ಆಸ್ಪತ್ರೆ ಮತ್ತು ಐಸಿಯು ದೊಡ್ಡಬಳ್ಳಾಪುರಕ್ಕೆ ಸುಸ್ವಾಗತ. ಅಪಾಯಿಂಟ್‌ಮೆಂಟ್ ಕಾಯ್ದಿರಿಸಲು ನಿಮ್ಮ ಪೂರ್ಣ ಹೆಸರು ತಿಳಿಸಿ.':
+    'Namaskara, We Care Multispeciality Hospital and ICU Doddaballapura ge susvaagatha. Appointment book madalu, nimma hesaru yenu?',
+  'ನಮಸ್ಕಾರ! ವೀ ಕೇರ್ ಮಲ್ಟಿಸ್ಪೆಷಾಲಿಟಿ ಆಸ್ಪತ್ರೆಗೆ ಸುಸ್ವಾಗತ. ಅಪಾಯಿಂಟ್‌ಮೆಂಟ್ ಕಾಯ್ದಿರಿಸಲು ನಿಮ್ಮ ಹೆಸರು ಏನು?':
+    'Namaskara, We Care hospital ge susvaagatha. Appointment book madalu, nimma hesaru yenu?',
+  'ನಮಸ್ಕಾರ! ವೀ ಕೇರ್ ಆಸ್ಪತ್ರೆಗೆ ಸುಸ್ವಾಗತ':
+    'Namaskara, We Care hospital ge susvaagatha.',
   'ನಮಸ್ಕಾರ': 'Namaskara,',
-  'ಸಿಟಿ ಕೇರ್ ಆಸ್ಪತ್ರೆಗೆ ಸುಸ್ವಾಗತ': 'City Care hospital ge susvaagatha,',
+  'ವೀ ಕೇರ್ ಆಸ್ಪತ್ರೆಗೆ ಸುಸ್ವಾಗತ': 'We Care hospital ge susvaagatha,',
   'ಸುಸ್ವಾಗತ': 'susvaagatha,',
 
   // Name & Phone Collection

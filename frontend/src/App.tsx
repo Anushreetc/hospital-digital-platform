@@ -8,6 +8,8 @@ import { DepartmentsSection } from './sections/DepartmentsSection';
 import { DoctorsSection } from './sections/DoctorsSection';
 import { ServicesSection } from './sections/ServicesSection';
 import { FacilitiesSection } from './sections/FacilitiesSection';
+import { TariffsSection } from './sections/TariffsSection';
+import { PatientGuideSection } from './sections/PatientGuideSection';
 import { AvailabilitySection } from './sections/AvailabilitySection';
 import { AppointmentSection } from './sections/AppointmentSection';
 import { FaqSection } from './sections/FaqSection';
@@ -15,13 +17,14 @@ import { ContactSection } from './sections/ContactSection';
 import { Footer } from './sections/Footer';
 import { DoctorDetailModal } from './components/DoctorDetailModal';
 import { VoiceAgentWidget } from './components/VoiceAgentWidget';
-import { VapiVoiceModal } from './components/VapiVoiceModal';
 import { AuthRoleModal } from './components/AuthRoleModal';
 import { AuthPages } from './pages/AuthPages';
 import { ManagementDashboard } from './pages/ManagementDashboard';
 import { DoctorDashboard } from './pages/DoctorDashboard';
 import { PatientDashboard } from './pages/PatientDashboard';
 import { Mic, Loader2 } from 'lucide-react';
+import '@n8n/chat/style.css';
+import { createChat } from '@n8n/chat';
 
 export const App: React.FC = () => {
   // Main Data States
@@ -37,7 +40,6 @@ export const App: React.FC = () => {
   const [doctorAvail, setDoctorAvail] = useState<DoctorAvailability | null>(null);
   const [preselectedDoctorId, setPreselectedDoctorId] = useState<string | undefined>(undefined);
   const [voiceWidgetOpen, setVoiceWidgetOpen] = useState<boolean>(false);
-  const [vapiModalOpen, setVapiModalOpen] = useState<boolean>(false);
   const [authModalOpen, setAuthModalOpen] = useState<boolean>(false);
 
   // Portal & Auth State
@@ -47,6 +49,27 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     loadPublicData();
+    
+    // Initialize n8n chat widget
+    createChat({
+      webhookUrl: 'https://anushreetc.app.n8n.cloud/webhook/2c353b81-4725-4372-b5b7-d5165e67f9e4/chat',
+      mode: 'window',
+      showWelcomeScreen: false,
+      initialMessages: [
+        'Hello! Welcome to We Care Multispeciality Hospital.',
+        'I can help you book, reschedule or cancel an appointment. How can I help?'
+      ],
+      i18n: {
+        en: {
+          title: 'Clinic Receptionist',
+          subtitle: 'Available 24/7. For emergencies call +91 93530 61993',
+          inputPlaceholder: 'Type your message...',
+          getStarted: 'Start chat',
+          footer: '',
+          closeButtonTooltip: 'Close chat'
+        }
+      }
+    });
   }, []);
 
   const loadPublicData = async () => {
@@ -101,6 +124,15 @@ export const App: React.FC = () => {
     setActivePortalRole(role);
   };
 
+  const handleVoiceCallClick = () => {
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
+    if (isMobile) {
+      window.location.href = 'tel:+13074149229';
+    } else {
+      setVoiceWidgetOpen(true);
+    }
+  };
+
   const handleSuccessLogin = (token: string, user: any, role: string) => {
     setAuthToken(token);
     setAuthenticatedUser({
@@ -149,8 +181,8 @@ export const App: React.FC = () => {
       <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center text-white space-y-4">
         <Loader2 className="w-12 h-12 text-blue-500 animate-spin" />
         <div className="text-center">
-          <div className="text-lg font-bold">Loading City Care Digital Platform...</div>
-          <div className="text-xs text-slate-400 mt-1">Connecting to NABH Hospital Services & Voice Engines</div>
+          <div className="text-lg font-bold">Loading We Care Digital Platform...</div>
+          <div className="text-xs text-slate-400 mt-1">Connecting to Doddaballapura Hospital Services &amp; Voice Engines</div>
         </div>
       </div>
     );
@@ -166,12 +198,14 @@ export const App: React.FC = () => {
         onNavigateToAppointment={handleNavigateToAppointment}
       />
 
+
+
       {/* Main Content Sections */}
       <main className="flex-1">
         <HeroSection
           hospitalInfo={hospitalInfo}
           onBookClick={handleNavigateToAppointment}
-          onVoiceClick={() => setVoiceWidgetOpen(true)}
+          onVoiceClick={handleVoiceCallClick}
           onFindDoctorClick={() => {
             const el = document.getElementById('doctors');
             if (el) el.scrollIntoView({ behavior: 'smooth' });
@@ -202,6 +236,16 @@ export const App: React.FC = () => {
         />
 
         <FacilitiesSection facilities={facilities} />
+
+        <TariffsSection
+          hospitalInfo={hospitalInfo}
+          onBookClick={handleNavigateToAppointment}
+        />
+
+        <PatientGuideSection
+          hospitalInfo={hospitalInfo}
+          onBookClick={handleNavigateToAppointment}
+        />
 
         <AvailabilitySection
           doctors={doctors}
@@ -240,32 +284,6 @@ export const App: React.FC = () => {
         onClose={() => setAuthModalOpen(false)}
         onSelectRole={handleSelectRoleFromModal}
       />
-
-      {/* Voice Assistant Modal */}
-      <VoiceAgentWidget
-        isOpen={voiceWidgetOpen}
-        onClose={() => setVoiceWidgetOpen(false)}
-      />
-
-      <VapiVoiceModal
-        isOpen={vapiModalOpen}
-        onClose={() => setVapiModalOpen(false)}
-        hospitalInfo={hospitalInfo}
-      />
-
-      {/* Floating Voice Agent Trigger Button - Mobile & Laptop Optimized */}
-      {!voiceWidgetOpen && (
-        <button
-          onClick={() => setVoiceWidgetOpen(true)}
-          className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40 bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-white px-3.5 py-2.5 sm:px-5 sm:py-3.5 rounded-full shadow-2xl hover:shadow-emerald-500/30 flex items-center gap-2 sm:gap-2.5 font-bold text-xs sm:text-sm transition-all transform hover:scale-105 active:scale-95 group cursor-pointer"
-          title="Open Voice Assistant"
-        >
-          <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-white/20 flex items-center justify-center">
-            <Mic className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white animate-pulse" />
-          </div>
-          <span>ಕನ್ನಡ / Voice Assistant</span>
-        </button>
-      )}
     </div>
   );
 };

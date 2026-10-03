@@ -1,40 +1,134 @@
 {
-  "name": "City Care Super Specialty Hospital",
-  "tagline": "Advanced Healthcare with Compassion & Excellence",
-  "address": "123 Healthcare Boulevard, Medical District, Bengaluru, Karnataka - 560001",
-  "phone": "+91 80 2345 6789",
-  "emergencyPhone": "+91 80 2345 9999",
-  "email": "care@citycarehospital.example.com",
-  "operatingHours": "24/7 Emergency & OPD (Mon-Sat 8:00 AM - 8:00 PM)",
-  "mapEmbedUrl": "https://maps.google.com/maps?q=Bengaluru&t=&z=13&ie=UTF8&iwloc=&output=embed",
-  "whatsAppNumber": "+919876543210",
+  "name": "We Care Multispeciality Hospital and ICU Doddaballapura",
+  "tagline": "24/7 Emergency, ICU & Multi-Specialty Care in Doddaballapura",
+  "address": "We Care Multispeciality Hospital and ICU, D Cross main Rd, near Federal Bank, Doddaballapura, Karnataka - 561203",
+  "phone": "+91 88677 55541",
+  "emergencyPhone": "+91 88677 55541",
+  "ambulancePhone": "+91 93530 61993",
+  "email": "nandiwecare0@gmail.com",
+  "operatingHours": "24/7 Open (Round-the-clock Emergency, ICU & Pharmacy)",
+  "mapEmbedUrl": "https://maps.google.com/maps?q=We+Care+Multispeciality+Hospital+and+ICU+Doddaballapura&t=&z=16&ie=UTF8&iwloc=&output=embed",
+  "whatsAppNumber": "+91 88677 55541",
   "certifications": [
-    "NABH Accredited",
-    "ISO 9001:2015 Certified",
-    "NABL Laboratory"
+    "24/7 Availability of Doctors",
+    "24/7 Emergency & ICU Care",
+    "Karnataka-Wide 24/7 Ambulance Fleet",
+    "Friendly & Caring Medical Staff"
   ],
   "statistics": [
     {
-      "label": "Specialty Departments",
-      "value": "15+"
+      "label": "Medical Disciplines",
+      "value": "12"
     },
     {
-      "label": "Expert Doctors",
-      "value": "45+"
+      "label": "Specialist Doctors",
+      "value": "13+"
     },
     {
-      "label": "Bed Capacity",
-      "value": "200+"
+      "label": "Hospital Bed Capacity",
+      "value": "28"
     },
     {
-      "label": "Satisfied Patients",
-      "value": "50,000+"
+      "label": "Doctor & ICU Care",
+      "value": "24/7"
     }
   ],
   "socials": {
-    "facebook": "https://facebook.com/example",
-    "twitter": "https://twitter.com/example",
-    "instagram": "https://instagram.com/example",
-    "linkedin": "https://linkedin.com/example"
+    "facebook": "https://facebook.com/nandiwecare",
+    "twitter": "https://twitter.com/nandiwecare",
+    "instagram": "https://instagram.com/nandiwecare",
+    "linkedin": "https://linkedin.com/company/nandiwecare"
+  },
+  "establishedYear": 2023,
+  "totalBeds": 28,
+  "directorName": "Mr. Vishnuvardhan (Director)",
+  "supportedLanguages": [
+    "English",
+    "Kannada (ಕನ್ನಡ)",
+    "Hindi (हिंदी)",
+    "Tamil (தமிழ்)",
+    "Telugu (తెలుగు)",
+    "Malayalam (മലയാളം)",
+    "Urdu (اردو)"
+  ],
+  "roomTariffs": [
+    {
+      "category": "General Ward",
+      "pricePerDay": 2500,
+      "description": "Comfortable and hygienic inpatient ward with round-the-clock nursing supervision.",
+      "features": [
+        "24/7 Nursing Care",
+        "Patient Bed & Bedside Locker",
+        "Shared Washroom",
+        "Vital Monitoring"
+      ]
+    },
+    {
+      "category": "Semi-Private Room",
+      "pricePerDay": 3500,
+      "description": "Twin-sharing air-conditioned room with attendant accommodation.",
+      "features": [
+        "Air Conditioning (AC)",
+        "Dedicated Attendant Bed",
+        "Curtained Privacy",
+        "Regular Doctor Rounds"
+      ]
+    },
+    {
+      "category": "Private Room",
+      "pricePerDay": 4000,
+      "description": "Independent air-conditioned private suite with dedicated patient amenities.",
+      "features": [
+        "Air Conditioning (AC)",
+        "Attendant Bed",
+        "Private Attached Bathroom",
+        "Television & Nurse Call"
+      ]
+    },
+    {
+      "category": "Intensive Care Unit (ICU)",
+      "pricePerDay": 6000,
+      "description": "Advanced critical care unit managed by multidisciplinary intensivists and high nurse-to-patient ratio.",
+      "features": [
+        "Air Conditioning (AC)",
+        "Multidisciplinary Critical Care Team",
+        "Advanced Continuous Hemodynamic Monitoring",
+        "High Staff-to-Patient Ratio"
+      ]
+    }
+  ],
+  "visitingHours": {
+    "general": "9:00 AM – 11:00 AM & 6:00 PM – 7:00 PM",
+    "icu": "5:00 PM – 6:00 PM",
+    "maxVisitors": 2,
+    "restrictions": [
+      "Visitors above 12 years only permitted in inpatient areas",
+      "Electric gadgets and flammable items are strictly restricted",
+      "All visitors must maintain strict hospital hygiene protocols",
+      "Maximum of 2 visitors permitted per patient at any time"
+    ]
+  },
+  "insuranceInfo": {
+    "acceptedTPAs": [
+      "MD India Health Insurance TPA",
+      "Cashless Hospitalization Network"
+    ],
+    "cashlessAvailable": true,
+    "preAuthRequired": true,
+    "documentsRequired": [
+      "Identity Proof (Aadhaar Card, Voter ID, Passport)",
+      "Address Proof",
+      "Age Proof",
+      "Previous Medical Records & Doctor Prescription",
+      "Passport Size Photographs",
+      "Duly Filled Insurance Pre-Authorization / Proposal Form"
+    ],
+    "paymentMethods": [
+      "Cash",
+      "UPI (GPay / PhonePe / Paytm)",
+      "Debit Card",
+      "Credit Card",
+      "Net Banking"
+    ]
   }
 }

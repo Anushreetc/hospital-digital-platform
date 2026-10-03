@@ -96,39 +96,39 @@ export const AppointmentSection: React.FC<Props> = ({
   };
 
   return (
-    <section id="appointment" className="py-20 bg-gradient-to-b from-white via-slate-50 to-blue-50/50 border-t border-slate-100">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-3xl mx-auto mb-12 space-y-3">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-bold uppercase tracking-wider">
+    <section id="appointment" className="py-12 sm:py-20 bg-gradient-to-b from-white via-slate-50 to-blue-50/50 border-t border-slate-100">
+      <div className="max-w-5xl mx-auto px-3.5 sm:px-6 lg:px-8">
+        <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-12 space-y-2.5 sm:space-y-3">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-[11px] xs:text-xs font-bold uppercase tracking-wider">
             Online OPD Booking
           </div>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+          <h2 className="text-2xl xs:text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight break-words">
             Schedule Doctor Consultation
           </h2>
-          <p className="text-base text-slate-600">
+          <p className="text-xs xs:text-sm sm:text-base text-slate-600">
             Select your preferred department, doctor, and convenient date/time slot. Instant confirmation.
           </p>
         </div>
 
         {/* Confirmation Success Card */}
         {createdAppointment ? (
-          <div className="bg-white rounded-3xl p-8 border border-emerald-200 shadow-xl text-center space-y-6 animate-in zoom-in-95 duration-300 max-w-2xl mx-auto">
-            <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto">
-              <CheckCircle2 className="w-10 h-10" />
+          <div className="bg-white rounded-2xl sm:rounded-3xl p-4 xs:p-6 sm:p-8 border border-emerald-200 shadow-xl text-center space-y-4 sm:space-y-6 animate-in zoom-in-95 duration-300 max-w-2xl mx-auto">
+            <div className="w-14 h-14 sm:w-16 sm:h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto">
+              <CheckCircle2 className="w-8 h-8 sm:w-10 sm:h-10" />
             </div>
             <div>
-              <span className="text-xs font-bold text-emerald-700 uppercase tracking-widest bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
+              <span className="text-[10px] xs:text-xs font-bold text-emerald-700 uppercase tracking-widest bg-emerald-50 px-2.5 xs:px-3 py-1 rounded-full border border-emerald-200">
                 Appointment Booked & Syncing to Hospital Admin
               </span>
-              <h3 className="text-2xl font-black text-slate-900 mt-3">
+              <h3 className="text-xl sm:text-2xl font-black text-slate-900 mt-3 break-words">
                 Appointment ID: <span className="text-blue-600 font-mono">{createdAppointment.id}</span>
               </h3>
-              <p className="text-sm text-slate-600 mt-2">
+              <p className="text-xs sm:text-sm text-slate-600 mt-2 leading-relaxed">
                 Thank you <strong className="text-slate-800">{createdAppointment.patientName}</strong>! Your appointment with <strong className="text-slate-800">{createdAppointment.doctorName}</strong> ({createdAppointment.departmentName}) has been received for <strong className="text-slate-800">{createdAppointment.preferredDate} at {createdAppointment.preferredTime}</strong>.
               </p>
             </div>
 
-            <div className="bg-slate-50 p-4 rounded-2xl text-xs text-slate-600 text-left space-y-1 border border-slate-100">
+            <div className="bg-slate-50 p-3.5 sm:p-4 rounded-xl sm:rounded-2xl text-xs text-slate-600 text-left space-y-1.5 border border-slate-100">
               <div className="flex justify-between"><span>Patient Phone:</span> <span className="font-semibold text-slate-900">{createdAppointment.patientPhone}</span></div>
               <div className="flex justify-between"><span>Status:</span> <span className="font-bold text-blue-600">{createdAppointment.status}</span></div>
               <div className="flex justify-between"><span>Google Sheets Persistence:</span> <span className="font-semibold text-emerald-700">Saved</span></div>
@@ -136,21 +136,21 @@ export const AppointmentSection: React.FC<Props> = ({
 
             <button
               onClick={() => setCreatedAppointment(null)}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-8 py-3 rounded-xl transition-all shadow-md shadow-blue-600/20"
+              className="w-full sm:w-auto min-h-[44px] bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 sm:px-8 py-3 rounded-xl transition-all shadow-md shadow-blue-600/20 touch-manipulation cursor-pointer"
             >
               Book Another Appointment
             </button>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="bg-white rounded-3xl p-6 sm:p-10 border border-slate-200/80 shadow-xl space-y-6">
+          <form onSubmit={handleSubmit} className="bg-white rounded-2xl sm:rounded-3xl p-4 xs:p-6 sm:p-10 border border-slate-200/80 shadow-xl space-y-4 sm:space-y-6">
             {errorMsg && (
-              <div className="p-4 bg-rose-50 border border-rose-200 rounded-2xl flex items-center gap-3 text-rose-800 text-sm font-semibold">
-                <AlertCircle className="w-5 h-5 shrink-0 text-rose-600" />
+              <div className="p-3.5 sm:p-4 bg-rose-50 border border-rose-200 rounded-xl sm:rounded-2xl flex items-center gap-2.5 sm:gap-3 text-rose-800 text-xs sm:text-sm font-semibold">
+                <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 shrink-0 text-rose-600" />
                 <span>{errorMsg}</span>
               </div>
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               {/* Department */}
               <div className="space-y-1.5">
                 <label className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
@@ -161,7 +161,7 @@ export const AppointmentSection: React.FC<Props> = ({
                   value={departmentId}
                   onChange={(e) => setDepartmentId(e.target.value)}
                   required
-                  className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-xl p-3 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full min-h-[44px] bg-slate-50 border border-slate-300 text-slate-900 rounded-xl p-2.5 sm:p-3 text-xs sm:text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 touch-manipulation"
                 >
                   <option value="">-- Choose Department --</option>
                   {departments.filter(d => d.active).map(d => (
@@ -180,7 +180,7 @@ export const AppointmentSection: React.FC<Props> = ({
                   value={doctorId}
                   onChange={(e) => setDoctorId(e.target.value)}
                   required
-                  className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-xl p-3 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full min-h-[44px] bg-slate-50 border border-slate-300 text-slate-900 rounded-xl p-2.5 sm:p-3 text-xs sm:text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 touch-manipulation"
                 >
                   <option value="">-- Choose Doctor --</option>
                   {availableDocs.map(d => (
@@ -201,7 +201,7 @@ export const AppointmentSection: React.FC<Props> = ({
                   value={preferredDate}
                   onChange={(e) => setPreferredDate(e.target.value)}
                   required
-                  className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-xl p-3 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full min-h-[44px] bg-slate-50 border border-slate-300 text-slate-900 rounded-xl p-2.5 sm:p-3 text-xs sm:text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 touch-manipulation"
                 />
               </div>
 
@@ -215,7 +215,7 @@ export const AppointmentSection: React.FC<Props> = ({
                   value={preferredTime}
                   onChange={(e) => setPreferredTime(e.target.value)}
                   required
-                  className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-xl p-3 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full min-h-[44px] bg-slate-50 border border-slate-300 text-slate-900 rounded-xl p-2.5 sm:p-3 text-xs sm:text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 touch-manipulation"
                 >
                   {timeSlots.map(t => (
                     <option key={t} value={t}>{t}</option>
@@ -235,7 +235,7 @@ export const AppointmentSection: React.FC<Props> = ({
                   value={patientName}
                   onChange={(e) => setPatientName(e.target.value)}
                   required
-                  className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-xl p-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full min-h-[44px] bg-slate-50 border border-slate-300 text-slate-900 rounded-xl p-2.5 sm:p-3 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 touch-manipulation"
                 />
               </div>
 
@@ -251,7 +251,7 @@ export const AppointmentSection: React.FC<Props> = ({
                   value={patientPhone}
                   onChange={(e) => setPatientPhone(e.target.value)}
                   required
-                  className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-xl p-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full min-h-[44px] bg-slate-50 border border-slate-300 text-slate-900 rounded-xl p-2.5 sm:p-3 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 touch-manipulation"
                 />
               </div>
             </div>
@@ -268,7 +268,7 @@ export const AppointmentSection: React.FC<Props> = ({
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
                 required
-                className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-xl p-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-xl p-2.5 sm:p-3 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 touch-manipulation"
               />
             </div>
 
@@ -277,7 +277,7 @@ export const AppointmentSection: React.FC<Props> = ({
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-4 rounded-xl shadow-lg shadow-blue-600/30 transition-all text-base flex items-center justify-center gap-2 disabled:opacity-50"
+                className="w-full min-h-[48px] bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-3.5 sm:py-4 rounded-xl shadow-lg shadow-blue-600/30 transition-all text-sm sm:text-base flex items-center justify-center gap-2 disabled:opacity-50 touch-manipulation cursor-pointer active:scale-95"
               >
                 {submitting ? (
                   <>

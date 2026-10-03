@@ -314,7 +314,7 @@ export const AuthPages: React.FC<Props> = ({ role, onSuccessLogin, onBackToWebsi
                 <input
                   type="text"
                   required
-                  placeholder="e.g. City Care Super Specialty Hospital"
+                  placeholder="e.g. We Care Multispeciality Hospital and ICU Doddaballapura"
                   value={hospitalName}
                   onChange={(e) => setHospitalName(e.target.value)}
                   className="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500"

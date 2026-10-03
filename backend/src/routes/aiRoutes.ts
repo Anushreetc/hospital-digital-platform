@@ -2,6 +2,7 @@ import { Router, Response } from 'express';
 import { FileRepository } from '../repositories/FileRepository';
 import { AppointmentService } from '../services/AppointmentService';
 import { VoiceTtsService } from '../services/VoiceTtsService';
+import { GptLiveService } from '../services/GptLiveService';
 
 export const createAiRouter = (
   fileRepo: FileRepository,
@@ -9,6 +10,7 @@ export const createAiRouter = (
 ): Router => {
   const router = Router();
   const ttsService = new VoiceTtsService();
+  const gptLiveService = new GptLiveService(fileRepo, appointmentService);
 
   const sendSuccess = (res: Response, data: any, status = 200) => res.status(status).json({ success: true, data });
   const sendError = (res: Response, err: any, defaultStatus = 400) => {
@@ -224,14 +226,17 @@ export const createAiRouter = (
     sendSuccess(res, ttsService.getAvailableProviders());
   });
 
-  // 12. Voice Synthesis Route (Kannada Neural Stream / ElevenLabs / Fish Audio)
+  // 12. Voice Synthesis Route (VoisLabs / Kannada Neural Stream / ElevenLabs / Fish Audio)
   router.post('/voice/tts', async (req, res) => {
     try {
-      const { text, provider, voiceId, language } = req.body;
+      const { text, provider, voiceId, language, tone } = req.body;
       if (!text) return sendError(res, { code: 'VALIDATION_ERROR', message: 'Text prompt required.' });
 
       let audioBuffer: Buffer;
-      if (provider === 'fish_audio') {
+      if (provider === 'voislabs') {
+        const langMode = (language === 'EN' || language === 'en') ? 'EN' : 'KN';
+        audioBuffer = await ttsService.synthesizeVoisLabs(text, langMode, voiceId, tone);
+      } else if (provider === 'fish_audio') {
         audioBuffer = await ttsService.synthesizeFishAudio(text);
       } else if (provider === 'elevenlabs') {
         audioBuffer = await ttsService.synthesizeElevenLabs(text, voiceId);
@@ -246,6 +251,55 @@ export const createAiRouter = (
     } catch (err: any) {
       sendError(res, err);
     }
+  });
+
+  // Dedicated VoisLabs Synthesis Endpoint
+  router.post('/voice/voislabs', async (req, res) => {
+    try {
+      const { text, language, voiceId, tone } = req.body;
+      if (!text) return sendError(res, { code: 'VALIDATION_ERROR', message: 'Text prompt required.' });
+
+      const langMode = (language === 'EN' || language === 'en') ? 'EN' : 'KN';
+      const audioBuffer = await ttsService.synthesizeVoisLabs(text, langMode, voiceId, tone);
+
+      res.setHeader('Content-Type', 'audio/mpeg');
+      res.setHeader('Content-Length', audioBuffer.length);
+      return res.send(audioBuffer);
+    } catch (err: any) {
+      sendError(res, err);
+    }
+  });
+
+  // 13. GPT-Live-1 Full-Duplex Session Initializer
+  router.post('/voice/gpt-live/session', async (_req, res) => {
+    try {
+      const session = await gptLiveService.createLiveSession();
+      return sendSuccess(res, session);
+    } catch (err: any) {
+      return sendError(res, err);
+    }
+  });
+
+  // 14. GPT-Live-1 Tool Dispatcher
+  router.post('/voice/gpt-live/tools', async (req, res) => {
+    try {
+      const { name, args } = req.body;
+      if (!name) return sendError(res, { code: 'VALIDATION_ERROR', message: 'Tool name required.' });
+      const result = await gptLiveService.executeTool(name, args || {});
+      return sendSuccess(res, result);
+    } catch (err: any) {
+      return sendError(res, err);
+    }
+  });
+
+  // 15. GPT-Live-1 Status & Config Check
+  router.get('/voice/gpt-live/status', (_req, res) => {
+    return sendSuccess(res, {
+      configured: gptLiveService.isConfigured(),
+      model: gptLiveService.getModelName(),
+      provider: 'openai',
+      fullDuplex: true
+    });
   });
 
   return router;

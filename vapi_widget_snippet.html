@@ -1,0 +1,41 @@
+<!-- VAPI VOICE AGENT WIDGET SNIPPET -->
+<!-- Paste this right before the closing </body> tag of your website -->
+
+<script>
+  var vapiInstance = null;
+  const assistantId = "YOUR_VAPI_ASSISTANT_ID"; // Replace with the Assistant ID from Vapi Dashboard
+  const apiKey = "YOUR_VAPI_PUBLIC_KEY"; // Replace with your Public Key from Vapi Dashboard
+
+  (function (d, t) {
+    var g = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    g.src =
+      "https://cdn.jsdelivr.net/gh/VapiAI/html-script-tag@latest/dist/assets/index.js";
+    g.defer = true;
+    g.async = true;
+    s.parentNode.insertBefore(g, s);
+
+    g.onload = function () {
+      vapiInstance = window.vapiSDK.run({
+        apiKey: apiKey,
+        assistant: assistantId,
+        config: {
+          position: "bottom-right",
+          offset: "20px",
+          button: {
+            color: "#4F46E5",
+            idle: {
+              icon: `https://unpkg.com/lucide-static@0.321.0/icons/mic.svg`,
+            },
+            loading: {
+              icon: `https://unpkg.com/lucide-static@0.321.0/icons/loader-2.svg`,
+            },
+            active: {
+              icon: `https://unpkg.com/lucide-static@0.321.0/icons/square.svg`,
+            },
+          },
+        },
+      });
+    };
+  })(document, "script");
+</script>

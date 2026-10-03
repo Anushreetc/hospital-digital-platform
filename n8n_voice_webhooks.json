@@ -1,0 +1,422 @@
+{
+  "name": "Voice Assistant Backend Webhooks",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "check-availability",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "1",
+      "name": "Webhook: Check Availability",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [200, 200]
+    },
+    {
+      "parameters": {
+        "jsCode": "const secret = $env.SHARED_SECRET || 'your_super_secret_key_here';\nif (items[0].json.headers['x-api-key'] !== secret) {\n  throw new Error('Unauthorized');\n}\nreturn items;"
+      },
+      "id": "2",
+      "name": "Auth Check",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [400, 200]
+    },
+    {
+      "parameters": {
+        "operation": "read",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_SHEET_ID_HERE",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Config",
+          "mode": "list"
+        },
+        "options": {}
+      },
+      "id": "3",
+      "name": "Get Config",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [600, 200]
+    },
+    {
+      "parameters": {
+        "operation": "read",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_SHEET_ID_HERE",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Appointments",
+          "mode": "list"
+        },
+        "options": {}
+      },
+      "id": "4",
+      "name": "Get Appointments",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [800, 200]
+    },
+    {
+      "parameters": {
+        "jsCode": "const reqDate = $('Webhook: Check Availability').item.json.body.date;\nconst configItems = $('Get Config').all().map(i => i.json);\nconst appts = $('Get Appointments').all().map(i => i.json);\n\n// Find working hours\nlet whStr = '10:00-18:00';\nfor (const c of configItems) {\n  if (c.key === 'working_hours') {\n    whStr = c.value;\n    break;\n  }\n}\n\n// Parse working hours\nconst [start, end] = whStr.split('-');\nconst startHour = parseInt(start.split(':')[0], 10);\nconst endHour = parseInt(end.split(':')[0], 10);\n\n// Generate 60 min slots\nconst slots = [];\nfor (let i = startHour; i < endHour; i++) {\n  slots.push(i.toString().padStart(2, '0') + ':00');\n}\n\n// Filter out booked slots for reqDate\nconst bookedForDate = appts.filter(a => a.date === reqDate && a.status !== 'Cancelled').map(a => a.time);\nconst available_slots = slots.filter(s => !bookedForDate.includes(s));\n\nreturn [{ json: { available_slots } }];"
+      },
+      "id": "5",
+      "name": "Compute Slots",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1000, 200]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "id": "6",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1200, 200]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "book-appointment",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "7",
+      "name": "Webhook: Book Appointment",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [200, 400]
+    },
+    {
+      "parameters": {
+        "jsCode": "const secret = $env.SHARED_SECRET || 'your_super_secret_key_here';\nif (items[0].json.headers['x-api-key'] !== secret) {\n  throw new Error('Unauthorized');\n}\n\nconst body = items[0].json.body;\nconst aptId = 'APT-' + Date.now();\n\nreturn [{ \n  json: { \n    appointment_id: aptId,\n    name: body.name,\n    phone: body.phone,\n    date: body.date,\n    time: body.time,\n    status: 'Confirmed'\n  } \n}];"
+      },
+      "id": "8",
+      "name": "Auth & Gen ID",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [400, 400]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_SHEET_ID_HERE",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Appointments",
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData"
+        },
+        "options": {}
+      },
+      "id": "9",
+      "name": "Append Row",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [600, 400]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ \"success\": true, \"appointment_id\": \"{{ $json.appointment_id }}\" }",
+        "options": {}
+      },
+      "id": "10",
+      "name": "Respond to Webhook 2",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [800, 400]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "cancel-appointment",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "11",
+      "name": "Webhook: Cancel Appt",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [200, 600]
+    },
+    {
+      "parameters": {
+        "jsCode": "const secret = $env.SHARED_SECRET || 'your_super_secret_key_here';\nif (items[0].json.headers['x-api-key'] !== secret) {\n  throw new Error('Unauthorized');\n}\n\nconst body = items[0].json.body;\nreturn [{ \n  json: { \n    appointment_id: body.appointment_id,\n    status: 'Cancelled'\n  } \n}];"
+      },
+      "id": "12",
+      "name": "Auth & Format",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [400, 600]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_SHEET_ID_HERE",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Appointments",
+          "mode": "list"
+        },
+        "columnToMatchOn": "appointment_id",
+        "valueToMatchOn": "={{ $json.appointment_id }}",
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "status": "Cancelled"
+          }
+        },
+        "options": {}
+      },
+      "id": "13",
+      "name": "Update Row",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [600, 600]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{ \"success\": true }",
+        "options": {}
+      },
+      "id": "14",
+      "name": "Respond to Webhook 3",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [800, 600]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "notify-staff",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "15",
+      "name": "Webhook: Notify Staff",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [200, 800]
+    },
+    {
+      "parameters": {
+        "jsCode": "const secret = $env.SHARED_SECRET || 'your_super_secret_key_here';\nif (items[0].json.headers['x-api-key'] !== secret) {\n  throw new Error('Unauthorized');\n}\nreturn items;"
+      },
+      "id": "16",
+      "name": "Auth Check Notify",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [400, 800]
+    },
+    {
+      "parameters": {
+        "sendTo": "clinic.staff@example.com",
+        "subject": "New Alert from Voice Assistant",
+        "message": "={{ $json.body.summary }}",
+        "appendAttribution": false
+      },
+      "id": "17",
+      "name": "Gmail",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2,
+      "position": [600, 800]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{ \"success\": true }",
+        "options": {}
+      },
+      "id": "18",
+      "name": "Respond to Webhook 4",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [800, 800]
+    }
+  ],
+  "connections": {
+    "Webhook: Check Availability": {
+      "main": [
+        [
+          {
+            "node": "Auth Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Auth Check": {
+      "main": [
+        [
+          {
+            "node": "Get Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Config": {
+      "main": [
+        [
+          {
+            "node": "Get Appointments",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Appointments": {
+      "main": [
+        [
+          {
+            "node": "Compute Slots",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Compute Slots": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook: Book Appointment": {
+      "main": [
+        [
+          {
+            "node": "Auth & Gen ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Auth & Gen ID": {
+      "main": [
+        [
+          {
+            "node": "Append Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append Row": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook: Cancel Appt": {
+      "main": [
+        [
+          {
+            "node": "Auth & Format",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Auth & Format": {
+      "main": [
+        [
+          {
+            "node": "Update Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Row": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook 3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook: Notify Staff": {
+      "main": [
+        [
+          {
+            "node": "Auth Check Notify",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Auth Check Notify": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook 4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

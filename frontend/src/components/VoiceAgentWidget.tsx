@@ -1,30 +1,86 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { apiClient } from '../services/apiClient';
-import { playBilingualAudio, stopKannadaAudio, unlockBrowserAudio, AudioLanguageMode } from '../services/kannadaTts';
-import { Mic, MicOff, Volume2, VolumeX, X, Send, AlertTriangle, RefreshCw, Languages, Play, Sparkles, Phone, PhoneOff, Hash } from 'lucide-react';
+import {
+  playBilingualAudio,
+  stopKannadaAudio,
+  unlockBrowserAudio,
+  getAvailableVoices,
+  previewTunedVoice,
+  AudioLanguageMode,
+  VoiceSettings,
+  VOISLABS_VOICES,
+  VOISLABS_TONES
+} from '../services/kannadaTts';
+import { DialogueTurn } from '../types';
+import { GptLiveClient } from '../services/gptLiveEngine';
+import {
+  Mic,
+  MicOff,
+  Volume2,
+  VolumeX,
+  Send,
+  RefreshCw,
+  Phone,
+  PhoneOff,
+  Hash,
+  Zap,
+  CheckCircle2,
+  Calendar,
+  User,
+  Keyboard,
+  ChevronDown,
+  Sliders,
+  Play,
+  RotateCcw,
+  Sparkles,
+  Radio,
+  FileText
+} from 'lucide-react';
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
 }
 
+interface MessageItem {
+  sender: 'bot' | 'user';
+  textKn: string;
+  textEn: string;
+}
+
 export const VoiceAgentWidget: React.FC<Props> = ({ isOpen, onClose }) => {
   const [sessionId, setSessionId] = useState<string>(`vsession-${Date.now()}`);
-  const [language, setLanguage] = useState<AudioLanguageMode>('BILINGUAL');
-  const [voiceEngine, setVoiceEngine] = useState<'web' | 'elevenlabs' | 'fish_audio'>('web');
+  const [step, setStep] = useState<'language_select' | 'conversation'>('language_select');
+  
+  // Separate Language Mode: 'KN' | 'EN' | 'BILINGUAL'
+  const [languageMode, setLanguageMode] = useState<AudioLanguageMode>('KN');
+
+  // Voice Tuning Settings (VoisLabs, Speed, Pitch, Selected Voice)
+  const [voiceSettings, setVoiceSettings] = useState<VoiceSettings>({
+    rate: 1.0,
+    pitch: 1.0,
+    engine: 'browser_neural',
+    voisLabsVoiceId: 'voislabs-kannada-female-1',
+    voisLabsTone: 'neutral'
+  });
+
+  const [availableVoices, setAvailableVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const [showTuningPanel, setShowTuningPanel] = useState<boolean>(false);
+  const [isTestingVoice, setIsTestingVoice] = useState<boolean>(false);
+
   const [isMuted, setIsMuted] = useState<boolean>(false);
-  const [isAudioStarted, setIsAudioStarted] = useState<boolean>(false);
   const [callSeconds, setCallSeconds] = useState<number>(0);
   const [showKeypad, setShowKeypad] = useState<boolean>(false);
+  const [showKeyboardInput, setShowKeyboardInput] = useState<boolean>(false);
+  const [handsFree, setHandsFree] = useState<boolean>(true); // Auto-listen active by default
 
-  const [messages, setMessages] = useState<Array<{ sender: 'bot' | 'user'; textKn: string; textEn?: string }>>([
-    {
-      sender: 'bot',
-      textKn: "ನಮಸ್ಕಾರ! ಸಿಟಿ ಕೇರ್ ಆಸ್ಪತ್ರೆಗೆ ಸುಸ್ವಾಗತ. ಅಪಾಯಿಂಟ್‌ಮೆಂಟ್ ಕಾಯ್ದಿರಿಸಲು ನಿಮ್ಮ ಹೆಸರು ಏನು?",
-      textEn: "Hello! Welcome to City Care Hospital. What is your full name for the appointment?"
-    }
-  ]);
+  const initialGreeting: MessageItem = {
+    sender: 'bot',
+    textKn: "ನಮಸ್ಕಾರ! ವೀ ಕೇರ್ ಮಲ್ಟಿಸ್ಪೆಷಾಲಿಟಿ ಆಸ್ಪತ್ರೆ ಮತ್ತು ಐಸಿಯು ದೊಡ್ಡಬಳ್ಳಾಪುರಕ್ಕೆ ಸುಸ್ವಾಗತ. ಅಪಾಯಿಂಟ್‌ಮೆಂಟ್ ಕಾಯ್ದಿರಿಸಲು ನಿಮ್ಮ ಪೂರ್ಣ ಹೆಸರು ತಿಳಿಸಿ.",
+    textEn: "Hello! Welcome to We Care Multispeciality Hospital and ICU Doddaballapura. Please state your full name to book an appointment."
+  };
 
+  const [messages, setMessages] = useState<MessageItem[]>([initialGreeting]);
   const [inputText, setInputText] = useState<string>('');
   const [isListening, setIsListening] = useState<boolean>(false);
   const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
@@ -33,40 +89,190 @@ export const VoiceAgentWidget: React.FC<Props> = ({ isOpen, onClose }) => {
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
+  const gptLiveRef = useRef<GptLiveClient | null>(null);
 
+  // Turn-by-turn transcript recording for Hospital Receptionist Portal
+  const dialogueTurnsRef = useRef<DialogueTurn[]>([
+    {
+      speaker: 'AI_RECEPTIONIST',
+      text: initialGreeting.textKn + (initialGreeting.textEn ? ` / ${initialGreeting.textEn}` : ''),
+      timestamp: '00:00'
+    }
+  ]);
+
+  // Fresh state refs to avoid stale closure issues in audio callbacks
+  const isOpenRef = useRef(isOpen);
+  isOpenRef.current = isOpen;
+
+  const isSpeakingRef = useRef(isSpeaking);
+  isSpeakingRef.current = isSpeaking;
+
+  const isListeningRef = useRef(isListening);
+  isListeningRef.current = isListening;
+
+  const handsFreeRef = useRef(handsFree);
+  handsFreeRef.current = handsFree;
+
+  const languageModeRef = useRef(languageMode);
+  languageModeRef.current = languageMode;
+
+  const isMutedRef = useRef(isMuted);
+  isMutedRef.current = isMuted;
+
+  // Persist conversation transcript & case to Hospital Receptionist Portal
+  const saveCurrentCallRecord = async (appt?: any) => {
+    const turns = [...dialogueTurnsRef.current];
+    if (turns.length <= 1 && !appt) return;
+
+    const appointment = appt || confirmedAppointment;
+    const callerName = appointment?.patientName || 'Caller';
+    const callerPhone = appointment?.patientPhone || '9876543210';
+    const fullTranscript = turns
+      .map((t) => `${t.speaker === 'AI_RECEPTIONIST' ? 'AI Receptionist' : 'Patient'} [${t.timestamp}]: ${t.text}`)
+      .join('\n');
+
+    const summaryText = appointment
+      ? `Patient ${appointment.patientName} (${appointment.patientPhone}) booked appointment for ${appointment.preferredDate} at ${appointment.preferredTime} with ${appointment.doctorName} (${appointment.departmentName}).`
+      : `Inquiry handled by AI Voice Receptionist in ${languageMode === 'KN' ? 'Kannada' : languageMode === 'EN' ? 'English' : 'Bilingual'} mode. Call duration: ${formatCallTime(callSeconds)}.`;
+
+    try {
+      await apiClient.saveVoiceCall({
+        id: `call-${sessionId.replace(/[^a-zA-Z0-9]/g, '').slice(-6)}`,
+        callId: sessionId,
+        callerName,
+        phoneNumber: callerPhone,
+        startedAt: new Date(Date.now() - (callSeconds * 1000)).toISOString(),
+        endedAt: new Date().toISOString(),
+        durationSeconds: Math.max(15, callSeconds),
+        language: languageMode === 'KN' ? 'KN' : languageMode === 'EN' ? 'EN' : 'BILINGUAL',
+        status: 'COMPLETED',
+        caseStatus: 'NEW',
+        intent: appointment ? 'APPOINTMENT_BOOKING' : 'GENERAL_OPD',
+        appointmentId: appointment?.id,
+        bookedAppointmentDetails: appointment ? {
+          id: appointment.id,
+          doctorName: appointment.doctorName,
+          departmentName: appointment.departmentName,
+          date: appointment.preferredDate,
+          time: appointment.preferredTime,
+          reason: appointment.reason
+        } : undefined,
+        outcome: appointment ? 'APPOINTMENT_CREATED' : 'INFORMATION_PROVIDED',
+        summary: summaryText,
+        transcript: fullTranscript,
+        dialogueTurns: turns
+      });
+    } catch (e) {
+      console.warn('Call transcript auto-save notice:', e);
+    }
+  };
+
+  // Discover and load available synthesizer voices
+  useEffect(() => {
+    const loadVoices = () => {
+      const v = getAvailableVoices();
+      if (v.length > 0) setAvailableVoices(v);
+    };
+    loadVoices();
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      window.speechSynthesis.onvoiceschanged = loadVoices;
+    }
+  }, []);
+
+  // Local storage removed for simplified UI
+
+  // Initialize GPT-Live-1 Engine
+  useEffect(() => {
+    gptLiveRef.current = new GptLiveClient(
+      (state) => {
+        setIsSpeaking(state.isSpeaking);
+        if (state.isSpeaking) {
+          isSpeakingRef.current = true;
+          if (recognitionRef.current) {
+            try { recognitionRef.current.abort(); } catch {}
+            setIsListening(false);
+          }
+        }
+      },
+      (sender, text) => {
+        setMessages((prev) => [
+          ...prev,
+          {
+            sender,
+            textKn: text,
+            textEn: text
+          }
+        ]);
+      }
+    );
+
+    return () => {
+      gptLiveRef.current?.stop();
+    };
+  }, []);
+
+  // Auto-scroll transcript
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, loading, isSpeaking, isListening, confirmedAppointment]);
 
-  // Call Duration Timer & Auto-Greeting on Open
+  // Call Duration Timer & Initial Greeting Speech on Open
   useEffect(() => {
     let timer: any;
     let speakTimer: any;
-    if (isOpen) {
+
+    if (isOpen && step === 'conversation') {
       unlockBrowserAudio();
-      setIsAudioStarted(true);
-      timer = setInterval(() => setCallSeconds(s => s + 1), 1000);
+      timer = setInterval(() => setCallSeconds((s) => s + 1), 1000);
+      gptLiveRef.current?.start().catch((err) => console.warn('Live API auto-start notice:', err));
+
+      // Speak greeting, then AUTOMATICALLY start listening for caller's answer!
       speakTimer = setTimeout(() => {
-        if (!isMuted && messages.length > 0) {
-          const firstMsg = messages[0];
+        if (!isMutedRef.current) {
           playBilingualAudio(
-            firstMsg.textKn,
-            firstMsg.textEn,
-            language,
-            () => setIsSpeaking(true),
-            () => setIsSpeaking(false)
+            initialGreeting.textKn,
+            initialGreeting.textEn,
+            languageModeRef.current,
+            voiceSettings,
+            () => {
+              setIsSpeaking(true);
+              isSpeakingRef.current = true;
+            },
+            () => {
+              setIsSpeaking(false);
+              isSpeakingRef.current = false;
+              if (isOpenRef.current && handsFreeRef.current) {
+                setTimeout(() => {
+                  if (isOpenRef.current && !isSpeakingRef.current) {
+                    startListening();
+                  }
+                }, 300);
+              }
+            }
           );
+        } else if (handsFreeRef.current) {
+          startListening();
         }
-      }, 400);
-    } else {
+      }, 500);
+    } else if (!isOpen) {
+      setStep('language_select');
       setCallSeconds(0);
+      setMessages([initialGreeting]);
+      dialogueTurnsRef.current = [];
+      setConfirmedAppointment(null);
       stopKannadaAudio();
+      if (recognitionRef.current) {
+        try { recognitionRef.current.abort(); } catch {}
+      }
+      setIsListening(false);
+      gptLiveRef.current?.stop();
     }
+
     return () => {
       clearInterval(timer);
       clearTimeout(speakTimer);
     };
-  }, [isOpen]);
+  }, [isOpen, step]);
 
   const formatCallTime = (secs: number) => {
     const mins = Math.floor(secs / 60);
@@ -74,105 +280,196 @@ export const VoiceAgentWidget: React.FC<Props> = ({ isOpen, onClose }) => {
     return `${mins.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
   };
 
-  const startAudioSession = () => {
-    unlockBrowserAudio();
-    setIsAudioStarted(true);
-    if (messages.length > 0 && !isMuted) {
-      const latestMsg = messages[messages.length - 1];
-      if (latestMsg.sender === 'bot') {
-        speakResponse(latestMsg.textKn, latestMsg.textEn);
-      }
+  // Speak response based on current languageMode and tuned voice settings
+  const speakResponse = (textKn: string, textEn?: string) => {
+    // Abort active recognition while AI is speaking so it doesn't pick up its own voice
+    if (recognitionRef.current) {
+      try { recognitionRef.current.abort(); } catch {}
+      setIsListening(false);
+      isListeningRef.current = false;
     }
-  };
 
-  // Speech Synthesis Pipeline (Bilingual Kannada + English Speech)
-  const speakResponse = async (textKn: string, textEn?: string) => {
-    if (isMuted) return;
-    playBilingualAudio(
-      textKn,
-      textEn,
-      language,
-      () => setIsSpeaking(true),
-      () => setIsSpeaking(false)
-    );
-  };
-
-  const fallbackWebSpeech = (textKn: string, textEn?: string) => {
-    if (!('speechSynthesis' in window)) {
-      setIsSpeaking(false);
+    if (isMutedRef.current) {
+      if (isOpenRef.current && handsFreeRef.current) {
+        startListening();
+      }
       return;
     }
 
-    try {
-      window.speechSynthesis.cancel();
-      if (window.speechSynthesis.paused) {
-        window.speechSynthesis.resume();
-      }
-
-      const isKannada = language === 'KN';
-      const textToSpeak = isKannada ? textKn : (textEn || textKn);
-      const utterance = new SpeechSynthesisUtterance(textToSpeak);
-      utterance.rate = 1.15; // Faster speech pace
-      utterance.volume = 1.0;
-      utterance.pitch = 1.0;
-
-      const voices = window.speechSynthesis.getVoices();
-      if (voices && voices.length > 0) {
-        // Search strictly for Kannada (kn-IN) or English (en-IN / en-US), NEVER Hindi!
-        let matchedVoice = voices.find(v => v.lang.toLowerCase().includes(isKannada ? 'kn' : 'en'));
-        if (!matchedVoice && isKannada) {
-          matchedVoice = voices.find(v => v.lang.toLowerCase().includes('en-in') || v.lang.toLowerCase().includes('en'));
-          if (matchedVoice && textEn) {
-            utterance.text = textEn;
-            utterance.lang = matchedVoice.lang;
-          }
-        }
-        if (matchedVoice) {
-          utterance.voice = matchedVoice;
+    playBilingualAudio(
+      textKn,
+      textEn || textKn,
+      languageModeRef.current,
+      voiceSettings,
+      () => {
+        setIsSpeaking(true);
+        isSpeakingRef.current = true;
+      },
+      () => {
+        setIsSpeaking(false);
+        isSpeakingRef.current = false;
+        // AS SOON AS THE AI FINISHES SPEAKING -> AUTOMATICALLY START LISTENING!
+        if (isOpenRef.current && handsFreeRef.current) {
+          setTimeout(() => {
+            if (isOpenRef.current && !isSpeakingRef.current) {
+              startListening();
+            }
+          }, 350);
         }
       }
-
-      utterance.onstart = () => setIsSpeaking(true);
-      utterance.onend = () => setIsSpeaking(false);
-      utterance.onerror = () => setIsSpeaking(false);
-
-      window.speechSynthesis.speak(utterance);
-    } catch (e) {
-      console.warn('SpeechSynthesis Exception:', e);
-      setIsSpeaking(false);
-    }
+    );
   };
 
   const stopSpeaking = () => {
     stopKannadaAudio();
     setIsSpeaking(false);
+    isSpeakingRef.current = false;
   };
 
-  // Web Speech Recognition (STT)
+  // Switch Language Mode cleanly & update ongoing session
+  const handleSelectLanguage = (newMode: AudioLanguageMode) => {
+    stopSpeaking();
+    setLanguageMode(newMode);
+    languageModeRef.current = newMode;
+    
+    // Announce the switch briefly in the chosen language, then auto-listen!
+    if (!isMutedRef.current) {
+      setTimeout(() => {
+        if (newMode === 'KN') {
+          playBilingualAudio(
+            "ಕನ್ನಡ ಭಾಷೆ ಆಯ್ಕೆ ಮಾಡಲಾಗಿದೆ. ನಾನು ಕನ್ನಡದಲ್ಲಿ ಮಾತನಾಡುತ್ತೇನೆ.",
+            undefined,
+            'KN',
+            voiceSettings,
+            () => {
+              setIsSpeaking(true);
+              isSpeakingRef.current = true;
+            },
+            () => {
+              setIsSpeaking(false);
+              isSpeakingRef.current = false;
+              if (isOpenRef.current && handsFreeRef.current) startListening();
+            }
+          );
+        } else if (newMode === 'EN') {
+          playBilingualAudio(
+            "English mode selected. Please speak your answer.",
+            "English mode selected. Please speak your answer.",
+            'EN',
+            voiceSettings,
+            () => {
+              setIsSpeaking(true);
+              isSpeakingRef.current = true;
+            },
+            () => {
+              setIsSpeaking(false);
+              isSpeakingRef.current = false;
+              if (isOpenRef.current && handsFreeRef.current) startListening();
+            }
+          );
+        } else {
+          playBilingualAudio(
+            "ದ್ವಿಭಾಷಾ ಮೋಡ್ ಸಕ್ರಿಯವಾಗಿದೆ.",
+            "Bilingual mode active.",
+            'BILINGUAL',
+            voiceSettings,
+            () => {
+              setIsSpeaking(true);
+              isSpeakingRef.current = true;
+            },
+            () => {
+              setIsSpeaking(false);
+              isSpeakingRef.current = false;
+              if (isOpenRef.current && handsFreeRef.current) startListening();
+            }
+          );
+        }
+      }, 200);
+    }
+  };
+
+  // Test current voice tuning settings
+  const handleTestTuning = () => {
+    stopSpeaking();
+    setIsTestingVoice(true);
+    const testLang = languageMode === 'EN' ? 'EN' : 'KN';
+    previewTunedVoice(
+      testLang,
+      voiceSettings,
+      () => {
+        setIsSpeaking(true);
+        isSpeakingRef.current = true;
+        setIsTestingVoice(true);
+      },
+      () => {
+        setIsSpeaking(false);
+        isSpeakingRef.current = false;
+        setIsTestingVoice(false);
+      }
+    );
+  };
+
+  // Web Speech Recognition (STT) calibrated to selected language
   const startListening = () => {
     stopSpeaking();
-    setIsAudioStarted(true);
+    unlockBrowserAudio();
 
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRecognition) {
-      alert("Browser speech recognition is not supported. Please type your response below.");
+      setShowKeyboardInput(true);
       return;
     }
 
     try {
       if (recognitionRef.current) {
-        recognitionRef.current.abort();
+        try { recognitionRef.current.abort(); } catch {}
       }
 
       const recognition = new SpeechRecognition();
       recognitionRef.current = recognition;
-      recognition.lang = language === 'KN' ? 'kn-IN' : 'en-IN';
+      
+      // Calibrate STT recognition language to user's selected mode
+      if (languageModeRef.current === 'EN') {
+        recognition.lang = 'en-IN';
+      } else {
+        recognition.lang = 'kn-IN';
+      }
+      
+      recognition.continuous = false;
       recognition.interimResults = false;
       recognition.maxAlternatives = 1;
 
-      recognition.onstart = () => setIsListening(true);
-      recognition.onend = () => setIsListening(false);
-      recognition.onerror = () => setIsListening(false);
+      recognition.onstart = () => {
+        setIsListening(true);
+        isListeningRef.current = true;
+      };
+
+      recognition.onend = () => {
+        setIsListening(false);
+        isListeningRef.current = false;
+        // If hands-free is enabled and AI is not speaking and no pending submission, gently maintain listening
+        if (isOpenRef.current && handsFreeRef.current && !isSpeakingRef.current && !loading) {
+          setTimeout(() => {
+            if (isOpenRef.current && handsFreeRef.current && !isSpeakingRef.current && !isListeningRef.current && !loading) {
+              try {
+                recognition.start();
+              } catch {}
+            }
+          }, 350);
+        }
+      };
+
+      recognition.onerror = (event: any) => {
+        setIsListening(false);
+        isListeningRef.current = false;
+        if (event.error === 'no-speech' && isOpenRef.current && handsFreeRef.current && !isSpeakingRef.current && !loading) {
+          setTimeout(() => {
+            if (isOpenRef.current && handsFreeRef.current && !isSpeakingRef.current && !isListeningRef.current && !loading) {
+              try { recognition.start(); } catch {}
+            }
+          }, 350);
+        }
+      };
 
       recognition.onresult = (event: any) => {
         const transcript = event.results[0][0].transcript;
@@ -186,25 +483,43 @@ export const VoiceAgentWidget: React.FC<Props> = ({ isOpen, onClose }) => {
     } catch (e) {
       console.warn('STT exception:', e);
       setIsListening(false);
+      isListeningRef.current = false;
     }
   };
 
+  // Dispatch Utterance to GPT-Live-1 Engine & Backend Tools
   const handleSendUtterance = async (textToSend?: string) => {
     const query = textToSend || inputText;
     if (!query.trim() || loading) return;
 
     stopSpeaking();
-    setIsAudioStarted(true);
-    setMessages(prev => [...prev, { sender: 'user', textKn: query, textEn: query }]);
+    unlockBrowserAudio();
+
+    const curTurnTime = formatCallTime(callSeconds);
+    dialogueTurnsRef.current.push({
+      speaker: 'PATIENT',
+      text: query,
+      timestamp: curTurnTime
+    });
+
+    setMessages((prev) => [...prev, { sender: 'user', textKn: query, textEn: query }]);
     setInputText('');
     setLoading(true);
 
     try {
       const res = await apiClient.processVoiceUtterance(sessionId, query);
+      const aiTurnTime = formatCallTime(callSeconds);
+      dialogueTurnsRef.current.push({
+        speaker: 'AI_RECEPTIONIST',
+        text: `${res.promptKannada} / ${res.promptEnglish}`,
+        timestamp: aiTurnTime
+      });
+
       if (res.appointment) {
         setConfirmedAppointment(res.appointment);
+        saveCurrentCallRecord(res.appointment);
       }
-      setMessages(prev => [
+      setMessages((prev) => [
         ...prev,
         {
           sender: 'bot',
@@ -214,12 +529,12 @@ export const VoiceAgentWidget: React.FC<Props> = ({ isOpen, onClose }) => {
       ]);
       speakResponse(res.promptKannada, res.promptEnglish);
     } catch (err: any) {
-      setMessages(prev => [
+      setMessages((prev) => [
         ...prev,
         {
           sender: 'bot',
           textKn: "ಕ್ಷಮಿಸಿ, ದೋಷ ಸಂಭವಿಸಿದೆ. ದಯವಿಟ್ಟು ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಿ.",
-          textEn: "Error processing request. Please try again."
+          textEn: "Sorry, an error occurred. Please try again."
         }
       ]);
     } finally {
@@ -228,26 +543,45 @@ export const VoiceAgentWidget: React.FC<Props> = ({ isOpen, onClose }) => {
   };
 
   const resetSession = () => {
+    saveCurrentCallRecord();
     stopSpeaking();
     setConfirmedAppointment(null);
     const newId = `vsession-${Date.now()}`;
     setSessionId(newId);
-    const initialMsg = [
+    setMessages([initialGreeting]);
+    dialogueTurnsRef.current = [
       {
-        sender: 'bot' as const,
-        textKn: "ನಮಸ್ಕಾರ! ಸಿಟಿ ಕೇರ್ ಆಸ್ಪತ್ರೆಗೆ ಸುಸ್ವಾಗತ. ಅಪಾಯಿಂಟ್‌ಮೆಂಟ್ ಕಾಯ್ದಿರಿಸಲು ನಿಮ್ಮ ಹೆಸರು ಏನು?",
-        textEn: "Hello! Welcome to City Care Hospital. What is your full name for the appointment?"
+        speaker: 'AI_RECEPTIONIST',
+        text: initialGreeting.textKn + (initialGreeting.textEn ? ` / ${initialGreeting.textEn}` : ''),
+        timestamp: '00:00'
       }
     ];
-    setMessages(initialMsg);
-    if (isAudioStarted && !isMuted) {
-      speakResponse(initialMsg[0].textKn, initialMsg[0].textEn);
-    }
+    setStep('language_select');
+  };
+
+  const handleStartConversation = (mode: 'KN' | 'EN') => {
+    setLanguageMode(mode);
+    languageModeRef.current = mode;
+    setVoiceSettings({
+      rate: 1.0,
+      pitch: 1.0,
+      engine: 'browser_neural',
+      voisLabsVoiceId: mode === 'KN' ? 'voislabs-kannada-female-1' : 'voislabs-english-female-1',
+      voisLabsTone: 'neutral'
+    });
+    setMessages([initialGreeting]);
+    dialogueTurnsRef.current = [
+      {
+        speaker: 'AI_RECEPTIONIST',
+        text: initialGreeting.textKn + (initialGreeting.textEn ? ` / ${initialGreeting.textEn}` : ''),
+        timestamp: '00:00'
+      }
+    ];
+    setStep('conversation');
   };
 
   const replayLastMessage = () => {
-    setIsAudioStarted(true);
-    const lastBotMsg = [...messages].reverse().find(m => m.sender === 'bot');
+    const lastBotMsg = [...messages].reverse().find((m) => m.sender === 'bot');
     if (lastBotMsg) {
       speakResponse(lastBotMsg.textKn, lastBotMsg.textEn);
     }
@@ -256,188 +590,123 @@ export const VoiceAgentWidget: React.FC<Props> = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-4 animate-in fade-in duration-200">
-      <div className="bg-slate-900 text-white rounded-3xl max-w-lg w-full shadow-2xl border border-slate-800 relative flex flex-col h-[620px] overflow-hidden">
-        {/* Header */}
-        <div className="bg-gradient-to-r from-slate-900 via-blue-900 to-slate-900 p-4 flex items-center justify-between border-b border-slate-800 shadow-md">
-          <div className="flex items-center space-x-3">
-            <div className="relative">
-              <div className={`w-10 h-10 rounded-2xl flex items-center justify-center font-bold shadow-md ${
-                isSpeaking ? 'bg-emerald-500 shadow-emerald-500/40 ring-4 ring-emerald-400/30' : isListening ? 'bg-rose-500 shadow-rose-500/40 ring-4 ring-rose-400/30' : 'bg-blue-600 shadow-blue-600/30'
-              }`}>
-                <Mic className={`w-5 h-5 text-white ${isListening || isSpeaking ? 'animate-bounce' : ''}`} />
-              </div>
-              {(isListening || isSpeaking) && (
-                <span className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-400 rounded-full animate-ping" />
-              )}
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-xl p-3 sm:p-4 animate-in fade-in duration-200">
+      <div className="bg-gradient-to-b from-slate-900 via-slate-950 to-slate-950 text-white rounded-3xl max-w-lg w-full shadow-2xl border border-cyan-500/20 relative flex flex-col h-[670px] max-h-[94vh] overflow-hidden">
+        
+
+        {step === 'language_select' ? (
+          <div className="flex flex-col items-center justify-center h-full p-8 space-y-8 text-center animate-in zoom-in-95">
+            <div className="w-20 h-20 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-full flex items-center justify-center shadow-lg shadow-blue-500/30">
+              <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="text-white"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" x2="12" y1="19" y2="22"></line></svg>
             </div>
-            <div>
-              <div className="font-bold text-sm flex items-center gap-1.5">
-                <span>{language === 'KN' ? 'ಕನ್ನಡ Voice Receptionist' : 'Voice Receptionist'}</span>
-                <span className="text-[10px] bg-emerald-400/20 text-emerald-300 px-2 py-0.5 rounded-full border border-emerald-400/30 font-semibold">
-                  AI Active
-                </span>
-              </div>
-              <div className="text-[11px] text-slate-300">
-                {isSpeaking ? '🔊 AI Speaking Voice...' : isListening ? '🎙️ Listening to you...' : 'Bilingual OPD Voice Assistant'}
-              </div>
+            <div className="space-y-2">
+              <h2 className="text-2xl font-bold text-white">Choose your language</h2>
+              <p className="text-slate-400 font-semibold text-lg">ಭಾಷೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ</p>
             </div>
-          </div>
-
-          <div className="flex items-center space-x-1.5">
-            {/* Voice Engine Toggle */}
-            <button
-              onClick={() => {
-                const engines: Array<'web' | 'elevenlabs' | 'fish_audio'> = ['web', 'elevenlabs', 'fish_audio'];
-                const nextIdx = (engines.indexOf(voiceEngine) + 1) % engines.length;
-                setVoiceEngine(engines[nextIdx]);
-              }}
-              title="Voice Engine (Web / ElevenLabs / Fish Audio)"
-              className="px-2 py-1 text-[11px] font-bold text-amber-200 hover:text-white bg-white/10 hover:bg-white/20 rounded-lg border border-amber-400/20 transition-colors"
-            >
-              {voiceEngine === 'web' ? '🌐 Web' : voiceEngine === 'elevenlabs' ? '✨ ElevenLabs' : '🐟 Fish Audio'}
-            </button>
-
-            {/* Language Selector */}
-            <button
-              onClick={() => {
-                const modes: AudioLanguageMode[] = ['BILINGUAL', 'KN', 'EN'];
-                const nextIdx = (modes.indexOf(language) + 1) % modes.length;
-                setLanguage(modes[nextIdx]);
-              }}
-              title="Switch Language Mode (Bilingual / Kannada / English)"
-              className="px-2.5 py-1 text-xs font-bold text-blue-200 hover:text-white bg-white/10 hover:bg-white/20 rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer border border-blue-400/30"
-            >
-              <Languages className="w-3.5 h-3.5 text-blue-300" />
-              <span>{language === 'BILINGUAL' ? '🔊 KN + EN' : language === 'KN' ? 'ಕನ್ನಡ' : 'English'}</span>
-            </button>
-
-            {/* Mute/Unmute */}
-            <button
-              onClick={() => {
-                if (isSpeaking) stopSpeaking();
-                setIsMuted(!isMuted);
-              }}
-              title={isMuted ? "Unmute Voice" : "Mute Voice"}
-              className="p-1.5 text-slate-300 hover:text-white hover:bg-white/10 rounded-full transition-colors"
-            >
-              {isMuted ? <VolumeX className="w-4 h-4 text-rose-400" /> : <Volume2 className="w-4 h-4 text-emerald-400" />}
-            </button>
-
-            {/* Reset */}
-            <button
-              onClick={resetSession}
-              title="Reset Call"
-              className="p-1.5 text-slate-300 hover:text-white hover:bg-white/10 rounded-full transition-colors"
-            >
-              <RefreshCw className="w-4 h-4" />
-            </button>
-
-            {/* End Call Button */}
-            <button
-              onClick={() => {
-                stopSpeaking();
-                onClose();
-              }}
-              title="End Voice Call"
-              className="px-2.5 py-1 bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs rounded-lg transition-colors flex items-center gap-1 cursor-pointer shadow-sm active:scale-95"
-            >
-              <PhoneOff className="w-3.5 h-3.5" />
-              <span>End Call</span>
-            </button>
-
-            {/* Close */}
-            <button
-              onClick={() => {
-                stopSpeaking();
-                onClose();
-              }}
-              className="p-1.5 text-slate-300 hover:text-white hover:bg-white/10 rounded-full transition-colors"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
-
-        {/* Telephony Line & Call Timer Bar */}
-        <div className="bg-slate-950 px-4 py-1.5 border-b border-slate-800 flex items-center justify-between text-[11px] text-slate-300 font-medium">
-          <div className="flex items-center gap-1.5 text-emerald-400 font-semibold">
-            <Phone className="w-3.5 h-3.5 animate-pulse" />
-            <span>Connected: +91 80 2345 6789</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="bg-slate-800 px-2 py-0.5 rounded text-[10px] font-mono text-slate-300">
-              ⏱️ {formatCallTime(callSeconds)}
-            </span>
-            <button
-              onClick={() => {
-                stopSpeaking();
-                setShowKeypad(!showKeypad);
-              }}
-              className={`px-2 py-0.5 rounded flex items-center gap-1 text-[10px] font-bold transition-all ${
-                showKeypad ? 'bg-blue-600 text-white' : 'bg-slate-800 text-slate-300 hover:text-white border border-slate-700'
-              }`}
-              title="Toggle Dial Keypad (1-9)"
-            >
-              <Hash className="w-3 h-3 text-amber-400" />
-              <span>Keypad</span>
-            </button>
-            <button
-              onClick={() => {
-                stopSpeaking();
-                onClose();
-              }}
-              className="px-2 py-0.5 bg-rose-700 hover:bg-rose-600 text-white rounded text-[10px] font-bold flex items-center gap-1 transition-all"
-              title="Hang Up"
-            >
-              <PhoneOff className="w-3 h-3" />
-              <span>Hang Up</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Interactive Phone Keypad Grid */}
-        {showKeypad && (
-          <div className="bg-slate-900 border-b border-slate-800 p-3 grid grid-cols-5 gap-2 animate-in slide-in-from-top-2">
-            {['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'].map(num => (
+            
+            <div className="w-full space-y-4 pt-4">
               <button
-                key={num}
-                onClick={() => handleSendUtterance(num)}
-                className="py-2 bg-slate-800 hover:bg-blue-600 hover:text-white rounded-xl text-xs font-extrabold text-slate-200 border border-slate-700 transition-all active:scale-95 flex items-center justify-center gap-1 shadow-sm"
+                onClick={() => handleStartConversation('KN')}
+                className="w-full py-4 px-6 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 rounded-2xl text-white font-bold text-lg shadow-lg flex items-center justify-center gap-3 active:scale-95 transition-all cursor-pointer"
               >
-                <span>{num}</span>
+                <span>ಕನ್ನಡ (Kannada)</span>
+                <span className="text-emerald-200 text-sm opacity-80">VoisLabs AI</span>
               </button>
-            ))}
+              
+              <button
+                onClick={() => handleStartConversation('EN')}
+                className="w-full py-4 px-6 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 rounded-2xl text-white font-bold text-lg shadow-lg flex items-center justify-center gap-3 active:scale-95 transition-all cursor-pointer"
+              >
+                <span>English</span>
+                <span className="text-blue-200 text-sm opacity-80">VoisLabs AI</span>
+              </button>
+            </div>
           </div>
-        )}
+        ) : (
+          <>
+            {/* Sleek Header */}
+            <div className="px-5 py-3 bg-slate-900/90 backdrop-blur-md border-b border-slate-800/80 flex items-center justify-between z-10">
+              <div className="flex items-center space-x-3">
+                <div className="relative flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-cyan-600 via-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-cyan-500/30">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="text-cyan-200"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                  </div>
+                  <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-400 border-2 border-slate-900 rounded-full animate-ping" />
+                  <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 border-2 border-slate-900 rounded-full" />
+                </div>
+    
+                <div>
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="font-bold text-sm tracking-tight text-white">We Care AI</span>
+                    <span className="bg-cyan-500/15 text-cyan-300 border border-cyan-400/30 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+                      GPT-Live-1
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 text-[11px] text-slate-400 mt-0.5">
+                    <span className="text-emerald-400 font-medium flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                      {languageMode === 'KN' ? 'ಕನ್ನಡ (VoisLabs)' : 'English (VoisLabs)'}
+                    </span>
+                    <span>•</span>
+                    <span className="font-mono text-slate-300">⏱️ {formatCallTime(callSeconds)}</span>
+                  </div>
+                </div>
+              </div>
+    
+              <div className="flex items-center space-x-1.5">
+                <button
+                  onClick={() => {
+                    if (isSpeaking) stopSpeaking();
+                    setIsMuted(!isMuted);
+                  }}
+                  title={isMuted ? "Unmute Voice" : "Mute Voice"}
+                  className="p-2 text-slate-300 hover:text-white hover:bg-slate-800/80 rounded-xl transition-all cursor-pointer"
+                >
+                  {isMuted ? (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="text-rose-400"><line x1="1" y1="1" x2="23" y2="23"></line><path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6"></path><path d="M17 16.95A7 7 0 0 1 5 12v-2m14 0v2a7 7 0 0 1-.11 1.23"></path><line x1="12" x2="12" y1="19" y2="22"></line></svg>
+                  ) : (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="text-emerald-400"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" x2="12" y1="19" y2="22"></line></svg>
+                  )}
+                </button>
+    
+                <button
+                  onClick={resetSession}
+                  title="Restart Call"
+                  className="p-2 text-slate-300 hover:text-white hover:bg-slate-800/80 rounded-xl transition-all cursor-pointer"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"></path><path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path><path d="M3 22v-6h6"></path><path d="M21 12a9 9 0 0 1-15 6.7L3 16"></path></svg>
+                </button>
+    
+                <button
+                  onClick={async () => {
+                    stopSpeaking();
+                    await saveCurrentCallRecord();
+                    onClose();
+                  }}
+                  title="End Call and save to Receptionist Desk"
+                  className="px-3 py-1.5 bg-rose-600 hover:bg-rose-500 active:scale-95 text-white font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 shadow-md shadow-rose-600/30 cursor-pointer ml-1"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.68 13.31a16 16 0 0 0 3.41 2.6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7 2 2 0 0 1 1.72 2v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.42 19.42 0 0 1-3.33-2.67m-2.67-3.34a19.79 19.79 0 0 1-3.07-8.63A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91"></path><line x1="23" y1="1" x2="1" y2="23"></line></svg>
+                  <span>End</span>
+                </button>
+              </div>
+            </div>
 
-        {/* Safety Notice */}
-        <div className="bg-amber-950/40 border-b border-amber-500/20 px-4 py-1.5 text-[11px] text-amber-200 flex items-center justify-between">
-          <div className="flex items-center gap-1.5">
-            <AlertTriangle className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-            <span>OPD Appointment Assistant only. For medical emergencies call 108.</span>
-          </div>
-        </div>
+        {/* Central Siri-Style Reactive Soundwave & Orb */}
+        <div className="py-3.5 px-6 bg-gradient-to-b from-slate-900/60 to-transparent flex flex-col items-center justify-center relative shrink-0">
+          <div className="relative flex items-center justify-center">
+            {/* Ambient Pulsing Glow Aura */}
+            <div
+              className={`absolute -inset-4 rounded-full blur-xl transition-opacity duration-500 ${
+                isSpeaking
+                  ? 'bg-gradient-to-r from-emerald-500/40 via-cyan-500/40 to-blue-500/40 opacity-100 animate-pulse'
+                  : isListening
+                  ? 'bg-gradient-to-r from-rose-500/40 via-amber-500/40 to-pink-500/40 opacity-100 animate-pulse'
+                  : 'bg-cyan-500/10 opacity-50'
+              }`}
+            />
 
-        {/* Unmute / Start Audio Banner Prompt (Browser Autoplay Unlocker) */}
-        {!isAudioStarted && (
-          <div className="bg-gradient-to-r from-emerald-900 to-blue-900 p-3 text-center border-b border-emerald-500/30 animate-pulse">
-            <button
-              onClick={startAudioSession}
-              className="px-5 py-2 bg-emerald-500 hover:bg-emerald-400 text-white font-extrabold text-xs rounded-full shadow-lg shadow-emerald-500/40 transition-all flex items-center gap-2 mx-auto active:scale-95 cursor-pointer"
-            >
-              <Play className="w-4 h-4 fill-current" />
-              <span>🔊 CLICK HERE TO START VOICE AUDIO</span>
-            </button>
-          </div>
-        )}
-
-        {/* Interactive Speaker Orb & Visualizer */}
-        <div className="py-4 bg-slate-950/60 border-b border-slate-800 flex flex-col items-center justify-center space-y-2">
-          <div className="relative">
-            {isSpeaking && <div className="absolute inset-0 rounded-full bg-emerald-500/40 animate-ping" />}
-            {isListening && <div className="absolute inset-0 rounded-full bg-rose-500/40 animate-pulse" />}
-
+            {/* Glowing Orb Button */}
             <button
               onClick={() => {
                 if (isSpeaking) {
@@ -446,108 +715,282 @@ export const VoiceAgentWidget: React.FC<Props> = ({ isOpen, onClose }) => {
                   replayLastMessage();
                 }
               }}
-              className={`w-20 h-20 rounded-full flex items-center justify-center transition-all duration-300 shadow-2xl border-4 cursor-pointer ${
+              title={isSpeaking ? "Click to Stop Speaking" : "Click to Replay Voice"}
+              className={`relative z-10 w-20 h-20 rounded-full flex items-center justify-center transition-all duration-300 shadow-2xl border-2 cursor-pointer ${
                 isSpeaking
-                  ? 'bg-emerald-600 border-emerald-400 scale-105 shadow-emerald-500/50'
+                  ? 'bg-gradient-to-tr from-emerald-600 to-teal-500 border-emerald-300 scale-105 shadow-emerald-500/50 ring-4 ring-emerald-400/20'
                   : isListening
-                  ? 'bg-rose-600 border-rose-400 scale-110 shadow-rose-500/50'
+                  ? 'bg-gradient-to-tr from-rose-600 to-amber-600 border-rose-300 scale-110 shadow-rose-500/50 ring-4 ring-rose-400/20'
                   : loading
-                  ? 'bg-indigo-600 border-indigo-400 animate-spin'
-                  : 'bg-slate-800 border-slate-700 hover:border-emerald-500 hover:scale-105'
+                  ? 'bg-gradient-to-tr from-indigo-700 to-blue-600 border-indigo-300 animate-pulse'
+                  : 'bg-slate-800/90 border-slate-700/80 hover:border-cyan-400 hover:scale-105'
               }`}
             >
-              {isSpeaking && <Volume2 className="w-9 h-9 text-white animate-bounce" />}
-              {isListening && <Mic className="w-9 h-9 text-white animate-pulse" />}
-              {loading && <Sparkles className="w-9 h-9 text-indigo-300" />}
-              {!isSpeaking && !isListening && !loading && <Volume2 className="w-9 h-9 text-emerald-400" />}
+              {isSpeaking ? (
+                <Volume2 className="w-9 h-9 text-white animate-bounce" />
+              ) : isListening ? (
+                <Mic className="w-9 h-9 text-white animate-pulse" />
+              ) : (
+                <Zap className="w-8 h-8 text-cyan-300" />
+              )}
             </button>
           </div>
 
-          <div className="flex items-center gap-2">
-            <span className="text-[11px] font-bold text-slate-300 uppercase tracking-wider">
-              {isSpeaking ? '🔊 Agent Speaking Voice...' : isListening ? '🎙️ Listening... Speak Now' : loading ? 'AI Thinking...' : 'Click Orb to Replay Voice Audio'}
+          {/* Dynamic Audio Equalizer Bars */}
+          <div className="flex items-center gap-1.5 h-5 mt-2.5">
+            {[40, 75, 100, 60, 90, 45, 80].map((h, i) => (
+              <span
+                key={i}
+                className={`w-1 rounded-full transition-all duration-150 ${
+                  isSpeaking
+                    ? 'bg-emerald-400 animate-pulse'
+                    : isListening
+                    ? 'bg-rose-400 animate-pulse'
+                    : 'bg-slate-700'
+                }`}
+                style={{
+                  height: isSpeaking || isListening ? `${(h * 0.20) + 5}px` : '4px',
+                  animationDelay: `${i * 120}ms`
+                }}
+              />
+            ))}
+          </div>
+
+          {/* Status Label Banner */}
+          <div className="mt-1 text-center">
+            <span className="text-xs font-semibold tracking-wide text-slate-200">
+              {isSpeaking ? (
+                <span className="text-emerald-400 flex items-center justify-center gap-1.5">
+                  <Volume2 className="w-3.5 h-3.5 animate-bounce" />
+                  <span>
+                    {languageMode === 'KN'
+                      ? '🔊 AI ಮಾತನಾಡುತ್ತಿದೆ... ದಯವಿಟ್ಟು ಆಲಿಸಿ'
+                      : languageMode === 'EN'
+                      ? '🔊 AI Speaking... Listen to prompt'
+                      : '🔊 AI Speaking in Kannada & English...'}
+                  </span>
+                </span>
+              ) : isListening ? (
+                <span className="text-rose-400 flex items-center justify-center gap-1.5 animate-pulse">
+                  <span className="w-2 h-2 rounded-full bg-rose-400 animate-ping" />
+                  <span>
+                    {languageMode === 'KN'
+                      ? '🎙️ ಮೈಕ್ ಲೈವ್ ಆಗಿದೆ... ನಿಮ್ಮ ಉತ್ತರ ಹೇಳಿ'
+                      : languageMode === 'EN'
+                      ? '🎙️ Mic Live (Hands-Free)... Speak your answer now'
+                      : '🎙️ Mic Live... Speak your answer now'}
+                  </span>
+                </span>
+              ) : loading ? (
+                <span className="text-cyan-400 flex items-center justify-center gap-1.5">
+                  <Zap className="w-3.5 h-3.5 fill-current animate-spin" />
+                  <span>⚡ GPT-Live-1 checking hospital slots...</span>
+                </span>
+              ) : (
+                <span className="text-emerald-400/90 flex items-center justify-center gap-1.5 text-[11px]">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <span>Hands-Free Active • Mic automatically opens when AI finishes</span>
+                </span>
+              )}
             </span>
           </div>
         </div>
 
-        {/* Chat Transcript Body */}
-        <div className="flex-1 bg-slate-950/90 p-4 overflow-y-auto space-y-3 text-xs">
+        {/* Scrollable Dialogue Subtitles Transcript */}
+        <div className="flex-1 bg-slate-950/70 p-4 overflow-y-auto space-y-3.5 text-xs">
           {messages.map((m, idx) => (
             <div key={idx} className={`flex ${m.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
               <div
-                className={`max-w-[85%] rounded-2xl p-3.5 leading-relaxed whitespace-pre-line shadow-md ${
+                className={`max-w-[88%] rounded-2xl p-3.5 leading-relaxed shadow-lg ${
                   m.sender === 'user'
-                    ? 'bg-blue-600 text-white rounded-br-none font-semibold'
-                    : 'bg-slate-800 text-slate-100 border border-slate-700 rounded-bl-none font-medium'
+                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-br-sm'
+                    : 'bg-slate-900/90 text-slate-100 border border-slate-800 rounded-bl-sm backdrop-blur-md'
                 }`}
               >
-                <div className="font-semibold text-slate-100">
-                  {language === 'EN' ? (m.textEn || m.textKn) : m.textKn}
-                </div>
-                {(language === 'BILINGUAL' || (language === 'KN' && m.sender === 'bot')) && m.textEn && (
-                  <div className="text-[11px] text-slate-300 font-normal pt-1.5 border-t border-slate-700/60 mt-1.5">
-                    {m.textEn}
+                {/* Bot Tag */}
+                {m.sender === 'bot' && (
+                  <div className="flex items-center gap-1.5 text-[10px] font-bold text-cyan-400 uppercase tracking-wider mb-1.5">
+                    <Zap className="w-3 h-3 fill-current" />
+                    <span>GPT-Live-1 Voice</span>
+                    <span className="text-slate-500">•</span>
+                    <span className="text-slate-400">{languageMode === 'KN' ? 'ಕನ್ನಡ' : languageMode === 'EN' ? 'English' : 'Bilingual'}</span>
                   </div>
+                )}
+
+                {/* Primary Content based on Selected Language Mode */}
+                {languageMode === 'EN' ? (
+                  <>
+                    <div className="font-semibold text-white text-[13px] leading-snug">
+                      {m.textEn || m.textKn}
+                    </div>
+                    {m.textKn && m.textKn !== m.textEn && (
+                      <div className="text-[11px] text-slate-400 font-normal pt-1.5 border-t border-slate-800/80 mt-1.5">
+                        {m.textKn}
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <div className="font-semibold text-white text-[13px] leading-snug">
+                      {m.textKn}
+                    </div>
+                    {m.textEn && m.textEn !== m.textKn && (
+                      <div className="text-[11px] text-blue-200/90 font-medium italic pt-1.5 border-t border-slate-800/80 mt-1.5">
+                        {m.textEn}
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
             </div>
           ))}
+
+          {/* Stored Appointment Voucher Card */}
           {confirmedAppointment && (
-            <div className="bg-gradient-to-r from-emerald-950 via-slate-900 to-emerald-950 border-2 border-emerald-500/50 rounded-2xl p-4 shadow-xl text-emerald-200 animate-in zoom-in-95 space-y-2.5 my-2">
-              <div className="flex items-center justify-between">
-                <div className="font-extrabold text-xs sm:text-sm text-emerald-300 flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping" />
-                  <span>✅ Stored on Receptionist Screen</span>
+            <div className="bg-gradient-to-br from-emerald-950/80 via-slate-900 to-teal-950/80 border border-emerald-500/40 rounded-2xl p-4 shadow-2xl text-emerald-200 animate-in zoom-in-95 space-y-3 my-2 backdrop-blur-md">
+              <div className="flex items-center justify-between pb-2 border-b border-emerald-500/20">
+                <div className="font-extrabold text-sm text-emerald-300 flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                  <span>Appointment Confirmed</span>
                 </div>
-                <span className="bg-emerald-500 text-slate-950 font-black text-[11px] px-2.5 py-0.5 rounded-full shadow-sm">
+                <span className="bg-emerald-500 text-slate-950 font-black text-xs px-2.5 py-0.5 rounded-full shadow-md">
                   Token: {confirmedAppointment.tokenNumber || 'T-01'}
                 </span>
               </div>
-              <div className="grid grid-cols-2 gap-2 text-[11px] bg-slate-950/70 p-2.5 rounded-xl border border-emerald-500/20 text-slate-300">
-                <div><span className="text-slate-400">Patient:</span> <strong className="text-white ml-1">{confirmedAppointment.patientName}</strong></div>
-                <div><span className="text-slate-400">Phone:</span> <strong className="text-white ml-1">{confirmedAppointment.patientPhone}</strong></div>
-                <div><span className="text-slate-400">Doctor:</span> <strong className="text-emerald-300 ml-1">{confirmedAppointment.doctorName}</strong></div>
-                <div><span className="text-slate-400">Slot:</span> <strong className="text-white ml-1">{confirmedAppointment.preferredDate} {confirmedAppointment.preferredTime}</strong></div>
+
+              <div className="grid grid-cols-2 gap-2 text-[11px] bg-slate-950/80 p-3 rounded-xl border border-emerald-500/20">
+                <div className="flex items-center gap-1.5">
+                  <User className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                  <span className="text-slate-300 truncate">
+                    <strong className="text-white">{confirmedAppointment.patientName}</strong>
+                  </span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <Phone className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                  <span className="text-slate-300 truncate">{confirmedAppointment.patientPhone}</span>
+                </div>
+                <div className="flex items-center gap-1.5 col-span-2">
+                  <Zap className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <span className="text-slate-300">
+                    Doctor: <strong className="text-emerald-300">{confirmedAppointment.doctorName}</strong>
+                  </span>
+                </div>
+                <div className="flex items-center gap-1.5 col-span-2">
+                  <Calendar className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                  <span className="text-slate-300">
+                    Slot: <strong className="text-white">{confirmedAppointment.preferredDate} at {confirmedAppointment.preferredTime}</strong>
+                  </span>
+                </div>
               </div>
-              <div className="text-[10px] text-emerald-400 font-semibold flex items-center gap-1">
-                <span>📡 Live Receptionist Status: <span className="underline">CONFIRMED (🎙️ Voice AI)</span></span>
+
+              <div className="text-[10px] text-emerald-400/90 font-medium flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                <span>Recorded live on Receptionist Desk & SMS notification sent.</span>
               </div>
             </div>
           )}
+
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Input Bar */}
-        <div className="p-3 bg-slate-900 border-t border-slate-800 flex items-center space-x-2">
+        {/* Collapsible Keyboard Typing Drawer */}
+        {showKeyboardInput && (
+          <div className="px-4 py-2.5 bg-slate-900 border-t border-slate-800 flex items-center space-x-2 animate-in slide-in-from-bottom-2 duration-150">
+            <input
+              type="text"
+              placeholder={languageMode === 'EN' ? "Type response (e.g. Ramesh / 9876543210)..." : "ಮಾತನಾಡಿ ಅಥವಾ ಟೈಪ್ ಮಾಡಿ (ಉದಾ: ರಮೇಶ್ / 9876543210)..."}
+              value={inputText}
+              onChange={(e) => setInputText(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleSendUtterance()}
+              className="flex-1 bg-slate-950 border border-slate-700/80 rounded-xl px-3.5 py-2 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+              autoFocus
+            />
+            <button
+              onClick={() => handleSendUtterance()}
+              disabled={!inputText.trim() || loading}
+              className="p-2 bg-blue-600 hover:bg-blue-500 disabled:opacity-40 text-white rounded-xl transition-all shadow-sm cursor-pointer"
+            >
+              <Send className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => setShowKeyboardInput(false)}
+              className="p-2 text-slate-400 hover:text-white rounded-xl"
+              title="Hide Keyboard"
+            >
+              <ChevronDown className="w-4 h-4" />
+            </button>
+          </div>
+        )}
+
+        {/* Bottom Call Control Dock */}
+        <div className="px-6 py-3.5 bg-slate-900/90 backdrop-blur-md border-t border-slate-800/80 flex items-center justify-between">
+          {/* Keyboard Toggle */}
           <button
-            onClick={startListening}
-            className={`p-3 rounded-xl transition-all shadow-sm ${
-              isListening
-                ? 'bg-rose-600 text-white animate-pulse ring-4 ring-rose-500/30'
-                : 'bg-emerald-600 text-white hover:bg-emerald-500'
+            onClick={() => setShowKeyboardInput(!showKeyboardInput)}
+            className={`p-2.5 rounded-2xl border transition-all cursor-pointer flex items-center gap-1.5 text-xs font-semibold ${
+              showKeyboardInput
+                ? 'bg-blue-600/20 border-blue-500 text-blue-300'
+                : 'bg-slate-800/70 border-slate-700/60 text-slate-300 hover:text-white hover:bg-slate-800'
             }`}
-            title="Click to Speak"
+            title="Type Response"
           >
-            {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+            <Keyboard className="w-4 h-4" />
+            <span className="hidden sm:inline">Type</span>
           </button>
 
-          <input
-            type="text"
-            placeholder={language === 'KN' ? "ಮಾತನಾಡಿ ಅಥವಾ ಟೈಪ್ ಮಾಡಿ (ಉದಾ: ರಮೇಶ್ / 9876543210)..." : "Speak or type response (e.g. Ramesh / 9876543210)..."}
-            value={inputText}
-            onChange={(e) => setInputText(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleSendUtterance()}
-            className="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs font-medium text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-
+          {/* Central Big Mic Action Button (Hands-Free Reactive) */}
           <button
-            onClick={() => handleSendUtterance()}
-            disabled={!inputText.trim() || loading}
-            className="p-2.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-40 text-white rounded-xl transition-all shadow-sm"
+            onClick={() => {
+              if (isSpeaking) {
+                stopSpeaking();
+                startListening();
+              } else if (isListening) {
+                if (recognitionRef.current) {
+                  try { recognitionRef.current.abort(); } catch {}
+                }
+                setIsListening(false);
+                isListeningRef.current = false;
+              } else {
+                startListening();
+              }
+            }}
+            className={`px-6 py-3 rounded-full font-bold text-xs tracking-wide transition-all duration-200 flex items-center gap-2 shadow-xl cursor-pointer active:scale-95 ${
+              isSpeaking
+                ? 'bg-slate-800 border-2 border-emerald-500/60 text-emerald-300 shadow-emerald-500/20'
+                : isListening
+                ? 'bg-gradient-to-r from-rose-600 to-amber-600 text-white ring-4 ring-rose-500/30 animate-pulse'
+                : 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white shadow-emerald-500/30 hover:shadow-emerald-500/40'
+            }`}
           >
-            <Send className="w-4 h-4" />
+            {isSpeaking ? (
+              <Volume2 className="w-4 h-4 animate-bounce text-emerald-400" />
+            ) : isListening ? (
+              <Mic className="w-4 h-4 animate-pulse text-white" />
+            ) : (
+              <Mic className="w-4 h-4" />
+            )}
+            <span>
+              {isSpeaking
+                ? 'AI Speaking... (Tap to Interrupt)'
+                : isListening
+                ? (languageMode === 'KN' ? '🎙️ ಆಲಿಸುತ್ತಿದೆ... ಮಾತನಾಡಿ' : '🎙️ Listening... (Speak Now)')
+                : (languageMode === 'KN' ? '🎙️ ಹ್ಯಾಂಡ್ಸ್-ಫ್ರೀ ಮೈಕ್ ಲೈವ್' : '🎙️ Hands-Free Mic Live')}
+            </span>
           </button>
+
+          {/* Emergency Notice Pill */}
+          <div className="text-[10px] text-slate-400 flex items-center gap-1">
+            <span className="text-amber-400 font-bold">108</span>
+            <span className="hidden sm:inline">Emergency</span>
+          </div>
         </div>
+
+        {/* Emergency Disclaimer Banner */}
+        <div className="bg-slate-950 px-4 py-1 text-center border-t border-slate-900 text-[10px] text-slate-500">
+          OPD Appointments only. In medical emergency call 108 or hospital casualty immediately.
+        </div>
+          </>
+        )}
       </div>
     </div>
   );

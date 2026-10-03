@@ -269,15 +269,138 @@ export class FileRepository {
     return log;
   }
 
-  // Voice Calls Telephony Storage
+  // Voice Calls Telephony & AI Receptionist Storage
   private voiceCallsPath = path.join(DATA_DIR, 'voice_calls.json');
-  public getVoiceCalls(): VoiceCall[] {
-    return this.readJson(this.voiceCallsPath, []);
+
+  private getDefaultVoiceCalls(): VoiceCall[] {
+    const now = new Date();
+    const twoHoursAgo = new Date(now.getTime() - 2 * 60 * 60 * 1000).toISOString();
+    const fourHoursAgo = new Date(now.getTime() - 4 * 60 * 60 * 1000).toISOString();
+    const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString();
+
+    return [
+      {
+        id: 'call-101',
+        callId: 'vcall_kn_appt_101',
+        callerName: 'ರಾಮೇಶ್ ಗೌಡ (Ramesh Gowda)',
+        phoneNumber: '9845012345',
+        startedAt: twoHoursAgo,
+        endedAt: twoHoursAgo,
+        durationSeconds: 115,
+        language: 'KN',
+        status: 'COMPLETED',
+        caseStatus: 'NEW',
+        intent: 'APPOINTMENT_BOOKING',
+        appointmentId: 'APT-20260921-001',
+        bookedAppointmentDetails: {
+          id: 'APT-20260921-001',
+          doctorName: 'Dr. Rajesh Kumar',
+          departmentName: 'Cardiology',
+          date: '2026-09-22',
+          time: '10:00 AM',
+          reason: 'ಎದೆ ಬಿಗಿತ ಮತ್ತು ರಕ್ತದೊತ್ತಡ ತಪಾಸಣೆ (Chest tightness checkup)'
+        },
+        outcome: 'APPOINTMENT_CREATED',
+        summary: 'ರೋಗಿ ರಾಮೇಶ್ ಗೌಡ ಕಾರ್ಡಿಯಾಲಜಿ ತಜ್ಞ ಡಾ. ರಾಜೇಶ್ ಕುಮಾರ್ ಅವರೊಂದಿಗೆ ನಾಳೆ ಬೆಳಿಗ್ಗೆ 10:00 ಕ್ಕೆ ಅಪಾಯಿಂಟ್‌ಮೆಂಟ್ ಕಾಯ್ದಿರಿಸಿದ್ದಾರೆ.',
+        transcript: 'AI Receptionist: ನಮಸ್ಕಾರ! ಸಿಟಿ ಕೇರ್ ಆಸ್ಪತ್ರೆಗೆ ಸುಸ್ವಾಗತ. ನಾನು ನಿಮ್ಮ AI ರಿಸೆಪ್ಷನಿಸ್ಟ್. ನಾನು ನಿಮಗೆ ಹೇಗೆ ಸಹಾಯ ಮಾಡಲಿ?\nPatient: ನಮಸ್ಕಾರ, ನನಗೆ ಡಾ. ರಾಜೇಶ್ ಕುಮಾರ್ ಅವರ ಅಪಾಯಿಂಟ್‌ಮೆಂಟ್ ಬೇಕು.\nAI Receptionist: ಖಂಡಿತ! ನಿಮ್ಮ ಹೆಸರು ಮತ್ತು 10 ಅಂಕಿಯ ಮೊಬೈಲ್ ಸಂಖ್ಯೆಯನ್ನು ತಿಳಿಸಿ.\nPatient: ನನ್ನ ಹೆಸರು ರಾಮೇಶ್ ಗೌಡ, ಮೊಬೈಲ್ 9845012345.\nAI Receptionist: ಧನ್ಯವಾದಗಳು ರಾಮೇಶ್ ಅವರೇ. ಭೇಟಿಯ ಕಾರಣ ತಿಳಿಸಿ.\nPatient: ಸ್ವಲ್ಪ ಎದೆ ಬಿಗಿತ ಮತ್ತು ಬಿಪಿ ಚೆಕಪ್ ಮಾಡಿಸಬೇಕು.\nAI Receptionist: ನಾಳೆ ಬೆಳಿಗ್ಗೆ 10:00 ಗಂಟೆಗೆ ಡಾ. ರಾಜೇಶ್ ಕುಮಾರ್ ಅವರೊಂದಿಗೆ ನಿಮ್ಮ ಅಪಾಯಿಂಟ್‌ಮೆಂಟ್ ದೃಢಪಡಿಸಲಾಗಿದೆ. ಅಪಾಯಿಂಟ್‌ಮೆಂಟ್ ಐಡಿ: APT-20260921-001.',
+        dialogueTurns: [
+          { speaker: 'AI_RECEPTIONIST', text: 'ನಮಸ್ಕಾರ! ಸಿಟಿ ಕೇರ್ ಆಸ್ಪತ್ರೆಗೆ ಸುಸ್ವಾಗತ. ನಾನು ನಿಮ್ಮ AI ರಿಸೆಪ್ಷನಿಸ್ಟ್. ನಾನು ನಿಮಗೆ ಹೇಗೆ ಸಹಾಯ ಮಾಡಲಿ?', timestamp: '00:02' },
+          { speaker: 'PATIENT', text: 'ನಮಸ್ಕಾರ, ನನಗೆ ಡಾ. ರಾಜೇಶ್ ಕುಮಾರ್ ಅವರ ಅಪಾಯಿಂಟ್‌ಮೆಂಟ್ ಬೇಕು.', timestamp: '00:15' },
+          { speaker: 'AI_RECEPTIONIST', text: 'ಖಂಡಿತ! ನಿಮ್ಮ ಪೂರ್ಣ ಹೆಸರು ಮತ್ತು 10 ಅಂಕಿಯ ಮೊಬೈಲ್ ಸಂಖ್ಯೆಯನ್ನು ತಿಳಿಸಿ.', timestamp: '00:28' },
+          { speaker: 'PATIENT', text: 'ನನ್ನ ಹೆಸರು ರಾಮೇಶ್ ಗೌಡ, ಮೊಬೈಲ್ 9845012345.', timestamp: '00:42' },
+          { speaker: 'AI_RECEPTIONIST', text: 'ಧನ್ಯವಾದಗಳು ರಾಮೇಶ್ ಅವರೇ. ಭೇಟಿಯ ಕಾರಣ ತಿಳಿಸಿ.', timestamp: '00:54' },
+          { speaker: 'PATIENT', text: 'ಸ್ವಲ್ಪ ಎದೆ ಬಿಗಿತ ಮತ್ತು ಬಿಪಿ ಚೆಕಪ್ ಮಾಡಿಸಬೇಕು.', timestamp: '01:06' },
+          { speaker: 'AI_RECEPTIONIST', text: 'ನಾಳೆ ಬೆಳಿಗ್ಗೆ 10:00 ಗಂಟೆಗೆ ಡಾ. ರಾಜೇಶ್ ಕುಮಾರ್ (ಕಾರ್ಡಿಯಾಲಜಿ) ಅವರೊಂದಿಗೆ ನಿಮ್ಮ ಅಪಾಯಿಂಟ್‌ಮೆಂಟ್ ದೃಢಪಡಿಸಲಾಗಿದೆ. ಅಪಾಯಿಂಟ್‌ಮೆಂಟ್ ಸಂಖ್ಯೆ: APT-20260921-001.', timestamp: '01:30' }
+        ],
+        createdAt: twoHoursAgo
+      },
+      {
+        id: 'call-102',
+        callId: 'vcall_en_ortho_102',
+        callerName: 'Meera Sharma',
+        phoneNumber: '9900112233',
+        startedAt: fourHoursAgo,
+        endedAt: fourHoursAgo,
+        durationSeconds: 98,
+        language: 'EN',
+        status: 'COMPLETED',
+        caseStatus: 'UNDER_REVIEW',
+        intent: 'APPOINTMENT_BOOKING',
+        assignedReceptionist: 'Ananya Hegde (Receptionist)',
+        receptionistNotes: 'Called patient to verify medical history. Advised patient to bring prior knee X-ray films. Arrival confirmed for 4 PM slot.',
+        appointmentId: 'APT-20260921-002',
+        bookedAppointmentDetails: {
+          id: 'APT-20260921-002',
+          doctorName: 'Dr. Suresh Rao',
+          departmentName: 'Orthopedics',
+          date: '2026-09-22',
+          time: '04:00 PM',
+          reason: 'Severe knee pain and arthritis review'
+        },
+        outcome: 'APPOINTMENT_CREATED',
+        summary: 'Patient Meera Sharma booked consultation with Orthopedic specialist Dr. Suresh Rao for persistent knee joint pain.',
+        transcript: 'AI Receptionist: Hello! Welcome to City Care Hospital. How may I assist you today?\nPatient: Hi, I need to consult an orthopedic specialist for my knee pain.\nAI Receptionist: Certainly. Dr. Suresh Rao in Orthopedics is available. May I have your full name and 10-digit phone number?\nPatient: Meera Sharma, 9900112233.\nAI Receptionist: Thank you Meera. Your appointment with Dr. Suresh Rao has been booked for tomorrow at 04:00 PM. ID: APT-20260921-002.',
+        dialogueTurns: [
+          { speaker: 'AI_RECEPTIONIST', text: 'Hello! Welcome to City Care Hospital. How may I assist you today?', timestamp: '00:02' },
+          { speaker: 'PATIENT', text: 'Hi, I need to consult an orthopedic specialist for my knee pain.', timestamp: '00:14' },
+          { speaker: 'AI_RECEPTIONIST', text: 'Certainly. Dr. Suresh Rao in Orthopedics is available. May I have your full name and 10-digit phone number?', timestamp: '00:26' },
+          { speaker: 'PATIENT', text: 'Meera Sharma, 9900112233.', timestamp: '00:40' },
+          { speaker: 'AI_RECEPTIONIST', text: 'Thank you Meera. Your appointment with Dr. Suresh Rao has been booked for tomorrow at 04:00 PM. ID: APT-20260921-002.', timestamp: '01:10' }
+        ],
+        createdAt: fourHoursAgo
+      },
+      {
+        id: 'call-103',
+        callId: 'vcall_kn_mri_103',
+        callerName: 'ಸುರೇಶ್ ಕುಮಾರ್ (Suresh Kumar)',
+        phoneNumber: '9886077889',
+        startedAt: yesterday,
+        endedAt: yesterday,
+        durationSeconds: 84,
+        language: 'BILINGUAL',
+        status: 'COMPLETED',
+        caseStatus: 'CLOSED',
+        intent: 'GENERAL_OPD',
+        assignedReceptionist: 'Priya Sharma (Admin)',
+        receptionistNotes: 'Explained 3T MRI brain scan preparation guidelines. Patient will arrive at 9 AM with fasting. Case resolved.',
+        closedAt: yesterday,
+        closedBy: 'Priya Sharma (Admin)',
+        outcome: 'INFORMATION_PROVIDED',
+        summary: 'Inquiry regarding 3T MRI diagnostic scan timings, pricing, and required fasting preparations.',
+        transcript: 'AI Receptionist: ನಮಸ್ಕಾರ! ಸಿಟಿ ಕೇರ್ ಆಸ್ಪತ್ರೆಗೆ ಸುಸ್ವಾಗತ / Welcome to City Care Hospital.\nPatient: ಸರ್, ಎಂಆರ್‌ಐ ಸ್ಕ್ಯಾನ್ ಸಮಯ ಮತ್ತು ಪೂರ್ವಸಿದ್ಧತೆ ಏನು?\nAI Receptionist: ನಮ್ಮಲ್ಲಿ 24 ಗಂಟೆಗಳ ಕಾಲ 3T MRI ಸ್ಕ್ಯಾನ್ ಸೌಲಭ್ಯವಿದೆ. ಪರೀಕ್ಷೆಗೆ 4 ಗಂಟೆಗಳ ಮುನ್ನ ಉಪವಾಸವಿರಬೇಕು.\nPatient: ಧನ್ಯವಾದಗಳು, ನಾನು ನಾಳೆ ಬರುತ್ತೇನೆ.\nAI Receptionist: ನಿಮಗೆ ಸ್ವಾಗತ! ನಮ್ಮ ರಿಸೆಪ್ಷನ್ ಸಂಖ್ಯೆ 080-23456789.',
+        dialogueTurns: [
+          { speaker: 'AI_RECEPTIONIST', text: 'ನಮಸ್ಕಾರ! ಸಿಟಿ ಕೇರ್ ಆಸ್ಪತ್ರೆಗೆ ಸುಸ್ವಾಗತ / Welcome to City Care Hospital.', timestamp: '00:02' },
+          { speaker: 'PATIENT', text: 'ಸರ್, ಎಂಆರ್‌ಐ ಸ್ಕ್ಯಾನ್ ಸಮಯ ಮತ್ತು ಪೂರ್ವಸಿದ್ಧತೆ ಏನು?', timestamp: '00:15' },
+          { speaker: 'AI_RECEPTIONIST', text: 'ನಮ್ಮಲ್ಲಿ 24 ಗಂಟೆಗಳ ಕಾಲ 3T MRI ಸ್ಕ್ಯಾನ್ ಸೌಲಭ್ಯವಿದೆ. ಪರೀಕ್ಷೆಗೆ 4 ಗಂಟೆಗಳ ಮುನ್ನ ಉಪವಾಸವಿರಬೇಕು.', timestamp: '00:32' },
+          { speaker: 'PATIENT', text: 'ಧನ್ಯವಾದಗಳು, ನಾನು ನಾಳೆ ಬರುತ್ತೇನೆ.', timestamp: '00:50' },
+          { speaker: 'AI_RECEPTIONIST', text: 'ನಿಮಗೆ ಸ್ವಾಗತ! ನಿಮಗೆ ಸಹಾಯ ಮಾಡಲು ನಮ್ಮ ರಿಸೆಪ್ಷನಿಸ್ಟ್ ತಂಡ ಸದಾ ಸಿದ್ಧವಾಗಿದೆ.', timestamp: '01:05' }
+        ],
+        createdAt: yesterday
+      }
+    ];
   }
+
+  public getVoiceCalls(): VoiceCall[] {
+    const list = this.readJson<VoiceCall[]>(this.voiceCallsPath, []);
+    if (!list || list.length === 0) {
+      const defaults = this.getDefaultVoiceCalls();
+      this.writeJson(this.voiceCallsPath, defaults);
+      return defaults;
+    }
+    return list;
+  }
+
+  public getVoiceCallById(idOrCallId: string): VoiceCall | undefined {
+    return this.getVoiceCalls().find(c => c.id === idOrCallId || c.callId === idOrCallId);
+  }
+
   public saveVoiceCall(call: VoiceCall): VoiceCall {
     const list = this.getVoiceCalls();
-    const idx = list.findIndex(c => c.callId === call.callId);
-    if (idx >= 0) list[idx] = call;
+    if (!call.caseStatus) {
+      call.caseStatus = 'NEW';
+    }
+    const idx = list.findIndex(c => c.callId === call.callId || c.id === call.id);
+    if (idx >= 0) list[idx] = { ...list[idx], ...call };
     else list.unshift(call);
     this.writeJson(this.voiceCallsPath, list);
     return call;

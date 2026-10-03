@@ -1,0 +1,125 @@
+{
+  "name": "Clinic Voice Receptionist",
+  "transcriber": {
+    "provider": "deepgram",
+    "model": "nova-2",
+    "language": "en"
+  },
+  "model": {
+    "provider": "openai",
+    "model": "gpt-4o",
+    "temperature": 0.3,
+    "systemPrompt": "You are a professional voice receptionist for a medical clinic. Your goal is to help patients book, cancel, or modify appointments.\n\n# VOICE CONVERSATION RULES\n- Keep replies extremely short (1-2 sentences maximum). This is a live voice call, so be concise and conversational.\n- Ask only one question at a time. Wait for the user to answer before moving on.\n- Read dates and times naturally (e.g., 'October 15th at 2 PM' instead of '2026-10-15 14:00').\n- Repeat phone numbers back to the user digit by digit to confirm accuracy.\n- NEVER state doctor availability without calling the `check_availability` tool first.\n- If a caller mentions a MEDICAL EMERGENCY (chest pain, severe bleeding, breathing issues, etc.), immediately instruct them to hang up and dial emergency services (911) or proceed to the nearest emergency room. Do NOT proceed with the booking flow.\n\n# BOOKING FLOW\n1. Ask the caller for the date they want to book.\n2. Call `check_availability` to get the free slots for that date.\n3. Offer 1-2 free slots to the user.\n4. Once they pick a slot, ask for their full name and a 10-digit phone number.\n5. Confirm the details (name, phone, date, time) and call `book_appointment`.\n6. Provide the generated appointment ID to the user and politely end the call.",
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "check_availability",
+          "description": "Checks available 60-minute appointment slots for a given date.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "date": {
+                "type": "string",
+                "description": "The requested date in YYYY-MM-DD format."
+              }
+            },
+            "required": ["date"]
+          }
+        },
+        "server": {
+          "url": "https://YOUR_N8N_URL.com/webhook/check-availability",
+          "headers": {
+            "X-Api-Key": "your_super_secret_key_here"
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "book_appointment",
+          "description": "Books an appointment for the patient. Must confirm availability before calling.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Patient's full name"
+              },
+              "phone": {
+                "type": "string",
+                "description": "Patient's 10-digit phone number"
+              },
+              "date": {
+                "type": "string",
+                "description": "Appointment date in YYYY-MM-DD format"
+              },
+              "time": {
+                "type": "string",
+                "description": "Time slot (e.g. '14:00', '10:00')"
+              }
+            },
+            "required": ["name", "phone", "date", "time"]
+          }
+        },
+        "server": {
+          "url": "https://YOUR_N8N_URL.com/webhook/book-appointment",
+          "headers": {
+            "X-Api-Key": "your_super_secret_key_here"
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "cancel_appointment",
+          "description": "Cancels an existing appointment given the appointment ID.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "appointment_id": {
+                "type": "string",
+                "description": "The unique appointment ID (e.g. APT-12345)"
+              }
+            },
+            "required": ["appointment_id"]
+          }
+        },
+        "server": {
+          "url": "https://YOUR_N8N_URL.com/webhook/cancel-appointment",
+          "headers": {
+            "X-Api-Key": "your_super_secret_key_here"
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "notify_staff",
+          "description": "Sends a message to the clinic staff if the caller has a complex issue or needs human assistance.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "summary": {
+                "type": "string",
+                "description": "A brief summary of what the patient needs."
+              }
+            },
+            "required": ["summary"]
+          }
+        },
+        "server": {
+          "url": "https://YOUR_N8N_URL.com/webhook/notify-staff",
+          "headers": {
+            "X-Api-Key": "your_super_secret_key_here"
+          }
+        }
+      }
+    ]
+  },
+  "firstMessage": "Hello! Welcome to the Clinic. I can help you book or cancel an appointment. How can I assist you today?",
+  "voice": {
+    "provider": "11labs",
+    "voiceId": "pNInz6obpgDQGcFmaJgB"
+  }
+}

@@ -55,18 +55,19 @@ class VapiService {
     } else {
       // Start with inline transient assistant config if assistantId environment variable is empty
       return this.vapi.start({
-        name: "Hospital AI Receptionist",
-        firstMessage: "Namaskara! Welcome to City Care Super Specialty Hospital. I am your hospital AI assistant. How can I help you today?",
+        name: "We Care Hospital AI Receptionist",
+        firstMessage: "Namaskara! Welcome to We Care Multispeciality Hospital and ICU Doddaballapura. I am your hospital AI assistant. How can I help you today?",
         model: {
           provider: "openai",
           model: "gpt-4o",
           messages: [
             {
               role: "system",
-              content: `You are the official AI voice receptionist for City Care Super Specialty Hospital.
-Your job is to help patients and visitors with hospital information, doctor details, availability, and appointment booking.
+              content: `You are the official AI voice receptionist for We Care Multispeciality Hospital and ICU Doddaballapura (located at D Cross main Rd, near Federal Bank, Doddaballapura).
+Your job is to help patients and visitors with hospital information, doctor details, 12 departments, room tariffs, emergency care, and appointment booking.
+Emergency phone: +91 88677 55541, 24/7 Ambulance: +91 93530 61993.
 You support Kannada and English naturally. If the user speaks Kannada, respond in Kannada. If English, respond in English.
-Never invent hospital information or diagnose diseases. Confirm patient name, phone, doctor, date, time, and reason before booking.`
+Confirm patient name, phone, doctor, date, time, and reason before booking.`
             }
           ]
         } as any

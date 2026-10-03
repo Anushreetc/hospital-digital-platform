@@ -173,5 +173,37 @@ describe('Hospital Backend Core Tests', () => {
       expect(n8nRes.count).toBeGreaterThan(0);
     });
   });
+
+  describe('OpenAI GPT-Live-1 Full-Duplex Integration', () => {
+    it('initializes GPT-Live-1 session and executes hospital backend tools', async () => {
+      const { GptLiveService } = await import('./services/GptLiveService');
+      const gptLiveService = new GptLiveService(fileRepo, appointmentService);
+
+      expect(gptLiveService.getModelName()).toBe('gpt-live-1');
+
+      // Test session creation
+      const session = await gptLiveService.createLiveSession();
+      expect(session.success).toBe(true);
+      expect(session.model).toBe('gpt-live-1');
+      expect(session.client_secret).toBeDefined();
+
+      // Test tool execution: getHospitalInfo
+      const hospitalInfo = await gptLiveService.executeTool('getHospitalInfo', {});
+      expect(hospitalInfo.name).toBeDefined();
+      expect(hospitalInfo.operatingHours).toBeDefined();
+
+      // Test tool execution: searchDoctors
+      const docs = await gptLiveService.executeTool('searchDoctors', { department: 'Cardiology' });
+      expect(docs.length).toBeGreaterThan(0);
+
+      // Test tool execution: checkDoctorAvailability
+      const avail = await gptLiveService.executeTool('checkDoctorAvailability', {
+        doctorId: docs[0].id,
+        date: '2026-09-21' // Monday
+      });
+      expect(avail.slots).toBeDefined();
+      expect(avail.available).toBe(true);
+    });
+  });
 });
 

@@ -76,8 +76,8 @@ export function processLocalVoiceUtterance(sessionId: string, query: string): Lo
     return {
       sessionId,
       state: session.state,
-      promptKannada: `ಸಿಟಿ ಕೇರ್ ಆಸ್ಪತ್ರೆ ${fallbackHospitalInfo.address} ನಲ್ಲಿದೆ. ನೀವು ಅಪಾಯಿಂಟ್‌ಮೆಂಟ್ ಕಾಯ್ದಿರಿಸಲು ಬಯಸುವಿರಾ? ನಿಮ್ಮ ಹೆಸರನ್ನು ತಿಳಿಸಿ.`,
-      promptEnglish: `City Care Hospital is located at ${fallbackHospitalInfo.address}. Would you like to book an appointment? Please provide your name.`,
+      promptKannada: `ವೀ ಕೇರ್ ಮಲ್ಟಿಸ್ಪೆಷಾಲಿಟಿ ಆಸ್ಪತ್ರೆ ಮತ್ತು ಐಸಿಯು ${fallbackHospitalInfo.address} ನಲ್ಲಿದೆ. ನೀವು ಅಪಾಯಿಂಟ್‌ಮೆಂಟ್ ಕಾಯ್ದಿರಿಸಲು ಬಯಸುವಿರಾ? ನಿಮ್ಮ ಹೆಸರನ್ನು ತಿಳಿಸಿ.`,
+      promptEnglish: `We Care Multispeciality Hospital and ICU is located at ${fallbackHospitalInfo.address}. Would you like to book an appointment? Please provide your name.`,
       collectedSlots: session.slots,
       isCompleted: false
     };
@@ -177,8 +177,8 @@ export function processLocalVoiceUtterance(sessionId: string, query: string): Lo
       return {
         sessionId,
         state: 'GREETING',
-        promptKannada: 'ನಮಸ್ಕಾರ! ಸಿಟಿ ಕೇರ್ ಆಸ್ಪತ್ರೆಗೆ ಸುಸ್ವಾಗತ. ಅಪಾಯಿಂಟ್‌ಮೆಂಟ್ ಕಾಯ್ದಿರಿಸಲು ನಿಮ್ಮ ಹೆಸರು ಏನು?',
-        promptEnglish: 'Namaskara! Welcome to City Care Hospital. What is your full name for the appointment booking?',
+        promptKannada: 'ನಮಸ್ಕಾರ! ವೀ ಕೇರ್ ಮಲ್ಟಿಸ್ಪೆಷಾಲಿಟಿ ಆಸ್ಪತ್ರೆಗೆ ಸುಸ್ವಾಗತ. ಅಪಾಯಿಂಟ್‌ಮೆಂಟ್ ಕಾಯ್ದಿರಿಸಲು ನಿಮ್ಮ ಹೆಸರು ಏನು?',
+        promptEnglish: 'Namaskara! Welcome to We Care Multispeciality Hospital and ICU Doddaballapura. What is your full name for the appointment booking?',
         collectedSlots: session.slots,
         isCompleted: false
       };
@@ -187,7 +187,7 @@ export function processLocalVoiceUtterance(sessionId: string, query: string): Lo
     // Extract Name cleanly (strip greetings, filler phrases, and question echoes)
     let extractedName = clean
       .replace(/^(ನನ್ನ ಹೆಸರು|ನನ್ನ ಹೆಸ್ರು|ಹೆಸರು|my name is|i am|iam|im|this is|call me|myself)\s*/i, '')
-      .replace(/(welcome to city care hospital|what is your full name|for the appointment|please provide your 10 digit|mobile number|namaskara|hello|ಧನ್ಯವಾದಗಳು|ಸಿಟಿ ಕೇರ್ ಆಸ್ಪತ್ರೆಗೆ ಸುಸ್ವಾಗತ|ನಿಮ್ಮ ಹೆಸರು ಏನು)/gi, '')
+      .replace(/(welcome to we care hospital|welcome to city care hospital|what is your full name|for the appointment|please provide your 10 digit|mobile number|namaskara|hello|ಧನ್ಯವಾದಗಳು|ವೀ ಕೇರ್ ಆಸ್ಪತ್ರೆಗೆ ಸುಸ್ವಾಗತ|ಸಿಟಿ ಕೇರ್ ಆಸ್ಪತ್ರೆಗೆ ಸುಸ್ವಾಗತ|ನಿಮ್ಮ ಹೆಸರು ಏನು)/gi, '')
       .replace(/[.,!?:;()]/g, '')
       .replace(/\s+/g, ' ')
       .trim();

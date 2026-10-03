@@ -125,9 +125,11 @@ export const createTelephonyRouter = (
     try {
       const calls = fileRepo.getVoiceCalls();
       const totalCalls = calls.length;
-      const appointmentsCreated = calls.filter(c => c.outcome === 'APPOINTMENT_CREATED').length;
+      const appointmentsCreated = calls.filter(c => c.outcome === 'APPOINTMENT_CREATED' || !!c.appointmentId).length;
       const humanHandoffs = calls.filter(c => c.outcome === 'HUMAN_HANDOFF').length;
       const emergencyEscalations = calls.filter(c => c.outcome === 'EMERGENCY_ESCALATED').length;
+      const openCases = calls.filter(c => c.caseStatus === 'NEW' || c.caseStatus === 'UNDER_REVIEW').length;
+      const closedCases = calls.filter(c => c.caseStatus === 'CLOSED').length;
 
       return res.status(200).json({
         success: true,
@@ -135,10 +137,125 @@ export const createTelephonyRouter = (
           totalCalls,
           appointmentsCreated,
           humanHandoffs,
-          emergencyEscalations
+          emergencyEscalations,
+          openCases,
+          closedCases
         },
         data: calls
       });
+    } catch (err: any) {
+      return res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
+  // 7. Record / Save AI Receptionist Conversation Transcript
+  router.post('/calls', (req: Request, res: Response) => {
+    try {
+      const callData = req.body;
+      if (!callData.callId && !callData.id) {
+        callData.callId = `call_${Date.now()}`;
+      }
+      if (!callData.id) {
+        callData.id = callData.callId;
+      }
+      if (!callData.createdAt) {
+        callData.createdAt = new Date().toISOString();
+      }
+      if (!callData.caseStatus) {
+        callData.caseStatus = 'NEW';
+      }
+
+      const saved = fileRepo.saveVoiceCall(callData);
+      return res.status(201).json({ success: true, data: saved });
+    } catch (err: any) {
+      return res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
+  // 8. Get All Voice Calls (With Query Filters for Receptionist Portal)
+  router.get('/calls', (req: Request, res: Response) => {
+    try {
+      const { status, caseStatus, search, language } = req.query as Record<string, string>;
+      let calls = fileRepo.getVoiceCalls();
+
+      if (caseStatus && caseStatus !== 'ALL') {
+        calls = calls.filter(c => c.caseStatus === caseStatus);
+      }
+      if (status && status !== 'ALL') {
+        calls = calls.filter(c => c.status === status);
+      }
+      if (language && language !== 'ALL') {
+        calls = calls.filter(c => c.language === language);
+      }
+      if (search) {
+        const q = search.toLowerCase().trim();
+        calls = calls.filter(c =>
+          (c.callerName && c.callerName.toLowerCase().includes(q)) ||
+          c.phoneNumber.includes(q) ||
+          (c.appointmentId && c.appointmentId.toLowerCase().includes(q)) ||
+          (c.summary && c.summary.toLowerCase().includes(q)) ||
+          (c.transcript && c.transcript.toLowerCase().includes(q)) ||
+          (c.receptionistNotes && c.receptionistNotes.toLowerCase().includes(q))
+        );
+      }
+
+      const totalCalls = calls.length;
+      const openCases = calls.filter(c => c.caseStatus === 'NEW' || c.caseStatus === 'UNDER_REVIEW').length;
+      const closedCases = calls.filter(c => c.caseStatus === 'CLOSED').length;
+      const appointmentsBooked = calls.filter(c => !!c.appointmentId).length;
+
+      return res.status(200).json({
+        success: true,
+        analytics: { totalCalls, openCases, closedCases, appointmentsBooked },
+        data: calls
+      });
+    } catch (err: any) {
+      return res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
+  // 9. Get Single Voice Call Case
+  router.get('/calls/:id', (req: Request, res: Response) => {
+    const call = fileRepo.getVoiceCallById(req.params.id);
+    if (!call) return res.status(404).json({ success: false, error: 'Voice call not found' });
+    return res.status(200).json({ success: true, data: call });
+  });
+
+  // 10. Update Receptionist Case (Assign Receptionist, Notes, Under Review)
+  router.patch('/calls/:id', (req: Request, res: Response) => {
+    try {
+      const existing = fileRepo.getVoiceCallById(req.params.id);
+      if (!existing) return res.status(404).json({ success: false, error: 'Voice call not found' });
+
+      const updated = fileRepo.saveVoiceCall({
+        ...existing,
+        ...req.body,
+        id: existing.id,
+        callId: existing.callId
+      });
+
+      return res.status(200).json({ success: true, data: updated });
+    } catch (err: any) {
+      return res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
+  // 11. Close Receptionist Case (Mark Resolved)
+  router.post('/calls/:id/close', (req: Request, res: Response) => {
+    try {
+      const existing = fileRepo.getVoiceCallById(req.params.id);
+      if (!existing) return res.status(404).json({ success: false, error: 'Voice call not found' });
+
+      const { resolutionNotes, closedBy } = req.body;
+      const updated = fileRepo.saveVoiceCall({
+        ...existing,
+        caseStatus: 'CLOSED',
+        receptionistNotes: resolutionNotes || existing.receptionistNotes || 'Case reviewed and closed.',
+        closedAt: new Date().toISOString(),
+        closedBy: closedBy || existing.assignedReceptionist || 'Reception Desk'
+      });
+
+      return res.status(200).json({ success: true, data: updated });
     } catch (err: any) {
       return res.status(500).json({ success: false, error: err.message });
     }

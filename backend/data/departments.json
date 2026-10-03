@@ -1,58 +1,98 @@
 [
   {
-    "id": "dept-cardio",
-    "name": "Cardiology",
-    "code": "CARD",
-    "description": "Comprehensive cardiovascular diagnosis, angioplasty, cardiac rehabilitation, and heart care.",
-    "iconName": "HeartPulse",
-    "active": true
-  },
-  {
-    "id": "dept-neuro",
-    "name": "Neurology & Neurosurgery",
-    "code": "NEUR",
-    "description": "Advanced brain and nerve care, stroke management, spine surgery, and neurological rehabilitation.",
-    "iconName": "Brain",
-    "active": true
-  },
-  {
     "id": "dept-ortho",
-    "name": "Orthopedics & Joint Replacement",
+    "name": "Department of Orthopaedics",
     "code": "ORTH",
-    "description": "Joint replacement, fracture care, sports injury management, and arthroscopic surgery.",
+    "description": "Expert care for bone fractures, joint pain, arthritis, spinal care, and orthopedic surgical interventions.",
     "iconName": "Bone",
     "active": true
   },
   {
-    "id": "dept-pedia",
-    "name": "Pediatrics & Neonatology",
-    "code": "PEDI",
-    "description": "Specialized pediatric care, NICU facilities, childhood vaccination, and growth monitoring.",
-    "iconName": "Baby",
-    "active": true
-  },
-  {
     "id": "dept-gynaec",
-    "name": "Obstetrics & Gynecology",
+    "name": "Department of Gynaecology & Obstetrics",
     "code": "GYNA",
-    "description": "High-risk pregnancy care, maternity services, laparoscopic gynecological surgery, and women's health.",
+    "description": "Comprehensive maternity services, antenatal & postnatal care, normal deliveries, and women's wellness.",
     "iconName": "UserPlus",
     "active": true
   },
   {
+    "id": "dept-pulmo",
+    "name": "Department of Pulmonology",
+    "code": "PULM",
+    "description": "Specialized treatment for asthma, COPD, chronic cough, respiratory infections, and lung conditions.",
+    "iconName": "Wind",
+    "active": true
+  },
+  {
     "id": "dept-gastro",
-    "name": "Gastroenterology",
+    "name": "Department of Gastroenterology",
     "code": "GAST",
-    "description": "Endoscopy, liver diseases, digestive disorders, and gastrointestinal surgery.",
+    "description": "Digestive health, liver disease management, abdominal pain, gastrointestinal disorders, and endoscopy evaluations.",
     "iconName": "Activity",
     "active": true
   },
   {
+    "id": "dept-pedia",
+    "name": "Department of Pediatrics",
+    "code": "PEDI",
+    "description": "Dedicated child healthcare, pediatric illness management, newborn follow-up, and routine vaccination schedules.",
+    "iconName": "Baby",
+    "active": true
+  },
+  {
+    "id": "dept-nephro",
+    "name": "Department of Nephrology",
+    "code": "NEPH",
+    "description": "Kidney disease management, renal assessments, hypertension-related kidney disorders, and clinical nephrology.",
+    "iconName": "Shield",
+    "active": true
+  },
+  {
+    "id": "dept-ent",
+    "name": "Department of ENT",
+    "code": "ENT",
+    "description": "Diagnosis and treatments for ear infections, hearing problems, nasal blockage, sinusitis, and throat conditions.",
+    "iconName": "Headphones",
+    "active": true
+  },
+  {
+    "id": "dept-neuro",
+    "name": "Department of Neurology & Neurosurgery",
+    "code": "NEUR",
+    "description": "Advanced management for stroke, headache, epilepsy, neuropathy, spine disorders, and neurosurgical emergencies.",
+    "iconName": "Brain",
+    "active": true
+  },
+  {
+    "id": "dept-gensurg",
+    "name": "Department of General Surgery",
+    "code": "GSUR",
+    "description": "General and emergency surgical care, hernia repair, appendicitis, trauma care, and wound management.",
+    "iconName": "Scissors",
+    "active": true
+  },
+  {
     "id": "dept-genmed",
-    "name": "General Medicine & Internal Medicine",
+    "name": "Department of General Medicine",
     "code": "GMED",
-    "description": "Diagnosis and management of chronic lifestyle diseases, fevers, infections, and preventive health checks.",
+    "description": "Comprehensive primary and internal medicine, fevers, diabetes, hypertension, and preventive health screenings.",
     "iconName": "Stethoscope",
+    "active": true
+  },
+  {
+    "id": "dept-uro",
+    "name": "Department of Urology",
+    "code": "UROL",
+    "description": "Urinary tract infections, kidney stones, prostate disorders, bladder issues, and urological surgical care.",
+    "iconName": "Droplets",
+    "active": true
+  },
+  {
+    "id": "dept-derm",
+    "name": "Department of Dermatology",
+    "code": "DERM",
+    "description": "Clinical skin condition management, acne, psoriasis, allergies, fungal infections, hair, and nail treatments.",
+    "iconName": "Sparkles",
     "active": true
   }
 ]
