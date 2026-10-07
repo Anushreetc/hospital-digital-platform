@@ -73,10 +73,12 @@ export const Navbar: React.FC<Props> = ({
       <div className="max-w-[1440px] mx-auto px-2.5 sm:px-4 lg:px-6">
         <div className="flex items-center justify-between h-14 sm:h-16 md:h-18 gap-1.5 sm:gap-2">
           {/* Logo & Brand */}
-          <a href="#home" className="flex items-center space-x-1.5 sm:space-x-2.5 shrink min-w-0 group">
-            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-blue-700 flex items-center justify-center text-white shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform shrink-0">
-              <HeartPulse className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-            </div>
+          <a href="#home" className="flex items-center space-x-2 sm:space-x-3 shrink min-w-0 group">
+            <img
+              src="/hospital_logo.png"
+              alt="We Care Multispeciality Hospital Logo"
+              className="w-10 h-10 sm:w-12 sm:h-12 object-contain group-hover:scale-105 transition-transform shrink-0"
+            />
             <div className="flex flex-col min-w-0">
               <span className="font-black text-xs xs:text-sm sm:text-base text-slate-900 leading-tight tracking-tight truncate max-w-[150px] 2xs:max-w-[180px] xs:max-w-[240px] sm:max-w-none">
                 We Care Multispeciality Hospital

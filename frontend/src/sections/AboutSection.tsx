@@ -81,22 +81,35 @@ export const AboutSection: React.FC<Props> = ({ hospitalInfo }) => {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-2.5 xs:gap-4">
-            {hospitalInfo.statistics.map((stat, idx) => (
-              <div
-                key={stat.label}
-                className={`p-4 xs:p-5 sm:p-6 rounded-2xl sm:rounded-3xl text-center space-y-1 sm:space-y-2 shadow-sm transition-all hover:scale-105 ${
-                  idx % 2 === 0 ? 'bg-gradient-to-br from-blue-900 to-slate-900 text-white' : 'bg-blue-50 border border-blue-100 text-slate-900'
-                }`}
-              >
-                <div className={`text-2xl xs:text-3xl sm:text-4xl font-extrabold ${idx % 2 === 0 ? 'text-blue-400' : 'text-blue-700'}`}>
-                  {stat.value}
-                </div>
-                <div className={`text-[10px] xs:text-xs font-semibold uppercase tracking-wider ${idx % 2 === 0 ? 'text-slate-300' : 'text-slate-600'}`}>
-                  {stat.label}
-                </div>
+          <div className="space-y-6">
+            <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl border-4 border-white">
+              <img
+                src="/hospital_building.jpg"
+                alt="We Care Multispeciality Hospital Building Front View"
+                className="w-full h-56 sm:h-64 object-cover hover:scale-105 transition-transform duration-700"
+              />
+              <div className="absolute bottom-3 left-3 bg-slate-900/80 backdrop-blur-md text-white text-xs font-semibold px-3 py-1.5 rounded-xl border border-slate-700/50">
+                🏢 Sri Siddeshwara Complex, D Cross Main Rd, Doddaballapura
               </div>
-            ))}
+            </div>
+
+            <div className="grid grid-cols-2 gap-2.5 xs:gap-4">
+              {hospitalInfo.statistics.map((stat, idx) => (
+                <div
+                  key={stat.label}
+                  className={`p-4 xs:p-5 sm:p-6 rounded-2xl sm:rounded-3xl text-center space-y-1 sm:space-y-2 shadow-sm transition-all hover:scale-105 ${
+                    idx % 2 === 0 ? 'bg-gradient-to-br from-blue-900 to-slate-900 text-white' : 'bg-blue-50 border border-blue-100 text-slate-900'
+                  }`}
+                >
+                  <div className={`text-2xl xs:text-3xl sm:text-4xl font-extrabold ${idx % 2 === 0 ? 'text-blue-400' : 'text-blue-700'}`}>
+                    {stat.value}
+                  </div>
+                  <div className={`text-[10px] xs:text-xs font-semibold uppercase tracking-wider ${idx % 2 === 0 ? 'text-slate-300' : 'text-slate-600'}`}>
+                    {stat.label}
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
