@@ -114,8 +114,8 @@ export const HeroSection: React.FC<Props> = ({
           <div className="lg:col-span-5 relative mt-2 sm:mt-4 lg:mt-0">
             <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl border-2 sm:border-4 border-white">
               <img
-                src="/hospital_building.jpg"
-                alt="We Care Multispeciality Hospital & ICU Doddaballapura Building"
+                src="https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&q=80&w=800"
+                alt="We Care Multispeciality Hospital and ICU Doddaballapura"
                 className="w-full h-56 xs:h-64 sm:h-80 md:h-[420px] object-cover hover:scale-105 transition-transform duration-700"
               />
 
