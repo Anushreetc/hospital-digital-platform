@@ -110,15 +110,33 @@ export const HeroSection: React.FC<Props> = ({
             </div>
           </div>
 
-          {/* Right Column: Hero Visual Card */}
+          {/* Right Column: Premium Hospital Showcase Card */}
           <div className="lg:col-span-5 relative mt-2 sm:mt-4 lg:mt-0">
-            <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl border-2 sm:border-4 border-white">
+            <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl border border-slate-200/80 bg-slate-900 group">
               <img
-                src="/images/hospital_building.jpg"
-                alt="We Care Multispeciality Hospital & ICU Doddaballapura Building"
-                className="w-full h-64 xs:h-72 sm:h-96 md:h-[450px] object-cover hover:scale-105 transition-transform duration-700"
+                src="/images/hospital_building_pro.jpg"
+                alt="We Care Multispeciality Hospital & ICU Doddaballapura Campus"
+                className="w-full h-64 xs:h-72 sm:h-96 md:h-[460px] object-cover group-hover:scale-105 transition-transform duration-700 brightness-[0.97] contrast-[1.05]"
               />
 
+              {/* Top Glass Status Badge */}
+              <div className="absolute top-3.5 left-3.5 sm:top-4 sm:left-4 z-10 flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900/80 backdrop-blur-md border border-white/20 text-white text-[11px] sm:text-xs font-bold shadow-lg">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span>24/7 ICU &amp; Emergency Campus</span>
+              </div>
+
+              {/* Bottom Glass Overlay Info Panel */}
+              <div className="absolute inset-x-0 bottom-0 z-10 p-4 sm:p-5 bg-gradient-to-t from-slate-950/95 via-slate-950/70 to-transparent text-white space-y-1">
+                <div className="flex items-center gap-1.5 text-xs text-blue-300 font-semibold tracking-wide uppercase">
+                  <span>📍 Doddaballapura, Karnataka</span>
+                </div>
+                <h3 className="font-extrabold text-sm sm:text-base text-white tracking-tight">
+                  We Care Multi Speciality Hospital &amp; ICU
+                </h3>
+                <p className="text-[11px] sm:text-xs text-slate-300 font-medium">
+                  Sri Siddeshwara Complex • Main Diagnostic &amp; Surgical Facility
+                </p>
+              </div>
             </div>
           </div>
         </div>

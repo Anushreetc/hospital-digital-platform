@@ -16,9 +16,9 @@ export const Footer: React.FC<Props> = ({ hospitalInfo, onOpenAuthModal }) => {
           <div className="sm:col-span-2 space-y-3.5 sm:space-y-4">
             <div className="flex items-center space-x-3">
               <img 
-                src="/images/hospital_logo.jpg" 
+                src="/images/hospital_logo.png" 
                 alt="We Care Multispeciality Hospital Logo" 
-                className="h-10 w-auto object-contain rounded-lg shrink-0 bg-white p-1" 
+                className="h-11 w-auto object-contain shrink-0" 
               />
               <span className="text-xl font-bold text-white tracking-tight">{hospitalInfo.name}</span>
             </div>
