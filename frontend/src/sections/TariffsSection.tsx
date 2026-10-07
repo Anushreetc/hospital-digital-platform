@@ -61,13 +61,13 @@ export const TariffsSection: React.FC<Props> = ({ hospitalInfo, onBookClick }) =
         <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-12 space-y-2.5 sm:space-y-3">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-[11px] xs:text-xs font-bold uppercase tracking-wider">
             <CreditCard className="w-3.5 h-3.5" />
-            Transparent Pricing & Insurance
+            Inpatient Facilities &amp; Insurance Support
           </div>
           <h2 className="text-2xl xs:text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight break-words">
-            Room Tariffs & Cashless Insurance Desk
+            Inpatient Rooms &amp; Cashless Insurance Desk
           </h2>
           <p className="text-xs xs:text-sm sm:text-base text-slate-600">
-            Clear, upfront room rates per day and seamless cashless hospitalization support for our patients in Doddaballapura.
+            Overview of inpatient room categories and key inclusions. Specific room tariffs and treatment packages are discussed directly at the hospital admission desk.
           </p>
         </div>
 
@@ -83,7 +83,7 @@ export const TariffsSection: React.FC<Props> = ({ hospitalInfo, onBookClick }) =
               }`}
             >
               <Bed className="w-4 h-4" />
-              <span>Room Tariffs (Per Day)</span>
+              <span>Inpatient Room Overview</span>
             </button>
             <button
               onClick={() => setActiveTab('INSURANCE')}
@@ -140,17 +140,11 @@ export const TariffsSection: React.FC<Props> = ({ hospitalInfo, onBookClick }) =
                         </div>
                       </div>
 
-                      <div className="pt-2 border-t border-slate-100/10">
-                        <div className="flex items-baseline gap-1">
-                          <span className="text-xs font-semibold text-slate-400">₹</span>
-                          <span className={`text-3xl sm:text-4xl font-black ${isICU ? 'text-blue-400' : 'text-blue-700'}`}>
-                            {t.pricePerDay.toLocaleString('en-IN')}
-                          </span>
-                          <span className={`text-xs font-medium ${isICU ? 'text-slate-400' : 'text-slate-500'}`}>
-                            / day
-                          </span>
+                      <div className="pt-2 border-t border-slate-100">
+                        <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 text-blue-700 text-xs font-bold border border-blue-200">
+                          <span>Pricing Discussed at Hospital Desk</span>
                         </div>
-                        <p className={`text-xs mt-2 leading-relaxed ${isICU ? 'text-slate-300' : 'text-slate-600'}`}>
+                        <p className={`text-xs mt-3 leading-relaxed ${isICU ? 'text-slate-300' : 'text-slate-600'}`}>
                           {t.description}
                         </p>
                       </div>
