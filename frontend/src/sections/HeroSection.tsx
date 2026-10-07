@@ -22,15 +22,17 @@ export const HeroSection: React.FC<Props> = ({
   };
 
   return (
-    <section id="home" className="relative pt-4 pb-10 xs:pt-6 xs:pb-12 sm:pt-12 sm:pb-20 md:pt-16 md:pb-24 overflow-hidden bg-slate-900 text-white">
-      {/* Ambient Blurred Hospital Photo Background */}
-      <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
+    <section id="home" className="relative pt-6 pb-12 sm:pt-16 sm:pb-24 lg:pt-20 lg:pb-32 overflow-hidden bg-slate-950 text-white min-h-[550px] sm:min-h-[620px] flex items-center">
+      {/* Full-Width Background Hospital Photo with Professional Overlay */}
+      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
         <img 
           src="/images/hospital_building_pro.jpg" 
-          alt="Background" 
-          className="w-full h-full object-cover blur-3xl opacity-25 scale-110"
+          alt="We Care Multispeciality Hospital Building" 
+          className="w-full h-full object-cover object-center scale-105 brightness-[0.65] contrast-[1.1]"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-slate-900/90 to-slate-950"></div>
+        {/* Multi-stage Gradient Overlay for Crystal Clear Text Contrast */}
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/90 to-slate-950/40"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-slate-950/60"></div>
       </div>
 
       <div className="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8">
@@ -116,50 +118,57 @@ export const HeroSection: React.FC<Props> = ({
             </div>
           </div>
 
-          {/* Right Column: Premium Blurred Hospital Showcase Card */}
-          <div className="lg:col-span-5 relative mt-2 sm:mt-4 lg:mt-0">
-            <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl border border-slate-700/80 bg-slate-950 p-2 group">
-              {/* Blurred Photo Layer inside Card */}
-              <div className="relative h-64 xs:h-72 sm:h-96 md:h-[460px] rounded-xl sm:rounded-2xl overflow-hidden">
-                <img
-                  src="/images/hospital_building_pro.jpg"
-                  alt="We Care Multispeciality Hospital Building"
-                  className="w-full h-full object-cover blur-sm scale-105 group-hover:scale-110 transition-all duration-700 brightness-[0.75]"
-                />
+          {/* Right Column: Glassmorphism Facility Quick Summary */}
+          <div className="lg:col-span-5 relative mt-4 lg:mt-0 z-10">
+            <div className="p-6 sm:p-7 rounded-3xl bg-slate-900/80 backdrop-blur-xl border border-white/15 shadow-2xl space-y-5">
+              <div className="flex items-center justify-between">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs font-bold">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                  <span>Open 24 Hours • 365 Days</span>
+                </div>
 
-                {/* Overlay Dark Gradient */}
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-slate-900/30"></div>
+                <span className="text-xs text-blue-300 font-bold bg-blue-500/20 px-2.5 py-1 rounded-lg border border-blue-500/30">
+                  Doddaballapura
+                </span>
+              </div>
 
-                {/* Floating Content / Glassmorphism Panel on top of blurred building photo */}
-                <div className="absolute inset-0 z-10 p-5 flex flex-col justify-between">
-                  <div className="flex items-center justify-between">
-                    <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900/90 backdrop-blur-md border border-emerald-500/30 text-emerald-400 text-[11px] sm:text-xs font-bold shadow-xl">
-                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                      <span>24/7 ICU &amp; Emergency Campus</span>
-                    </div>
+              <div className="space-y-2">
+                <h3 className="text-lg sm:text-xl font-black text-white tracking-tight">
+                  We Care Multi Speciality Hospital &amp; ICU
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
+                  Sri Siddeshwara Complex, D Cross Main Rd, near Federal Bank, Doddaballapura, Karnataka 561203.
+                </p>
+              </div>
 
-                    <div className="px-2.5 py-1 rounded-lg bg-blue-600/80 backdrop-blur-md text-white text-[10px] sm:text-xs font-bold">
-                      Verified Center
-                    </div>
-                  </div>
+              <div className="space-y-2.5 pt-2 border-t border-white/10 text-xs text-slate-200">
+                <div className="flex items-center justify-between py-1 border-b border-white/5">
+                  <span className="text-slate-400 font-medium">🚨 Emergency Helpline:</span>
+                  <a href={`tel:${hospitalInfo.emergencyPhone || '+918867755541'}`} className="font-bold text-rose-400 hover:underline">
+                    {hospitalInfo.emergencyPhone || '+91 88677 55541'}
+                  </a>
+                </div>
 
-                  <div className="space-y-2.5 p-4 rounded-xl bg-slate-900/85 backdrop-blur-md border border-white/10 text-white shadow-2xl">
-                    <div className="flex items-center gap-2 text-xs text-blue-400 font-bold uppercase tracking-wider">
-                      <span>📍 Doddaballapura, Karnataka</span>
-                    </div>
-                    <h3 className="font-extrabold text-base sm:text-lg text-white leading-tight">
-                      We Care Multi Speciality Hospital &amp; ICU
-                    </h3>
-                    <p className="text-xs text-slate-300 leading-relaxed font-medium">
-                      Sri Siddeshwara Complex, D Cross Main Rd, near Federal Bank.
-                    </p>
-                    <div className="pt-1 flex items-center justify-between border-t border-slate-700/60 text-[11px] text-slate-300">
-                      <span>🚑 Ambulance: +91 93530 61993</span>
-                      <span className="text-emerald-400 font-bold">28 Beds Operational</span>
-                    </div>
-                  </div>
+                <div className="flex items-center justify-between py-1 border-b border-white/5">
+                  <span className="text-slate-400 font-medium">🚑 Ambulance Service:</span>
+                  <a href={`tel:${hospitalInfo.ambulancePhone || '+919353061993'}`} className="font-bold text-amber-300 hover:underline">
+                    {hospitalInfo.ambulancePhone || '+91 93530 61993'}
+                  </a>
+                </div>
+
+                <div className="flex items-center justify-between py-1">
+                  <span className="text-slate-400 font-medium">🏥 Bed Capacity &amp; ICU:</span>
+                  <span className="font-bold text-emerald-400">28 Beds • Advanced ICU</span>
                 </div>
               </div>
+
+              <button
+                onClick={onBookClick}
+                className="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold rounded-xl text-xs sm:text-sm shadow-lg shadow-blue-600/30 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+              >
+                <CalendarCheck className="w-4 h-4" />
+                <span>Schedule Consultation Now</span>
+              </button>
             </div>
           </div>
         </div>
