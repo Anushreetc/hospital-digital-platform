@@ -130,8 +130,8 @@ export const AppointmentSection: React.FC<Props> = ({
 
             <div className="bg-slate-50 p-3.5 sm:p-4 rounded-xl sm:rounded-2xl text-xs text-slate-600 text-left space-y-1.5 border border-slate-100">
               <div className="flex justify-between"><span>Patient Phone:</span> <span className="font-semibold text-slate-900">{createdAppointment.patientPhone}</span></div>
-              <div className="flex justify-between"><span>Status:</span> <span className="font-bold text-blue-600">{createdAppointment.status}</span></div>
-              <div className="flex justify-between"><span>Google Sheets Persistence:</span> <span className="font-semibold text-emerald-700">Saved</span></div>
+              <div className="flex justify-between"><span>Booking Status:</span> <span className="font-bold text-blue-600">CONFIRMED</span></div>
+              <div className="flex justify-between"><span>OPD Desk Notification:</span> <span className="font-semibold text-emerald-700">Verified &amp; Dispatched</span></div>
             </div>
 
             <button

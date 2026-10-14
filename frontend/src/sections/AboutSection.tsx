@@ -1,6 +1,6 @@
 import React from 'react';
 import { HospitalInfo } from '../types';
-import { Award, CheckCircle2, HeartHandshake, Shield, Sparkles, Users } from 'lucide-react';
+import { ShieldCheck, CheckCircle2, HeartHandshake, Activity, Award, ArrowRight } from 'lucide-react';
 
 interface Props {
   hospitalInfo: HospitalInfo;
@@ -8,95 +8,104 @@ interface Props {
 
 export const AboutSection: React.FC<Props> = ({ hospitalInfo }) => {
   return (
-    <section id="about" className="py-12 sm:py-20 bg-white border-t border-slate-100">
-      <div className="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8">
-        <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-16 space-y-2.5 sm:space-y-3">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-[11px] xs:text-xs font-bold uppercase tracking-wider">
-            <Sparkles className="w-3.5 h-3.5" />
-            About Our Institution
+    <section id="about" className="py-16 sm:py-24 bg-slate-50 border-t border-slate-200/80">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
+          {/* Left Column: Authentic Hospital Building Photograph */}
+          <div className="lg:col-span-5 relative">
+            <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl border border-slate-200/80 bg-white group">
+              <img
+                src="/images/hospital_building_pro.jpg"
+                alt="We Care Multispeciality Hospital & ICU Building"
+                className="w-full h-80 sm:h-[440px] object-cover group-hover:scale-103 transition-transform duration-700"
+              />
+              {/* Subtle Tag Overlay */}
+              <div className="absolute top-4 left-4 z-10 flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#101B33]/90 text-white text-xs font-bold shadow-md backdrop-blur-xs">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span>Established 2023 • 24/7 Facility</span>
+              </div>
+              <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5 bg-gradient-to-t from-[#101B33]/90 via-[#101B33]/50 to-transparent text-white">
+                <div className="text-xs font-semibold text-blue-300">Doddaballapura, Karnataka</div>
+                <div className="text-sm sm:text-base font-bold text-white">Sri Siddeshwara Complex, D Cross Main Rd</div>
+              </div>
+            </div>
           </div>
-          <h2 className="text-2xl xs:text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight break-words">
-            Excellence in Healthcare & Patient Compassion
-          </h2>
-          <p className="text-xs xs:text-sm sm:text-base text-slate-600">
-            Dedicated to providing state-of-the-art medical treatment, ethical healthcare practices, and personalized care for every patient.
-          </p>
-        </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-          <div className="space-y-5 sm:space-y-6">
-            <h3 className="text-xl xs:text-2xl font-bold text-slate-900">
-              Welcome to {hospitalInfo.name}
-            </h3>
-            <p className="text-xs xs:text-sm sm:text-base text-slate-600 leading-relaxed">
-              Established in 2023, We Care Multispeciality Hospital and ICU brings together multiple medical and surgical disciplines under one modern 28-bed roof in Doddaballapura. Our hospital is built on the foundation of 24/7 doctor availability, round-the-clock intensive care, and rapid emergency ambulance response across Karnataka.
+          {/* Right Column: About Hospital Content & Healthcare Values */}
+          <div className="lg:col-span-7 space-y-6">
+            <div className="space-y-3">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100/80 text-blue-800 text-xs font-bold uppercase tracking-wider">
+                <Award className="w-3.5 h-3.5 text-blue-600" />
+                <span>About We Care Multispeciality Hospital</span>
+              </div>
+              <h2 className="text-2xl xs:text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
+                Clinical Excellence &amp; Compassionate Healing in Doddaballapura
+              </h2>
+            </div>
+
+            <p className="text-sm sm:text-base text-slate-600 leading-relaxed font-normal">
+              Established in 2023, <strong>We Care Multispeciality Hospital &amp; ICU</strong> brings together 12 specialized medical disciplines and 13+ experienced clinicians under a modern 28-bed infrastructure. Our institution operates on an unwavering standard of round-the-clock doctor availability, dedicated intensive care, and rapid emergency ambulance response across Karnataka.
             </p>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 pt-1 sm:pt-2">
-              <div className="p-3.5 sm:p-4 bg-slate-50 rounded-2xl border border-slate-100 space-y-1.5 sm:space-y-2">
-                <div className="w-8 h-8 sm:w-9 sm:h-9 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center">
-                  <Shield className="w-4 h-4 sm:w-5 sm:h-5" />
+            {/* 4 Key Strengths Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+              <div className="p-4 bg-white rounded-xl border border-slate-200/80 shadow-xs space-y-1.5">
+                <div className="flex items-center gap-2 text-blue-600 font-bold text-sm">
+                  <ShieldCheck className="w-4 h-4 shrink-0" />
+                  <span>24/7 Attending Physicians</span>
                 </div>
-                <h4 className="font-bold text-slate-900 text-sm">24/7 Doctor Availability</h4>
-                <p className="text-xs text-slate-600 leading-relaxed">Trained professionals like doctors and nurses work around the clock to provide immediate and attentive patient care.</p>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Trained emergency physicians, duty medical officers, and intensive care nurses on site 24 hours a day.
+                </p>
               </div>
 
-              <div className="p-3.5 sm:p-4 bg-slate-50 rounded-2xl border border-slate-100 space-y-1.5 sm:space-y-2">
-                <div className="w-8 h-8 sm:w-9 sm:h-9 bg-emerald-100 text-emerald-600 rounded-lg flex items-center justify-center">
-                  <HeartHandshake className="w-4 h-4 sm:w-5 sm:h-5" />
+              <div className="p-4 bg-white rounded-xl border border-slate-200/80 shadow-xs space-y-1.5">
+                <div className="flex items-center gap-2 text-emerald-600 font-bold text-sm">
+                  <Activity className="w-4 h-4 shrink-0" />
+                  <span>Multi-Bed Advanced ICU</span>
                 </div>
-                <h4 className="font-bold text-slate-900 text-sm">Friendly & Caring Staff</h4>
-                <p className="text-xs text-slate-600 leading-relaxed">Warm, patient-first care delivered with compassion in 7 languages (Kannada, English, Hindi, Tamil, Telugu, Malayalam, Urdu).</p>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  State-of-the-art multipara telemetry monitoring, invasive ventilator support, and crash-cart resuscitation.
+                </p>
+              </div>
+
+              <div className="p-4 bg-white rounded-xl border border-slate-200/80 shadow-xs space-y-1.5">
+                <div className="flex items-center gap-2 text-indigo-600 font-bold text-sm">
+                  <CheckCircle2 className="w-4 h-4 shrink-0" />
+                  <span>In-House Lab &amp; Pharmacy</span>
+                </div>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Same-day diagnostic biochemistry and hematology reports backed by round-the-clock prescription pharmacy.
+                </p>
+              </div>
+
+              <div className="p-4 bg-white rounded-xl border border-slate-200/80 shadow-xs space-y-1.5">
+                <div className="flex items-center gap-2 text-amber-600 font-bold text-sm">
+                  <HeartHandshake className="w-4 h-4 shrink-0" />
+                  <span>Cashless TPA Desk</span>
+                </div>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Hassle-free pre-authorization and cashless hospitalization for empaneled insurance providers (MD India, etc.).
+                </p>
               </div>
             </div>
 
-            <div className="space-y-2 pt-1 sm:pt-2">
-              <h4 className="font-bold text-slate-900 text-xs sm:text-sm">Key Hospital Highlights</h4>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-medium text-slate-700">
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span>24/7 Emergency Care &amp; Ambulance Services</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span>Multi-disciplinary 24/7 Intensive Care Unit (ICU)</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span>In-House Diagnostic Lab (Same-Day Reports)</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span>Cashless Hospitalization with MD India Insurance</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Notice for patients */}
-            <div className="p-3.5 bg-amber-50 rounded-2xl border border-amber-200 text-xs text-amber-900 flex items-start gap-2.5">
-              <Sparkles className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-              <span>
-                <strong>Important Information for Patients:</strong> Please bring your previous hospital summaries, diagnostic records, and past prescriptions to help our doctors provide the best personalized care.
-              </span>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-2.5 xs:gap-4">
-            {hospitalInfo.statistics.map((stat, idx) => (
-              <div
-                key={stat.label}
-                className={`p-4 xs:p-5 sm:p-6 rounded-2xl sm:rounded-3xl text-center space-y-1 sm:space-y-2 shadow-sm transition-all hover:scale-105 ${
-                  idx % 2 === 0 ? 'bg-gradient-to-br from-blue-900 to-slate-900 text-white' : 'bg-blue-50 border border-blue-100 text-slate-900'
-                }`}
+            {/* Action Button */}
+            <div className="pt-2 flex items-center gap-4">
+              <a
+                href="#departments"
+                className="inline-flex items-center gap-2 bg-[#101B33] hover:bg-blue-700 text-white font-bold text-xs sm:text-sm px-6 py-3 rounded-xl transition-all shadow-sm active:scale-95"
               >
-                <div className={`text-2xl xs:text-3xl sm:text-4xl font-extrabold ${idx % 2 === 0 ? 'text-blue-400' : 'text-blue-700'}`}>
-                  {stat.value}
-                </div>
-                <div className={`text-[10px] xs:text-xs font-semibold uppercase tracking-wider ${idx % 2 === 0 ? 'text-slate-300' : 'text-slate-600'}`}>
-                  {stat.label}
-                </div>
-              </div>
-            ))}
+                <span>Explore Medical Departments</span>
+                <ArrowRight className="w-4 h-4" />
+              </a>
+              <a
+                href="#contact"
+                className="inline-flex items-center gap-2 text-slate-700 hover:text-blue-600 font-semibold text-xs sm:text-sm px-3 py-3 transition-colors"
+              >
+                <span>Hospital Location &amp; Directions</span>
+              </a>
+            </div>
           </div>
         </div>
       </div>
