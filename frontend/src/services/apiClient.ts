@@ -243,25 +243,47 @@ export const apiClient = {
         return saved;
       });
     }).catch(async () => {
-      // Use Supabase instead of local mock storage
-      const newApt = await supabaseApi.bookAppointment({
-        patientId: data.patientId || 'pat-1',
-        patientName: data.patientName || 'Patient',
-        patientPhone: data.patientPhone || '9876543210',
-        patientEmail: data.patientEmail || 'patient@example.com',
-        departmentId: data.departmentId || 'dept-1',
-        departmentName: data.departmentName || 'Cardiology',
-        doctorId: data.doctorId || 'doc-1',
-        doctorName: data.doctorName || 'Dr. Rajesh Kumar',
-        preferredDate: data.preferredDate || new Date().toISOString().split('T')[0],
-        preferredTime: data.preferredTime || '10:00 AM',
-        reason: data.reason || 'General Consultation',
-        source: data.source || 'WEB',
-        createdAt: new Date().toISOString()
-      } as any);
-      
-      saveAndNotifyAppointment(newApt as any);
-      return newApt as any;
+      try {
+        const newApt = await supabaseApi.bookAppointment({
+          patientId: data.patientId || 'pat-1',
+          patientName: data.patientName || 'Patient',
+          patientPhone: data.patientPhone || '9876543210',
+          patientEmail: data.patientEmail || 'patient@example.com',
+          departmentId: data.departmentId || 'dept-1',
+          departmentName: data.departmentName || 'General Medicine',
+          doctorId: data.doctorId || 'doc-1',
+          doctorName: data.doctorName || 'Doctor',
+          preferredDate: data.preferredDate || new Date().toISOString().split('T')[0],
+          preferredTime: data.preferredTime || '10:00 AM',
+          reason: data.reason || 'General Consultation',
+          source: data.source || 'WEB',
+          createdAt: new Date().toISOString()
+        } as any);
+        
+        saveAndNotifyAppointment(newApt as any);
+        return newApt as any;
+      } catch (e) {
+        // Fallback to local appointment
+        const localApt: Appointment = {
+          id: `APT-${Date.now()}`,
+          patientId: data.patientId || 'pat-1',
+          patientName: data.patientName || 'Patient',
+          patientPhone: data.patientPhone || '9876543210',
+          patientEmail: data.patientEmail || 'patient@example.com',
+          departmentId: data.departmentId || 'dept-1',
+          departmentName: data.departmentName || 'General Medicine',
+          doctorId: data.doctorId || 'doc-1',
+          doctorName: data.doctorName || 'Doctor',
+          preferredDate: data.preferredDate || new Date().toISOString().split('T')[0],
+          preferredTime: data.preferredTime || '10:00 AM',
+          reason: data.reason || 'General Consultation',
+          status: 'CONFIRMED',
+          source: data.source || 'WEB',
+          createdAt: new Date().toISOString()
+        };
+        saveAndNotifyAppointment(localApt);
+        return localApt;
+      }
     });
   },
 

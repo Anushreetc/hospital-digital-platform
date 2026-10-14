@@ -50,26 +50,30 @@ export const App: React.FC = () => {
   useEffect(() => {
     loadPublicData();
     
-    // Initialize n8n chat widget
-    createChat({
-      webhookUrl: 'https://anushreetc.app.n8n.cloud/webhook/2c353b81-4725-4372-b5b7-d5165e67f9e4/chat',
-      mode: 'window',
-      showWelcomeScreen: false,
-      initialMessages: [
-        'Hello! Welcome to We Care Multispeciality Hospital.',
-        'I can help you book, reschedule or cancel an appointment. How can I help?'
-      ],
-      i18n: {
-        en: {
-          title: 'Clinic Receptionist',
-          subtitle: 'Available 24/7. For emergencies call +91 93530 61993',
-          inputPlaceholder: 'Type your message...',
-          getStarted: 'Start chat',
-          footer: '',
-          closeButtonTooltip: 'Close chat'
+    // Initialize n8n chat widget safely
+    try {
+      createChat({
+        webhookUrl: 'https://anushreetc.app.n8n.cloud/webhook/2c353b81-4725-4372-b5b7-d5165e67f9e4/chat',
+        mode: 'window',
+        showWelcomeScreen: false,
+        initialMessages: [
+          'Hello! Welcome to We Care Multispeciality Hospital.',
+          'I can help you book, reschedule or cancel an appointment. How can I help?'
+        ],
+        i18n: {
+          en: {
+            title: 'Clinic Receptionist',
+            subtitle: 'Available 24/7. For emergencies call +91 93530 61993',
+            inputPlaceholder: 'Type your message...',
+            getStarted: 'Start chat',
+            footer: '',
+            closeButtonTooltip: 'Close chat'
+          }
         }
-      }
-    });
+      });
+    } catch (err) {
+      console.warn('n8n chat widget failed to initialize:', err);
+    }
   }, []);
 
   const loadPublicData = async () => {
