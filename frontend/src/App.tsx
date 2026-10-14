@@ -16,15 +16,12 @@ import { FaqSection } from './sections/FaqSection';
 import { ContactSection } from './sections/ContactSection';
 import { Footer } from './sections/Footer';
 import { DoctorDetailModal } from './components/DoctorDetailModal';
-import { VoiceAgentWidget } from './components/VoiceAgentWidget';
 import { AuthRoleModal } from './components/AuthRoleModal';
 import { AuthPages } from './pages/AuthPages';
 import { ManagementDashboard } from './pages/ManagementDashboard';
 import { DoctorDashboard } from './pages/DoctorDashboard';
 import { PatientDashboard } from './pages/PatientDashboard';
-import { Mic, Loader2 } from 'lucide-react';
-import '@n8n/chat/style.css';
-import { createChat } from '@n8n/chat';
+import { Loader2 } from 'lucide-react';
 
 export const App: React.FC = () => {
   // Main Data States
@@ -39,7 +36,6 @@ export const App: React.FC = () => {
   const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
   const [doctorAvail, setDoctorAvail] = useState<DoctorAvailability | null>(null);
   const [preselectedDoctorId, setPreselectedDoctorId] = useState<string | undefined>(undefined);
-  const [voiceWidgetOpen, setVoiceWidgetOpen] = useState<boolean>(false);
   const [authModalOpen, setAuthModalOpen] = useState<boolean>(false);
 
   // Portal & Auth State
@@ -49,31 +45,6 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     loadPublicData();
-    
-    // Initialize n8n chat widget safely
-    try {
-      createChat({
-        webhookUrl: 'https://anushreetc.app.n8n.cloud/webhook/2c353b81-4725-4372-b5b7-d5165e67f9e4/chat',
-        mode: 'window',
-        showWelcomeScreen: false,
-        initialMessages: [
-          'Hello! Welcome to We Care Multispeciality Hospital.',
-          'I can help you book, reschedule or cancel an appointment. How can I help?'
-        ],
-        i18n: {
-          en: {
-            title: 'Clinic Receptionist',
-            subtitle: 'Available 24/7. For emergencies call +91 93530 61993',
-            inputPlaceholder: 'Type your message...',
-            getStarted: 'Start chat',
-            footer: '',
-            closeButtonTooltip: 'Close chat'
-          }
-        }
-      });
-    } catch (err) {
-      console.warn('n8n chat widget failed to initialize:', err);
-    }
   }, []);
 
   const loadPublicData = async () => {
@@ -126,15 +97,6 @@ export const App: React.FC = () => {
   const handleSelectRoleFromModal = (role: 'PATIENT' | 'DOCTOR' | 'MANAGEMENT') => {
     setAuthModalOpen(false);
     setActivePortalRole(role);
-  };
-
-  const handleVoiceCallClick = () => {
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
-    if (isMobile) {
-      window.location.href = 'tel:+13074149229';
-    } else {
-      setVoiceWidgetOpen(true);
-    }
   };
 
   const handleSuccessLogin = (token: string, user: any, role: string) => {
@@ -198,18 +160,14 @@ export const App: React.FC = () => {
       <Navbar
         hospitalInfo={hospitalInfo}
         onOpenAuthModal={() => setAuthModalOpen(true)}
-        onOpenVoiceWidget={() => setVoiceWidgetOpen(true)}
         onNavigateToAppointment={handleNavigateToAppointment}
       />
-
-
 
       {/* Main Content Sections */}
       <main className="flex-1">
         <HeroSection
           hospitalInfo={hospitalInfo}
           onBookClick={handleNavigateToAppointment}
-          onVoiceClick={handleVoiceCallClick}
           onFindDoctorClick={() => {
             const el = document.getElementById('doctors');
             if (el) el.scrollIntoView({ behavior: 'smooth' });

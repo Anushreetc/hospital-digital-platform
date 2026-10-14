@@ -6,26 +6,15 @@ import { unlockBrowserAudio } from '../services/kannadaTts';
 interface Props {
   hospitalInfo: HospitalInfo;
   onOpenAuthModal: () => void;
-  onOpenVoiceWidget: () => void;
   onNavigateToAppointment: () => void;
 }
 
 export const Navbar: React.FC<Props> = ({
   hospitalInfo,
   onOpenAuthModal,
-  onOpenVoiceWidget,
   onNavigateToAppointment
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  const handleVoiceCallClick = () => {
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
-    if (isMobile) {
-      window.location.href = 'tel:+13074149229';
-    } else {
-      onOpenVoiceWidget();
-    }
-  };
 
   const primaryNavLinks = [
     { name: 'Home', href: '#home' },
@@ -150,16 +139,14 @@ export const Navbar: React.FC<Props> = ({
             ))}
           </div>
           <div className="pt-2 border-t border-slate-100 space-y-2">
-            <button
-              onClick={() => {
-                setMobileMenuOpen(false);
-                handleVoiceCallClick();
-              }}
+            <a
+              href="tel:+13074149229"
+              onClick={() => setMobileMenuOpen(false)}
               className="w-full text-center py-3 px-4 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-md cursor-pointer flex items-center justify-center gap-1.5 min-h-[44px]"
             >
-              <PhoneCall className="w-4 h-4 text-white animate-pulse" />
-              <span>🎙️ Talk to AI Voice Assistant (ಕನ್ನಡ / EN)</span>
-            </button>
+              <PhoneCall className="w-4 h-4 text-white" />
+              <span>📞 24/7 Helpline: +1 307 414 9229</span>
+            </a>
             <button
               onClick={() => {
                 setMobileMenuOpen(false);

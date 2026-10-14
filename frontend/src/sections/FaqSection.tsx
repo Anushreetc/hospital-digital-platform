@@ -27,7 +27,7 @@ export const FaqSection: React.FC = () => {
     },
     {
       q: "How does a new patient register at the hospital?",
-      a: "New patients can register at our reception desk: present your Aadhaar Card, complete the registration form, pay the registration and consultation fee, and receive your permanent UHID card. Appointments can also be booked by phone (+91 88677 55541) or via our Kannada AI Voice Assistant."
+      a: "New patients can register at our reception desk: present your Aadhaar Card, complete the registration form, pay the registration and consultation fee, and receive your permanent UHID card. Appointments can also be booked by phone (+91 88677 55541 / +1 307 414 9229) or online through this portal."
     },
     {
       q: "What languages do the hospital staff and doctors speak?",

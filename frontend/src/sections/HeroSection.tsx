@@ -6,20 +6,14 @@ import { unlockBrowserAudio } from '../services/kannadaTts';
 interface Props {
   hospitalInfo: HospitalInfo;
   onBookClick: () => void;
-  onVoiceClick: () => void;
   onFindDoctorClick: () => void;
 }
 
 export const HeroSection: React.FC<Props> = ({
   hospitalInfo,
   onBookClick,
-  onVoiceClick,
   onFindDoctorClick
 }) => {
-  const handleVoiceCallClick = () => {
-    unlockBrowserAudio();
-    onVoiceClick();
-  };
 
   return (
     <section id="home" className="relative pt-6 pb-12 sm:pt-14 sm:pb-20 md:pt-16 md:pb-24 overflow-hidden bg-gradient-to-b from-blue-50/70 via-slate-50 to-white text-slate-900">
