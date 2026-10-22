@@ -3,7 +3,7 @@ import {HospitalInfo,Doctor,Department} from '../types';
 import {ArrowUpRight,ArrowRight,Search,ChevronLeft,ChevronRight,Pause,Play,Stethoscope,Clock3,Bed,Users,Phone,Mic,CalendarDays} from 'lucide-react';
 const slides=[
  {image:'hero-care-team.jpg',label:'WE CARE MULTISPECIALITY HOSPITAL & ICU',title:'Expert care.\nA personal touch.',text:'Emergency support, advanced ICU care and multi-speciality consultations in Doddaballapura. Healthcare with heart.',caption:'Clinical excellence and 24/7 ICU team at We Care'},
- {image:'hero-consultation.jpg',label:'EXPERTISE YOU CAN TRUST. CARE YOU CAN FEEL.',title:'Compassionate doctors.\nPersonalised care.',text:'Experienced specialists dedicated to understanding your health and guiding your family every step of the way.',caption:'Personalised doctor consultation at We Care'},
+ {image:'hero-ot-suite.jpg',label:'ADVANCED SURGICAL & SPECIALITY CARE',title:'Surgical excellence.\nPersonalised care.',text:'Modern laminar-flow operating theatre equipped for multi-speciality surgeries, emergency procedures and advanced clinical care.',caption:'Modern Operating Theatre & Surgical Suite at We Care'},
  {image:'hospital-exterior.jpg',label:'YOUR NEIGHBOURHOOD MULTISPECIALITY HOSPITAL',title:'Modern 28-bed hospital.\nIn Doddaballapura.',text:'Round-the-clock emergency, intensive care unit, in-house laboratory and 24-hour pharmacy under one roof.',caption:'We Care Multispeciality Hospital & ICU, Doddaballapura'}
 ];
 export const HeroSection:React.FC<{hospitalInfo:HospitalInfo;onBookClick:()=>void;onFindDoctorClick:()=>void;doctors?:Doctor[];departments?:Department[]}>=({hospitalInfo,onBookClick,onFindDoctorClick,doctors=[],departments=[]})=>{
