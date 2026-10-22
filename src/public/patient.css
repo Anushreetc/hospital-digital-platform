@@ -15,3 +15,214 @@
 
 @media(min-width:701px){.hero-photo-caption{right:200px}}
 @media(max-width:700px){.hero-slider-controls{left:20px;right:auto}}
+
+/* Gallery Card & Lightbox Modal styles */
+.hospital-gallery-grid button.gallery-card{
+  all:unset;
+  cursor:pointer;
+  display:flex;
+  flex-direction:column;
+  border-radius:12px;
+  overflow:hidden;
+  border:1px solid #dce5f0;
+  background:#fff;
+  transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease;
+  position:relative;
+  text-align:left;
+}
+.hospital-gallery-grid button.gallery-card:hover{
+  transform:translateY(-3px);
+  box-shadow:0 12px 30px rgba(16,41,76,0.12);
+  border-color:#b8cbe3;
+}
+.hospital-gallery-grid button.gallery-card:focus-visible{
+  outline:3px solid #195fbd;
+  outline-offset:2px;
+}
+.gallery-card-img-wrap{
+  position:relative;
+  width:100%;
+  height:270px;
+  overflow:hidden;
+  background:#10294c;
+}
+.gallery-card-img-wrap img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+  transition:transform .35s ease;
+}
+.hospital-gallery-grid button.gallery-card:hover .gallery-card-img-wrap img{
+  transform:scale(1.04);
+}
+.gallery-card-badge{
+  position:absolute;
+  top:12px;
+  right:12px;
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  padding:5px 10px;
+  background:rgba(16,41,76,0.8);
+  backdrop-filter:blur(4px);
+  color:#fff;
+  font-size:10px;
+  font-weight:600;
+  border-radius:20px;
+  opacity:0;
+  transform:translateY(-4px);
+  transition:opacity .2s ease,transform .2s ease;
+}
+.hospital-gallery-grid button.gallery-card:hover .gallery-card-badge{
+  opacity:1;
+  transform:translateY(0);
+}
+.gallery-card-label{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:14px 16px;
+  font-size:13px;
+  font-weight:600;
+  color:#10294c;
+  background:#fff;
+  width:100%;
+  box-sizing:border-box;
+}
+.gallery-card-icon{
+  color:#195fbd;
+  opacity:.65;
+  transition:transform .2s,opacity .2s;
+}
+.hospital-gallery-grid button.gallery-card:hover .gallery-card-icon{
+  opacity:1;
+  transform:scale(1.15);
+}
+
+.gallery-lightbox-backdrop{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  background:rgba(10,25,47,0.88);
+  backdrop-filter:blur(8px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  animation:galleryFadeIn .2s ease-out;
+}
+.gallery-lightbox-modal{
+  position:relative;
+  max-width:920px;
+  width:100%;
+  max-height:92vh;
+  background:#0f2442;
+  border:1px solid rgba(255,255,255,0.14);
+  border-radius:16px;
+  box-shadow:0 24px 60px rgba(0,0,0,0.55);
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  animation:galleryScaleIn .2s cubic-bezier(0.16,1,0.3,1);
+}
+.gallery-lightbox-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:16px 22px;
+  border-bottom:1px solid rgba(255,255,255,0.1);
+  color:#fff;
+}
+.gallery-lightbox-title{
+  font-size:15px;
+  font-weight:600;
+  letter-spacing:-0.2px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.gallery-lightbox-count{
+  font-size:11px;
+  padding:3px 10px;
+  border-radius:20px;
+  background:rgba(255,255,255,0.12);
+  color:#a5c4e8;
+  font-weight:500;
+}
+.gallery-lightbox-close{
+  background:rgba(255,255,255,0.1);
+  border:0;
+  color:#fff;
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  cursor:pointer;
+  transition:background .2s,transform .1s;
+}
+.gallery-lightbox-close:hover{
+  background:rgba(255,255,255,0.24);
+}
+.gallery-lightbox-body{
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:16px;
+  background:#09192e;
+  min-height:300px;
+  max-height:calc(82vh - 80px);
+}
+.gallery-lightbox-body img{
+  max-width:100%;
+  max-height:calc(78vh - 80px);
+  width:auto;
+  height:auto;
+  object-fit:contain;
+  border-radius:8px;
+  box-shadow:0 8px 30px rgba(0,0,0,0.45);
+}
+.gallery-lightbox-nav{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  background:rgba(16,41,76,0.8);
+  border:1px solid rgba(255,255,255,0.18);
+  color:#fff;
+  width:46px;
+  height:46px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  cursor:pointer;
+  transition:background .2s,transform .1s;
+  backdrop-filter:blur(4px);
+}
+.gallery-lightbox-nav:hover{
+  background:#195fbd;
+  transform:translateY(-50%) scale(1.06);
+}
+.gallery-lightbox-prev{left:20px}
+.gallery-lightbox-next{right:20px}
+.gallery-lightbox-caption{
+  padding:14px 22px;
+  background:#0b1d36;
+  border-top:1px solid rgba(255,255,255,0.08);
+  font-size:12px;
+  color:#b0c4de;
+  line-height:1.5;
+}
+
+@keyframes galleryFadeIn{from{opacity:0}to{opacity:1}}
+@keyframes galleryScaleIn{from{opacity:0;transform:scale(0.96)}to{opacity:1;transform:scale(1)}}
+
+@media(max-width:700px){
+  .gallery-lightbox-modal{max-height:96vh;width:96%}
+  .gallery-lightbox-nav{width:38px;height:38px}
+  .gallery-lightbox-prev{left:10px}
+  .gallery-lightbox-next{right:10px}
+  .gallery-lightbox-body img{max-height:60vh}
+  .hospital-gallery-grid button.gallery-card .gallery-card-img-wrap{height:200px}
+}
