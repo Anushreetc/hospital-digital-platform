@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="referrer" content="no-referrer" />
+    <link rel="icon" type="image/png" href="/images/wecare-official-logo.jpeg" />
+    <title>We Care Hospital — Staff</title>
+    <script>
+      // Invite and password-reset links land here with type=invite|recovery in
+      // the URL hash. Remember that before the auth client consumes the hash,
+      // so the app asks the user to choose a password first.
+      (function () {
+        var m = /[#&]type=(invite|recovery)/.exec(window.location.hash);
+        if (m) { try { sessionStorage.setItem('staff_must_set_password', m[1]); } catch (e) {} }
+      })();
+    </script>
+  </head>
+  <body class="bg-slate-900 text-slate-100 antialiased">
+    <div id="root"></div>
+    <script type="module" src="/src/staff/main.tsx"></script>
+  </body>
+</html>

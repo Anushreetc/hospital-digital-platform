@@ -1,48 +1,54 @@
-# Relational Database Schema & Entities
+# Database Schema
 
-The platform uses a relational entity model compatible with PostgreSQL.
+The platform runs on Supabase Postgres. The schema, access rules and functions
+are in `supabase/migrations/`; the initial content is in `supabase/seed.sql`.
+See `SECURITY.md` for who can access what.
 
 ```mermaid
 erDiagram
-    HOSPITAL ||--o{ DEPARTMENT : contains
-    DEPARTMENT ||--o{ DOCTOR : employs
-    DOCTOR ||--o{ DOCTOR_AVAILABILITY : schedule
-    PATIENT ||--o{ APPOINTMENT : books
-    DOCTOR ||--o{ APPOINTMENT : consults
-    DOCTOR_APPLICATION ||--|| DOCTOR : creates
-    ADMIN_USER ||--o{ AUDIT_LOG : generates
-
-    APPOINTMENT {
-        string id PK "APT-YYYYMMDD-XXXX"
-        string patient_id FK
-        string doctor_id FK
-        string department_id FK
-        string preferred_date
-        string preferred_time
-        string reason
-        string source
-        string status
-        timestamp created_at
-    }
-
-    DOCTOR_APPLICATION {
-        string id PK
-        string user_id FK
-        string name
-        string registration_number
-        string status "PENDING_VERIFICATION | APPROVED | REJECTED"
-        timestamp created_at
-    }
+    AUTH_USERS ||--|| PROFILES : has
+    PROFILES ||--o| DOCTORS : "doctor login"
+    DEPARTMENTS ||--o{ DOCTORS : employs
+    DOCTORS ||--o{ DOCTOR_SCHEDULES : "weekly OPD"
+    DOCTORS ||--o{ DOCTOR_LEAVES : "days off"
+    DOCTORS ||--o{ APPOINTMENTS : consults
+    PROFILES ||--o{ APPOINTMENTS : "patient (optional)"
+    APPOINTMENTS ||--o| VOICE_CALLS : "booked by"
 ```
 
-## Entities
+## Tables
 
-1. `hospitals`: Name, address, phone, emergency phone, email, hours, map URL, stats.
-2. `departments`: ID, name, code, description, icon, active.
-3. `doctors`: ID, user_id, name, qualification, designation, specialization, department_id, experience, registration_number, active.
-4. `doctor_applications`: ID, user_id, name, email, phone, qualification, specialization, registration_number, bio, status, reviewed_by, reviewed_at.
-5. `doctor_availabilities`: ID, doctor_id, weekly_schedule (JSON), unavailabilities (JSON).
-6. `patients`: ID, name, email, phone, password_hash, dob, gender.
-7. `appointments`: ID (`APT-YYYYMMDD-XXXX`), patient_id, doctor_id, department_id, preferred_date, preferred_time, reason, source, status, notes (JSON), idempotency_key.
-8. `admin_users`: ID, username, email, password_hash, role, status, active.
-9. `audit_logs`: ID, actor_json, action, entity, entity_id, timestamp, details_json.
+| Table | Purpose |
+|---|---|
+| `profiles` | One row per auth user: `role` (PATIENT, DOCTOR, RECEPTIONIST, HOSPITAL_ADMIN, SUPER_ADMIN), name, contact details, `active` |
+| `hospital_info` | Single row of site content (JSON matching `HospitalInfo` in `frontend/src/types.ts`) |
+| `departments`, `services`, `facilities` | Public site content, with `display_order` and `active` |
+| `doctors` | Public doctor profiles; `user_id` links a doctor's login |
+| `doctor_schedules` | Weekly OPD sessions: day, start/end, slot length, patients per slot |
+| `doctor_leaves` | Dates a doctor is unavailable |
+| `appointments` | Bookings: `code` (APT-YYYYMMDD-XXXXX), daily `token_number`, `slot_time`, `status`, `source`, `notes` (JSON) |
+| `voice_calls` | AI receptionist calls and the front-desk case workflow |
+| `audit_logs` | Append-only log of sensitive actions |
+
+## Functions (called from the apps)
+
+| Function | Who | What |
+|---|---|---|
+| `get_available_slots(doctor, date)` | anyone | Slots with remaining capacity (next 60 days, minus leave) |
+| `book_appointment(...)` | anyone | Validated, capacity-checked booking; returns a summary |
+| `update_appointment_status(id, status, note)` | patient / doctor / staff | Status change with per-role rules |
+| `add_appointment_note(id, text)` | doctor / staff | Append a note |
+| `claim_guest_bookings()` | patient | Link earlier guest bookings made with the patient's verified mobile |
+| `get_dashboard_stats()` | staff | Live KPI counts |
+| `list_staff()`, `set_user_role(user, role, active)` | admins | Staff access management |
+
+## Appointment status flow
+
+```
+NEW ──► CONTACTED ──► CONFIRMED ──► COMPLETED
+ │          │             ├──────► NO_SHOW
+ └──────────┴─────────────┴──────► CANCELLED
+```
+
+Guest website bookings start as `NEW` (the front desk confirms them by phone).
+Bookings by signed-in patients or staff start as `CONFIRMED`.

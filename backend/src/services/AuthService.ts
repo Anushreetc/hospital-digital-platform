@@ -19,6 +19,9 @@ export class AuthService {
 
   constructor(fileRepo: FileRepository) {
     this.fileRepo = fileRepo;
+    if (!process.env.JWT_SECRET && process.env.NODE_ENV === 'production') {
+      throw new Error('JWT_SECRET must be set in production.');
+    }
     this.jwtSecret = process.env.JWT_SECRET || 'fallback_secret_key_development_only';
     this.jwtExpiresIn = process.env.JWT_EXPIRES_IN || '7d';
   }

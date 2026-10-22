@@ -26,5 +26,5 @@ npm run test
    - Speak / type responses -> Verify slot progression and confirmation output.
 
 4. **Audit Trail Verification**:
-   - Log in as Super Admin (`superadmin@citycarehospital.example.com` / `SuperAdmin@123`).
+   - Log in to the staff app as a Super Admin account (created per `SUPABASE_SETUP.md`).
    - Open Audit Logs -> Verify status change and user actions recorded.

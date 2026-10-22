@@ -1,5 +1,6 @@
 import { HospitalInfo, Department, Doctor, DoctorAvailability, ServiceItem, FacilityItem, AdminUser } from '../models/types';
 import bcrypt from 'bcryptjs';
+import { randomBytes } from 'crypto';
 
 export const defaultHospitalInfo: HospitalInfo = {
   name: "We Care Multispeciality Hospital and ICU Doddaballapura",
@@ -550,45 +551,57 @@ export const defaultFacilities: FacilityItem[] = [
   }
 ];
 
-export const getInitialAdminUsers = (): AdminUser[] => [
-  {
-    id: "usr-superadmin",
-    username: "superadmin",
-    email: "superadmin@wecarehospital.in",
-    passwordHash: bcrypt.hashSync("SuperAdmin@123", 10),
-    role: "SUPER_ADMIN",
-    name: "System Super Admin",
-    active: true,
-    createdAt: new Date().toISOString()
-  },
-  {
-    id: "usr-admin",
-    username: "director",
-    email: "nandiwecare0@gmail.com",
-    passwordHash: bcrypt.hashSync("WeCare@123", 10),
-    role: "HOSPITAL_ADMIN",
-    name: "Mr. Vishnuvardhan (Director)",
-    active: true,
-    createdAt: new Date().toISOString()
-  },
-  {
-    id: "usr-receptionist",
-    username: "reception",
-    email: "reception@wecarehospital.in",
-    passwordHash: bcrypt.hashSync("Reception@123", 10),
-    role: "RECEPTIONIST",
-    name: "Front Desk Receptionist",
-    active: true,
-    createdAt: new Date().toISOString()
-  },
-  {
-    id: "usr-doc-101",
-    username: "doc101@wecarehospital.in",
-    email: "doc101@wecarehospital.in",
-    passwordHash: bcrypt.hashSync("Doctor@123", 10),
-    role: "DOCTOR",
-    name: "Dr. Chiranjeevi Ks",
-    active: true,
-    createdAt: new Date().toISOString()
-  }
-];
+// Seed accounts never ship with a known password. Set SEED_ADMIN_PASSWORD for local
+// development; otherwise a random one is generated and printed once at first start.
+const resolveSeedPassword = (): string => {
+  if (process.env.SEED_ADMIN_PASSWORD) return process.env.SEED_ADMIN_PASSWORD;
+  const generated = randomBytes(12).toString('base64url');
+  console.warn(`[seed] SEED_ADMIN_PASSWORD not set; generated one-time seed password: ${generated}`);
+  return generated;
+};
+
+export const getInitialAdminUsers = (): AdminUser[] => {
+  const seedPassword = resolveSeedPassword();
+  return [
+    {
+      id: "usr-superadmin",
+      username: "superadmin",
+      email: "superadmin@wecarehospital.in",
+      passwordHash: bcrypt.hashSync(seedPassword, 10),
+      role: "SUPER_ADMIN",
+      name: "System Super Admin",
+      active: true,
+      createdAt: new Date().toISOString()
+    },
+    {
+      id: "usr-admin",
+      username: "director",
+      email: "nandiwecare0@gmail.com",
+      passwordHash: bcrypt.hashSync(seedPassword, 10),
+      role: "HOSPITAL_ADMIN",
+      name: "Mr. Vishnuvardhan (Director)",
+      active: true,
+      createdAt: new Date().toISOString()
+    },
+    {
+      id: "usr-receptionist",
+      username: "reception",
+      email: "reception@wecarehospital.in",
+      passwordHash: bcrypt.hashSync(seedPassword, 10),
+      role: "RECEPTIONIST",
+      name: "Front Desk Receptionist",
+      active: true,
+      createdAt: new Date().toISOString()
+    },
+    {
+      id: "usr-doc-101",
+      username: "doc101@wecarehospital.in",
+      email: "doc101@wecarehospital.in",
+      passwordHash: bcrypt.hashSync(seedPassword, 10),
+      role: "DOCTOR",
+      name: "Dr. Chiranjeevi Ks",
+      active: true,
+      createdAt: new Date().toISOString()
+    }
+  ];
+};

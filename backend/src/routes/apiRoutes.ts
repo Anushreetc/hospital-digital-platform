@@ -130,14 +130,8 @@ export const createApiRouter = (
   });
 
   // 3. Management Auth
-  router.post('/auth/management/signup', async (req, res) => {
-    try {
-      const result = await authService.managementSignup(req.body);
-      sendSuccess(res, result, 201);
-    } catch (err) {
-      sendError(res, err);
-    }
-  });
+  // Management accounts are never self-registered. Staff are invited by an
+  // administrator (see supabase/functions/invite-staff).
 
   router.post('/auth/management/login', async (req, res) => {
     try {
