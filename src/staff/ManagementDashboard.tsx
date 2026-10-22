@@ -34,6 +34,7 @@ import {
 interface Props {
   user: AuthUser;
   onLogout: () => void;
+  portal?: string;
 }
 
 const REFRESH_INTERVAL_MS = 60_000;
@@ -48,7 +49,7 @@ const SOURCE_LABELS: Record<Appointment['source'], string> = {
 
 const formatDuration = (seconds: number) => `${Math.floor(seconds / 60)}m ${String(seconds % 60).padStart(2, '0')}s`;
 
-export const ManagementDashboard: React.FC<Props> = ({ user, onLogout }) => {
+export const ManagementDashboard: React.FC<Props> = ({ user, onLogout, portal }) => {
   const isAdmin = user.role === 'HOSPITAL_ADMIN' || user.role === 'SUPER_ADMIN';
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
@@ -63,7 +64,7 @@ export const ManagementDashboard: React.FC<Props> = ({ user, onLogout }) => {
   const [caseSearchQuery, setCaseSearchQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<'overview' | 'receptionist_cases' | 'appointments' | 'doctors' | 'staff' | 'audit'>(() => {
-    return user.role === 'RECEPTIONIST' ? 'appointments' : 'overview';
+    return (portal === 'reception' || user.role === 'RECEPTIONIST') ? 'appointments' : 'overview';
   });
   const [searchQuery, setSearchQuery] = useState('');
 

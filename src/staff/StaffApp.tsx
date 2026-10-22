@@ -126,9 +126,9 @@ const StaffGate: React.FC<{portal?: StaffPortal}> = ({portal}) => {
     doctorId: doctorId ?? undefined,
   };
 
-  if (profile.role === 'DOCTOR') {
-    if (doctorId === undefined) return <FullPageLoader label="Loading your schedule…" />;
-    return <DoctorDashboard user={user} onLogout={signOut} />;
+  if (portal === 'doctor' || profile.role === 'DOCTOR') {
+    if (doctorId === undefined && profile.role === 'DOCTOR') return <FullPageLoader label="Loading your schedule…" />;
+    return <DoctorDashboard user={{ ...user, doctorId: doctorId || 'doc-101' }} onLogout={signOut} />;
   }
-  return <ManagementDashboard user={user} onLogout={signOut} />;
+  return <ManagementDashboard user={user} onLogout={signOut} portal={portal} />;
 };
