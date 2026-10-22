@@ -17,7 +17,7 @@ export const AboutSection: React.FC<Props> = ({ hospitalInfo }) => {
               <img
                 src="/images/hospital_building_pro.jpg"
                 alt="We Care Multispeciality Hospital & ICU Building"
-                className="w-full h-80 sm:h-[440px] object-cover group-hover:scale-103 transition-transform duration-700"
+                className="w-full h-80 sm:h-[440px] object-cover object-[center_28%] group-hover:scale-103 transition-transform duration-700"
               />
               {/* Subtle Tag Overlay */}
               <div className="absolute top-4 left-4 z-10 flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#101B33]/90 text-white text-xs font-bold shadow-md backdrop-blur-xs">
