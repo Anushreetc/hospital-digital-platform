@@ -3,21 +3,41 @@ import { Link, Navigate, Route, Routes } from 'react-router-dom';
 import { useAuth } from '../lib/auth';
 import { FullPageError, FullPageLoader } from '../components/StatusScreens';
 import { isSupabaseConfigured } from '../lib/supabase';
+import { HospitalProvider } from './HospitalContext';
+import { PublicLayout } from './PublicLayout';
 import { HomePage } from './HomePage';
+import { DoctorsPage } from './DoctorsPage';
+import { SpecialitiesPage } from './SpecialitiesPage';
+import { PatientGuidePage } from './PatientGuidePage';
+import { ContactPage } from './ContactPage';
+import { AppointmentPage } from './AppointmentPage';
 import { PatientLoginPage } from './PatientLoginPage';
 import { PatientPortalPage } from './PatientPortalPage';
 
 // Staff UI is lazy-loaded only for staff routes; database authorization is always required.
 const PortalPage = lazy(() => import('../staff/PortalPage'));
+
 export const PublicApp: React.FC = () => (
-  <Routes>
-    <Route path="/" element={<HomePage />} />
-    <Route path="/staff" element={<Suspense fallback={<FullPageLoader />}><PortalPage /></Suspense>} />
-    <Route path="/staff/:portal" element={<Suspense fallback={<FullPageLoader />}><PortalPage /></Suspense>} />
-    <Route path="/login" element={<Configured><PatientLoginPage /></Configured>} />
-    <Route path="/my" element={<RequirePatient><PatientPortalPage /></RequirePatient>} />
-    <Route path="*" element={<NotFound />} />
-  </Routes>
+  <HospitalProvider>
+    <Routes>
+      {/* Public multi-page website */}
+      <Route element={<PublicLayout />}>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/doctors" element={<DoctorsPage />} />
+        <Route path="/specialities" element={<SpecialitiesPage />} />
+        <Route path="/patient-guide" element={<PatientGuidePage />} />
+        <Route path="/contact" element={<ContactPage />} />
+        <Route path="/appointment" element={<AppointmentPage />} />
+      </Route>
+
+      {/* Staff and patient portal routes */}
+      <Route path="/staff" element={<Suspense fallback={<FullPageLoader />}><PortalPage /></Suspense>} />
+      <Route path="/staff/:portal" element={<Suspense fallback={<FullPageLoader />}><PortalPage /></Suspense>} />
+      <Route path="/login" element={<Configured><PatientLoginPage /></Configured>} />
+      <Route path="/my" element={<RequirePatient><PatientPortalPage /></RequirePatient>} />
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  </HospitalProvider>
 );
 
 // UI guard only; the database enforces access regardless of what the browser shows.
@@ -45,4 +65,11 @@ const NotFound: React.FC = () => (
   />
 );
 
-const Configured: React.FC<{children: React.ReactElement}> = ({children}) => isSupabaseConfigured ? children : <FullPageError title="Patient sign-in is not available yet" message="Please contact reception to arrange your visit." action={<Link to="/">Back to hospital website</Link>} />;
+const Configured: React.FC<{ children: React.ReactElement }> = ({ children }) =>
+  isSupabaseConfigured ? children : (
+    <FullPageError
+      title="Patient sign-in is not available yet"
+      message="Please contact reception to arrange your visit."
+      action={<Link to="/">Back to hospital website</Link>}
+    />
+  );

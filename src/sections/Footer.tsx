@@ -52,14 +52,12 @@ export const Footer: React.FC<Props> = ({ hospitalInfo }) => {
           <div className="space-y-3">
             <h4 className="font-bold text-white uppercase text-[11px] tracking-wider">Quick Navigation</h4>
             <ul className="space-y-2 text-slate-400">
-              <li><a href="#home" className="hover:text-blue-400 transition-colors py-1 inline-block">Home</a></li>
-              <li><a href="#about" className="hover:text-blue-400 transition-colors py-1 inline-block">About Us</a></li>
-              <li><a href="#departments" className="hover:text-blue-400 transition-colors py-1 inline-block">Departments</a></li>
-              <li><a href="#doctors" className="hover:text-blue-400 transition-colors py-1 inline-block">Find Doctor</a></li>
-              <li><a href="#services" className="hover:text-blue-400 transition-colors py-1 inline-block">Services</a></li>
-              <li><a href="#facilities" className="hover:text-blue-400 transition-colors py-1 inline-block">Facilities</a></li>
-              <li><a href="#tariffs" className="hover:text-blue-400 transition-colors py-1 inline-block">Rooms &amp; inpatient care</a></li>
-              <li><a href="#patient-guide" className="hover:text-blue-400 transition-colors py-1 inline-block">Patient Guide</a></li>
+              <li><Link to="/" className="hover:text-blue-400 transition-colors py-1 inline-block">Home</Link></li>
+              <li><Link to="/#about" className="hover:text-blue-400 transition-colors py-1 inline-block">About Us</Link></li>
+              <li><Link to="/specialities" className="hover:text-blue-400 transition-colors py-1 inline-block">Specialities &amp; Departments</Link></li>
+              <li><Link to="/doctors" className="hover:text-blue-400 transition-colors py-1 inline-block">Find a Doctor</Link></li>
+              <li><Link to="/patient-guide" className="hover:text-blue-400 transition-colors py-1 inline-block">Patient Guide &amp; Tariffs</Link></li>
+              <li><Link to="/contact" className="hover:text-blue-400 transition-colors py-1 inline-block">Location &amp; Emergency</Link></li>
             </ul>
           </div>
 
@@ -68,7 +66,7 @@ export const Footer: React.FC<Props> = ({ hospitalInfo }) => {
             <h4 className="font-bold text-white uppercase text-[11px] tracking-wider">Patients</h4>
             <ul className="space-y-2 text-slate-400">
               <li>
-                <a href="/#appointment" className="hover:text-blue-400 transition-colors py-1 inline-block">Book an Appointment</a>
+                <Link to="/appointment" className="hover:text-blue-400 transition-colors py-1 inline-block">Book an Appointment</Link>
               </li>
               <li>
                 <Link to="/login" className="hover:text-blue-400 transition-colors py-1 inline-block">Patient Login</Link>
