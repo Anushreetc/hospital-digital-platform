@@ -88,7 +88,7 @@ export const PatientLoginPage: React.FC = () => {
         </Link>
 
         <div className="flex items-center gap-3">
-          <img src="/images/hospital_logo.png" alt="" className="w-12 h-12 rounded-xl object-contain bg-white border border-slate-100" />
+          <img src="/images/wecare-official-logo.png" alt="We Care Hospital Logo" className="w-12 h-12 rounded-xl object-contain" />
           <div>
             <h1 className="text-xl font-black text-slate-900">Patient Login</h1>
             <p className="text-xs text-slate-500">View and manage your appointments</p>

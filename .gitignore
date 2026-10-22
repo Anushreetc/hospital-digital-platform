@@ -7,6 +7,3 @@ dist-staff/
 .env.*.local
 *.pyc
 __pycache__/
-*.db
-*.sqlite
-.DS_Store

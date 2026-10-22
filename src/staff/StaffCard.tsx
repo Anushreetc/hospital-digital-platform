@@ -6,7 +6,7 @@ export const StaffCard: React.FC<{ title: string; subtitle?: string; children: R
   <div className="min-h-screen bg-slate-900 flex items-center justify-center px-4 py-10">
     <div className="bg-white text-slate-900 rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl space-y-5">
       <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
-        <img src="/images/wecare-official-logo.jpeg" alt="We Care Hospital logo" className="w-24 h-14 object-contain rounded-md" />
+        <img src="/images/wecare-official-logo.png" alt="We Care Hospital logo" className="w-24 h-14 object-contain rounded-md" />
         <div className="min-w-0">
           <h1 className="text-lg font-black">{title}</h1>
           {subtitle && <p className="text-xs text-slate-500 truncate">{subtitle}</p>}
