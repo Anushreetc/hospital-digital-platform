@@ -2,9 +2,9 @@ import React,{useEffect,useState} from 'react';
 import {HospitalInfo,Doctor,Department} from '../types';
 import {ArrowUpRight,ArrowRight,Search,ChevronLeft,ChevronRight,Pause,Play,Stethoscope,Clock3,Bed,Users,Phone,Mic,CalendarDays} from 'lucide-react';
 const slides=[
- {image:'hospital-gallery-2.jpg',label:'EXPERTISE YOU CAN TRUST. CARE YOU CAN FEEL.',title:'Expert care.\nA personal touch.',text:'Comprehensive medical and surgical care, dedicated specialists and a team that puts your family first.',caption:'Inside our operating theatre'},
- {image:'hospital-gallery-1.jpg',label:'ANSWERS THAT SUPPORT YOUR CARE',title:'Closer to answers.\nCloser to care.',text:'In-house laboratory and diagnostic services, with medical expertise to guide your next step.',caption:'Our in-house laboratory'},
- {image:'hospital-exterior.jpg',label:'YOUR NEIGHBOURHOOD. YOUR HOSPITAL.',title:'Here for you.\nAround the clock.',text:'Emergency support and ICU care, right here in Doddaballapura. Advanced healthcare. Compassionate care.',caption:'We Care Multispeciality Hospital & ICU'}
+ {image:'hospital-exterior.jpg',label:'WE CARE MULTISPECIALITY HOSPITAL & ICU',title:'Expert care.\nA personal touch.',text:'Emergency support and ICU care, right here in Doddaballapura. Advanced healthcare. Compassionate care.',caption:'We Care Multispeciality Hospital & ICU, Doddaballapura'},
+ {image:'hospital-gallery-2.jpg',label:'EXPERTISE YOU CAN TRUST. CARE YOU CAN FEEL.',title:'Surgical excellence.\nAdvanced facilities.',text:'Comprehensive medical and surgical care, dedicated specialists and a team that puts your family first.',caption:'Inside our operating theatre'},
+ {image:'hospital-gallery-1.jpg',label:'ANSWERS THAT SUPPORT YOUR CARE',title:'Closer to answers.\nCloser to care.',text:'In-house laboratory and diagnostic services, with medical expertise to guide your next step.',caption:'Our in-house laboratory'}
 ];
 export const HeroSection:React.FC<{hospitalInfo:HospitalInfo;onBookClick:()=>void;onFindDoctorClick:()=>void;doctors?:Doctor[];departments?:Department[]}>=({hospitalInfo,onBookClick,onFindDoctorClick,doctors=[],departments=[]})=>{
  const [slide,setSlide]=useState(0),[paused,setPaused]=useState(()=>window.matchMedia('(prefers-reduced-motion: reduce)').matches),[tab,setTab]=useState('All'),[query,setQuery]=useState('');
