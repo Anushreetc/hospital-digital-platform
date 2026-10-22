@@ -2,9 +2,9 @@ import React,{useEffect,useState} from 'react';
 import {HospitalInfo,Doctor,Department} from '../types';
 import {ArrowUpRight,ArrowRight,Search,ChevronLeft,ChevronRight,Pause,Play,Stethoscope,Clock3,Bed,Users,Phone,Mic,CalendarDays} from 'lucide-react';
 const slides=[
- {image:'hospital-exterior.jpg',label:'WE CARE MULTISPECIALITY HOSPITAL & ICU',title:'Expert care.\nA personal touch.',text:'Emergency support and ICU care, right here in Doddaballapura. Advanced healthcare. Compassionate care.',caption:'We Care Multispeciality Hospital & ICU, Doddaballapura'},
- {image:'hospital-gallery-2.jpg',label:'EXPERTISE YOU CAN TRUST. CARE YOU CAN FEEL.',title:'Surgical excellence.\nAdvanced facilities.',text:'Comprehensive medical and surgical care, dedicated specialists and a team that puts your family first.',caption:'Inside our operating theatre'},
- {image:'hospital-gallery-1.jpg',label:'ANSWERS THAT SUPPORT YOUR CARE',title:'Closer to answers.\nCloser to care.',text:'In-house laboratory and diagnostic services, with medical expertise to guide your next step.',caption:'Our in-house laboratory'}
+ {image:'hero-care-team.jpg',label:'WE CARE MULTISPECIALITY HOSPITAL & ICU',title:'Expert care.\nA personal touch.',text:'Emergency support, advanced ICU care and multi-speciality consultations in Doddaballapura. Healthcare with heart.',caption:'Clinical excellence and 24/7 ICU team at We Care'},
+ {image:'hero-consultation.jpg',label:'EXPERTISE YOU CAN TRUST. CARE YOU CAN FEEL.',title:'Compassionate doctors.\nPersonalised care.',text:'Experienced specialists dedicated to understanding your health and guiding your family every step of the way.',caption:'Personalised doctor consultation at We Care'},
+ {image:'hospital-exterior.jpg',label:'YOUR NEIGHBOURHOOD MULTISPECIALITY HOSPITAL',title:'Modern 28-bed hospital.\nIn Doddaballapura.',text:'Round-the-clock emergency, intensive care unit, in-house laboratory and 24-hour pharmacy under one roof.',caption:'We Care Multispeciality Hospital & ICU, Doddaballapura'}
 ];
 export const HeroSection:React.FC<{hospitalInfo:HospitalInfo;onBookClick:()=>void;onFindDoctorClick:()=>void;doctors?:Doctor[];departments?:Department[]}>=({hospitalInfo,onBookClick,onFindDoctorClick,doctors=[],departments=[]})=>{
  const [slide,setSlide]=useState(0),[paused,setPaused]=useState(()=>window.matchMedia('(prefers-reduced-motion: reduce)').matches),[tab,setTab]=useState('All'),[query,setQuery]=useState('');
