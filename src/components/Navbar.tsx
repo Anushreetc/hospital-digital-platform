@@ -51,25 +51,6 @@ export const Navbar: React.FC<NavbarProps> = ({ hospitalInfo, signedIn, onNaviga
             <Link to="/#about">Our hospital</Link>
             <Link to="/patient-guide">Patient guide</Link>
             <Link to="/contact">Location & contact</Link>
-            <button
-              type="button"
-              onClick={() => window.dispatchEvent(new Event('open-voice-agent'))}
-              title="ElevenLabs AI Voice Assistant"
-              style={{
-                color: '#047857',
-                fontWeight: 700,
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '5px',
-                background: '#ecfdf5',
-                padding: '4px 12px',
-                borderRadius: '9999px',
-                border: '1px solid #a7f3d0'
-              }}
-            >
-              <Sparkles size={13} style={{ color: '#059669' }} />
-              <span>🎙️ Voice Agent (AI)</span>
-            </button>
           </div>
           <Link to="/appointment" className="hospital-button" onClick={handleBookClick}>
             Book appointment <ArrowUpRight size={17} />

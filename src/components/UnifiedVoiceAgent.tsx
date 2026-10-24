@@ -660,7 +660,7 @@ export const UnifiedVoiceAgent: React.FC<Props> = ({
               <span>AI Voice Agent</span>
               <span className="text-[10px] bg-white/20 px-1.5 py-0.2 rounded-full font-bold">ElevenLabs</span>
             </div>
-            <div className="text-[10px] text-emerald-100 font-medium">ಕನ್ನಡ · English · Hands-free</div>
+            <div className="text-[10px] text-white/90 font-semibold tracking-wide">ಕನ್ನಡ · English · Hands-free</div>
           </div>
         </button>
       )}
@@ -805,6 +805,33 @@ export const UnifiedVoiceAgent: React.FC<Props> = ({
                           : 'Speak naturally in Kannada or English for immediate doctor booking, ICU help, and hospital timings.'}
                       </p>
                     </div>
+
+                    {!elevenLabsVoice.hasApiKey() && (
+                      <div className="bg-slate-950 p-3 rounded-2xl border border-emerald-500/30 w-full max-w-xs text-left space-y-1.5">
+                        <div className="flex items-center justify-between text-[11px] font-bold text-emerald-400">
+                          <span className="flex items-center gap-1.5"><Key className="w-3 h-3" /> Connect ElevenLabs Voice</span>
+                          <button onClick={() => setActiveTab('settings')} className="text-[10px] text-slate-400 hover:text-white underline cursor-pointer">Settings</button>
+                        </div>
+                        <div className="flex gap-1.5">
+                          <input
+                            type="password"
+                            placeholder="Paste ElevenLabs xi-api-key"
+                            value={apiKeyInput}
+                            onChange={(e) => setApiKeyInput(e.target.value)}
+                            className="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-2.5 py-1.5 text-white text-xs font-mono focus:outline-none focus:border-emerald-500"
+                          />
+                          <button
+                            onClick={() => {
+                              handleSaveSettings();
+                              handleTestVoice();
+                            }}
+                            className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold shrink-0 cursor-pointer"
+                          >
+                            Connect
+                          </button>
+                        </div>
+                      </div>
+                    )}
 
                     <button
                       onClick={handleStartCall}
