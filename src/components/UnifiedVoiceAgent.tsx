@@ -88,8 +88,13 @@ export const UnifiedVoiceAgent: React.FC<Props> = ({
   const [language, setLanguage] = useState<'KN' | 'EN'>('KN');
 
   // ElevenLabs Settings State
-  const [selectedVoiceId, setSelectedVoiceId] = useState<string>(
-    elevenLabsVoice.getSelectedVoiceId()
+  const initialVoiceId = elevenLabsVoice.getSelectedVoiceId();
+  const [selectedVoiceId, setSelectedVoiceId] = useState<string>(initialVoiceId);
+  const isCustomVoiceInit = !PRECONFIGURED_ELEVENLABS_VOICES.some(
+    (v) => v.id === initialVoiceId
+  );
+  const [customVoiceInput, setCustomVoiceInput] = useState<string>(
+    isCustomVoiceInit ? initialVoiceId : ''
   );
   const [apiKeyInput, setApiKeyInput] = useState<string>(elevenLabsVoice.getApiKey());
   const [agentIdInput, setAgentIdInput] = useState<string>(elevenLabsVoice.getAgentId());
@@ -412,11 +417,19 @@ export const UnifiedVoiceAgent: React.FC<Props> = ({
   };
 
   // Save Settings & Test ElevenLabs
+  const getEffectiveVoiceId = () => {
+    if (selectedVoiceId === 'custom') {
+      return customVoiceInput.trim() || PRECONFIGURED_ELEVENLABS_VOICES[0].id;
+    }
+    return selectedVoiceId;
+  };
+
   const handleSaveSettings = () => {
+    const effectiveVoiceId = getEffectiveVoiceId();
     elevenLabsVoice.setApiKey(apiKeyInput);
     elevenLabsVoice.setAgentId(agentIdInput);
-    elevenLabsVoice.setSelectedVoiceId(selectedVoiceId);
-    setTestStatus({ success: true, message: 'Settings saved successfully.' });
+    elevenLabsVoice.setSelectedVoiceId(effectiveVoiceId);
+    setTestStatus({ success: true, message: 'Settings saved successfully. Voice updated!' });
     setTimeout(() => setTestStatus(null), 3000);
   };
 
@@ -431,7 +444,8 @@ export const UnifiedVoiceAgent: React.FC<Props> = ({
     setIsTestingVoice(true);
     setTestStatus(null);
     elevenLabsVoice.unlockAudio();
-    const res = await elevenLabsVoice.testApiKey(apiKeyInput, selectedVoiceId);
+    const effectiveVoiceId = getEffectiveVoiceId();
+    const res = await elevenLabsVoice.testApiKey(apiKeyInput, effectiveVoiceId);
     setIsTestingVoice(false);
     if (res.success) {
       setTestStatus({
@@ -1207,9 +1221,13 @@ export const UnifiedVoiceAgent: React.FC<Props> = ({
 
                 {/* Preconfigured Voice Selection */}
                 <div className="space-y-1.5">
-                  <label className="text-slate-300 font-bold block">Select Pre-configured Voice:</label>
+                  <label className="text-slate-300 font-bold block">Select Voice Profile:</label>
                   <select
-                    value={selectedVoiceId}
+                    value={
+                      PRECONFIGURED_ELEVENLABS_VOICES.some((v) => v.id === selectedVoiceId)
+                        ? selectedVoiceId
+                        : 'custom'
+                    }
                     onChange={(e) => setSelectedVoiceId(e.target.value)}
                     className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white text-xs focus:outline-none focus:border-emerald-500"
                   >
@@ -1218,7 +1236,28 @@ export const UnifiedVoiceAgent: React.FC<Props> = ({
                         {v.name} ({v.gender}) - {v.recommendedFor}
                       </option>
                     ))}
+                    <option value="custom">-- Custom Voice (Paste Voice ID from ElevenLabs) --</option>
                   </select>
+
+                  {(selectedVoiceId === 'custom' ||
+                    (!PRECONFIGURED_ELEVENLABS_VOICES.some((v) => v.id === selectedVoiceId) &&
+                      selectedVoiceId)) && (
+                    <div className="pt-1.5 space-y-1">
+                      <label className="text-[11px] text-emerald-400 font-semibold block">
+                        Enter Custom ElevenLabs Voice ID:
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Paste Voice ID (e.g. 21m00Tcm4TlvDq8ikWAM)"
+                        value={customVoiceInput}
+                        onChange={(e) => setCustomVoiceInput(e.target.value.trim())}
+                        className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white text-xs font-mono focus:outline-none focus:border-emerald-500"
+                      />
+                      <p className="text-[10px] text-slate-500">
+                        In ElevenLabs: click Voices on the left sidebar &gt; select any voice &gt; click &quot;Copy Voice ID&quot;.
+                      </p>
+                    </div>
+                  )}
                 </div>
 
                 {/* ElevenLabs API Key Input */}
