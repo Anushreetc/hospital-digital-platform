@@ -1,7 +1,7 @@
 /**
  * ElevenLabs Voice Agent & Speech Synthesis Service
  * Provides real-time ultra-realistic human voices (English & Kannada/Indic multilingual)
- * Supports custom API Key, Agent ID, low-latency Web Audio streaming, and intelligent fallback.
+ * Supports custom API Key, Agent ID, low-latency audio streaming, and high-fidelity native fallback.
  */
 
 import { Doctor } from '../types';
@@ -55,6 +55,7 @@ export const PRECONFIGURED_ELEVENLABS_VOICES: ElevenLabsVoice[] = [
 class ElevenLabsVoiceService {
   private currentAudioElement: HTMLAudioElement | null = null;
   private isSpeaking = false;
+  private safetyTimeout: any = null;
 
   public getApiKey(): string {
     return (
@@ -104,6 +105,10 @@ class ElevenLabsVoiceService {
    */
   public stop(): void {
     this.isSpeaking = false;
+    if (this.safetyTimeout) {
+      clearTimeout(this.safetyTimeout);
+      this.safetyTimeout = null;
+    }
     if (this.currentAudioElement) {
       try {
         this.currentAudioElement.pause();
@@ -114,13 +119,15 @@ class ElevenLabsVoiceService {
       this.currentAudioElement = null;
     }
     if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
+      try {
+        window.speechSynthesis.cancel();
+      } catch {}
     }
   }
 
   /**
    * Speak text using ElevenLabs API (eleven_multilingual_v2)
-   * With automatic fallback to high-fidelity browser neural speech if API key is not present.
+   * With automatic fallback to high-fidelity native audio stream.
    */
   public async speak(
     text: string,
@@ -149,6 +156,14 @@ class ElevenLabsVoiceService {
       options.onEnd?.();
       return;
     }
+
+    // Safety timeout to prevent any freeze
+    this.safetyTimeout = setTimeout(() => {
+      if (this.isSpeaking) {
+        this.isSpeaking = false;
+        options.onEnd?.();
+      }
+    }, 12000);
 
     // 1. Try ElevenLabs API if key is available
     if (apiKey) {
@@ -191,30 +206,74 @@ class ElevenLabsVoiceService {
         audio.onended = () => {
           URL.revokeObjectURL(audioUrl);
           this.isSpeaking = false;
+          if (this.safetyTimeout) clearTimeout(this.safetyTimeout);
           options.onEnd?.();
         };
 
         audio.onerror = () => {
           URL.revokeObjectURL(audioUrl);
           this.isSpeaking = false;
-          // Fallback to browser synthesis
-          this.speakBrowser(cleanedText, options);
+          this.speakAudioStream(cleanedText, options);
         };
 
         await audio.play();
         return;
       } catch (err) {
-        console.warn('ElevenLabs API call notice, falling back to speech synthesis:', err);
-        // Fall through to browser speech fallback
+        console.warn('ElevenLabs API call notice, falling back to neural audio:', err);
       }
     }
 
-    // 2. High-quality Browser Neural Speech Fallback
-    this.speakBrowser(cleanedText, options);
+    // 2. High-fidelity Native Audio Stream (Kannada & Indian English)
+    this.speakAudioStream(cleanedText, options);
   }
 
   /**
-   * Browser Speech Synthesis fallback calibrated for warm Indian medical reception
+   * High-fidelity native speech audio streaming fallback
+   */
+  private speakAudioStream(
+    text: string,
+    options: {
+      isKannada?: boolean;
+      onStart?: () => void;
+      onEnd?: () => void;
+      onError?: (err: any) => void;
+    } = {}
+  ): void {
+    const lang = options.isKannada ? 'kn' : 'en';
+    const cleanSnippet = text.slice(0, 250);
+    const streamUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(
+      cleanSnippet
+    )}&tl=${lang}&client=tw-ob`;
+
+    try {
+      options.onStart?.();
+      this.isSpeaking = true;
+
+      const audio = new Audio(streamUrl);
+      this.currentAudioElement = audio;
+
+      audio.onended = () => {
+        this.isSpeaking = false;
+        if (this.safetyTimeout) clearTimeout(this.safetyTimeout);
+        options.onEnd?.();
+      };
+
+      audio.onerror = () => {
+        // Fallback to browser speech synthesis
+        this.speakBrowser(text, options);
+      };
+
+      audio.play().catch(() => {
+        // If autoplay blocked or error, fallback to browser synthesis
+        this.speakBrowser(text, options);
+      });
+    } catch {
+      this.speakBrowser(text, options);
+    }
+  }
+
+  /**
+   * Browser Speech Synthesis fallback
    */
   private speakBrowser(
     text: string,
@@ -226,6 +285,7 @@ class ElevenLabsVoiceService {
     } = {}
   ): void {
     if (!('speechSynthesis' in window)) {
+      this.isSpeaking = false;
       options.onEnd?.();
       return;
     }
@@ -239,7 +299,6 @@ class ElevenLabsVoiceService {
     utterance.rate = 0.95;
     utterance.pitch = 1.05;
 
-    // Pick best available Indian English or Kannada voice
     const voices = window.speechSynthesis.getVoices();
     const preferredVoice = voices.find(
       (v) =>
@@ -258,11 +317,13 @@ class ElevenLabsVoiceService {
 
     utterance.onend = () => {
       this.isSpeaking = false;
+      if (this.safetyTimeout) clearTimeout(this.safetyTimeout);
       options.onEnd?.();
     };
 
     utterance.onerror = (e) => {
       this.isSpeaking = false;
+      if (this.safetyTimeout) clearTimeout(this.safetyTimeout);
       options.onError?.(e);
       options.onEnd?.();
     };
@@ -287,8 +348,10 @@ class ElevenLabsVoiceService {
     // Emergency / Ambulance
     if (/emergency|ambulance|casualty|icu|ತುರ್ತು|ಆಂಬುಲೆನ್ಸ್/i.test(q)) {
       return {
-        textKn: "ತುರ್ತು ಪರಿಸ್ಥಿತಿಗಾಗಿ ತಕ್ಷಣವೇ ನಮ್ಮ 24/7 ತುರ್ತು ಸಂಖ್ಯೆ +91 88677 55541 ಅಥವಾ ಆಂಬುಲೆನ್ಸ್ +91 93530 61993 ಗೆ ಕರೆ ಮಾಡಿ. ನಮ್ಮ ತುರ್ತು ಮತ್ತು ಐಸಿಯು ತಂಡ ಸದಾ ಸಿದ್ಧವಾಗಿದೆ.",
-        textEn: "For medical emergencies, please call our 24/7 Emergency unit at +91 88677 55541 or Ambulance at +91 93530 61993 immediately. Our ICU casualty team is on duty round the clock.",
+        textKn:
+          'ತುರ್ತು ಪರಿಸ್ಥಿತಿಗಾಗಿ ತಕ್ಷಣವೇ ನಮ್ಮ 24/7 ತುರ್ತು ಸಂಖ್ಯೆ +91 88677 55541 ಅಥವಾ ಆಂಬುಲೆನ್ಸ್ +91 93530 61993 ಗೆ ಕರೆ ಮಾಡಿ. ನಮ್ಮ ತುರ್ತು ಮತ್ತು ಐಸಿಯು ತಂಡ ಸದಾ ಸಿದ್ಧವಾಗಿದೆ.',
+        textEn:
+          'For medical emergencies, please call our 24/7 Emergency unit at +91 88677 55541 or Ambulance at +91 93530 61993 immediately. Our ICU casualty team is on duty round the clock.',
         intent: 'EMERGENCY'
       };
     }
@@ -296,8 +359,10 @@ class ElevenLabsVoiceService {
     // Visiting Hours
     if (/visiting|visit hours|timing|ಭೇಟಿ|ಸಮಯ/i.test(q)) {
       return {
-        textKn: "ಆಸ್ಪತ್ರೆಯ ಸಾಮಾನ್ಯ ವಾರ್ಡ್ ಭೇಟಿ ಸಮಯ: ಬೆಳಗ್ಗೆ 9:00 ರಿಂದ 11:00 ಮತ್ತು ಸಂಜೆ 6:00 ರಿಂದ 7:00 ರವರೆಗೆ. ಐಸಿಯು ಭೇಟಿ ಸಮಯ: ಸಂಜೆ 5:00 ರಿಂದ 6:00 ರವರೆಗೆ. ರೋಗಿಗಳ ಸುರಕ್ಷತೆಗಾಗಿ ಒಬ್ಬ ಸಂದರ್ಶಕರಿಗೆ ಮಾತ್ರ ಅವಕಾಶವಿದೆ.",
-        textEn: "Hospital visiting hours are 9:00 AM to 11:00 AM and 6:00 PM to 7:00 PM for general wards. For ICU patients, visiting is between 5:00 PM to 6:00 PM. One visitor at a time is permitted.",
+        textKn:
+          'ಆಸ್ಪತ್ರೆಯ ಸಾಮಾನ್ಯ ವಾರ್ಡ್ ಭೇಟಿ ಸಮಯ: ಬೆಳಗ್ಗೆ 9:00 ರಿಂದ 11:00 ಮತ್ತು ಸಂಜೆ 6:00 ರಿಂದ 7:00 ರವರೆಗೆ. ಐಸಿಯು ಭೇಟಿ ಸಮಯ: ಸಂಜೆ 5:00 ರಿಂದ 6:00 ರವರೆಗೆ.',
+        textEn:
+          'Hospital visiting hours are 9:00 AM to 11:00 AM and 6:00 PM to 7:00 PM for general wards. For ICU patients, visiting is between 5:00 PM to 6:00 PM.',
         intent: 'INFO'
       };
     }
@@ -305,8 +370,10 @@ class ElevenLabsVoiceService {
     // Address & Location
     if (/address|location|where|directions|route|ವಿಳಾಸ|ಎಲ್ಲಿದೆ/i.test(q)) {
       return {
-        textKn: "ವೀ ಕೇರ್ ಆಸ್ಪತ್ರೆ ಡಿ ಕ್ರಾಸ್ ಮುಖ್ಯ ರಸ್ತೆ, ಫೆಡರಲ್ ಬ್ಯಾಂಕ್ ಮತ್ತು ಶ್ರೀ ರಾಮಾ ಕಲ್ಯಾಣ ಮಂಟಪದ ಹತ್ತಿರ, ದೊಡ್ಡಬಳ್ಳಾಪುರದಲ್ಲಿದೆ. ಪಿನ್‌ಕೋಡ್ 561203. ಆಸ್ಪತ್ರೆಯಲ್ಲಿ ಆಂಬುಲೆನ್ಸ್ ಮತ್ತು ಕಾರು ಪಾರ್ಕಿಂಗ್ ಸೌಲಭ್ಯವಿದೆ.",
-        textEn: "We Care Hospital is located on D Cross Main Road, near Federal Bank and Sri Rama Kalyana Mantapa, Doddaballapura, Karnataka 561203. Dedicated parking and 24/7 ambulance bay are available.",
+        textKn:
+          'ವೀ ಕೇರ್ ಆಸ್ಪತ್ರೆ ಡಿ ಕ್ರಾಸ್ ಮುಖ್ಯ ರಸ್ತೆ, ಫೆಡರಲ್ ಬ್ಯಾಂಕ್ ಹತ್ತಿರ, ದೊಡ್ಡಬಳ್ಳಾಪುರದಲ್ಲಿದೆ. ಪಿನ್‌ಕೋಡ್ 561203. ಆಸ್ಪತ್ರೆಯಲ್ಲಿ ಆಂಬುಲೆನ್ಸ್ ಮತ್ತು ಕಾರು ಪಾರ್ಕಿಂಗ್ ಸೌಲಭ್ಯವಿದೆ.',
+        textEn:
+          'We Care Hospital is located on D Cross Main Road, near Federal Bank, Doddaballapura, Karnataka 561203. Dedicated parking and 24/7 ambulance bay are available.',
         intent: 'INFO'
       };
     }
@@ -314,8 +381,10 @@ class ElevenLabsVoiceService {
     // Blood Test & Laboratory
     if (/blood|lab|test|pathology|ರಕ್ತ|ಲ್ಯಾಬ್|ಪರೀಕ್ಷೆ/i.test(q)) {
       return {
-        textKn: "ನಮ್ಮಲ್ಲಿ 24 ಗಂಟೆಗಳ ಕಾಲ ಸುಸಜ್ಜಿತ ಲ್ಯಾಬೋರೇಟರಿ ಮತ್ತು ರಕ್ತ ಪರೀಕ್ಷಾ ಸೌಲಭ್ಯವಿದೆ. CBC, ಲಿಪಿಡ್ ಪ್ರೊಫೈಲ್, ಥೈರಾಯ್ಡ್, ಲಿವರ್ ಮತ್ತು ಕಿಡ್ನಿ ಕಾರ್ಯಕ್ಷಮತೆ ಪರೀಕ್ಷೆಗಳ ವರದಿಗಳು ಅದೇ ದಿನ ಡಿಜಿಟಲ್ ರೂಪದಲ್ಲಿ ಲಭ್ಯವಾಗುತ್ತವೆ.",
-        textEn: "Our fully equipped 24/7 in-house diagnostic laboratory provides comprehensive blood tests, CBC, lipid profile, HbA1c, thyroid, liver and renal panels with same-day digital report delivery.",
+        textKn:
+          'ನಮ್ಮಲ್ಲಿ 24 ಗಂಟೆಗಳ ಕಾಲ ಸುಸಜ್ಜಿತ ಲ್ಯಾಬೋರೇಟರಿ ಮತ್ತು ರಕ್ತ ಪರೀಕ್ಷಾ ಸೌಲಭ್ಯವಿದೆ. CBC, ಲಿಪಿಡ್ ಪ್ರೊಫೈಲ್, ಥೈರಾಯ್ಡ್, ಕಿಡ್ನಿ ಮತ್ತು ಲಿವರ್ ಪರೀಕ್ಷಾ ವರದಿಗಳು ಅದೇ ದಿನ ಡಿಜಿಟಲ್ ರೂಪದಲ್ಲಿ ಲಭ್ಯವಾಗುತ್ತವೆ.',
+        textEn:
+          'Our fully equipped 24/7 in-house diagnostic laboratory provides comprehensive blood tests, CBC, lipid profile, HbA1c, thyroid, and renal panels with same-day digital report delivery.',
         intent: 'INFO'
       };
     }
@@ -323,8 +392,10 @@ class ElevenLabsVoiceService {
     // Operation Theatre & Surgery
     if (/operation|theatre|surgery|ot|ಶಸ್ತ್ರಚಿಕಿತ್ಸೆ|ಆಪರೇಷನ್/i.test(q)) {
       return {
-        textKn: "ವೀ ಕೇರ್ ಆಸ್ಪತ್ರೆಯು ಅತ್ಯಾಧುನಿಕ ಲ್ಯಾಮಿನಾರ್ ಫ್ಲೋ ಆಪರೇಷನ್ ಥಿಯೇಟರ್ ಮತ್ತು ಐಸಿಯು ಬ್ಯಾಕಪ್ ಹೊಂದಿದೆ. ಸಾಮಾನ್ಯ ಶಸ್ತ್ರಚಿಕಿತ್ಸೆ, ಮೂಳೆ ಶಸ್ತ್ರಚಿಕಿತ್ಸೆ, ಸ್ತ್ರೀರೋಗ ಶಸ್ತ್ರಚಿಕಿತ್ಸೆಗಳು ಸುರಕ್ಷಿತವಾಗಿ ನಡೆಯುತ್ತವೆ.",
-        textEn: "We Care Hospital houses a modern laminar-flow Operating Theatre with HEPA filtration and continuous ICU monitoring for multi-speciality, laparoscopic, orthopedic and emergency surgical procedures.",
+        textKn:
+          'ವೀ ಕೇರ್ ಆಸ್ಪತ್ರೆಯು ಅತ್ಯಾಧುನಿಕ ಲ್ಯಾಮಿನಾರ್ ಫ್ಲೋ ಆಪರೇಷನ್ ಥಿಯೇಟರ್ ಮತ್ತು ಐಸಿಯು ಬ್ಯಾಕಪ್ ಹೊಂದಿದೆ. ಸಾಮಾನ್ಯ, ಲ್ಯಾಪರೊಸ್ಕೋಪಿಕ್ ಮತ್ತು ಮೂಳೆ ಶಸ್ತ್ರಚಿಕಿತ್ಸೆಗಳು ಸುರಕ್ಷಿತವಾಗಿ ನಡೆಯುತ್ತವೆ.',
+        textEn:
+          'We Care Hospital houses a modern laminar-flow Operating Theatre with HEPA filtration and continuous ICU monitoring for multi-speciality, laparoscopic and orthopedic surgical procedures.',
         intent: 'INFO'
       };
     }
@@ -332,8 +403,10 @@ class ElevenLabsVoiceService {
     // Insurance & Cashless
     if (/insurance|cashless|tpa|ayushman|claim|ವಿಮೆ|ಕ್ಯಾಶ್‌ಲೆಸ್/i.test(q)) {
       return {
-        textKn: "ನಮ್ಮಲ್ಲಿ ಪ್ರಮುಖ ಆರೋಗ್ಯ ವಿಮೆಗಳು ಮತ್ತು ಟಿಪಿಎ ಕ್ಯಾಶ್‌ಲೆಸ್ ಸೌಲಭ್ಯಗಳು ಲಭ್ಯವಿವೆ. ನಿಮ್ಮ ವಿಮಾ ಪಾಲಿಸಿ ಕಾರ್ಡ್ ಮತ್ತು ಆಧಾರ್ ಕಾರ್ಡ್‌ನೊಂದಿಗೆ ರಿಸೆಪ್ಷನ್ ವಿಮಾ ಡೆಸ್ಕ್ ಅನ್ನು ಸಂಪರ್ಕಿಸಿ.",
-        textEn: "We support major health insurance policies and corporate TPAs with cashless hospitalization facilities. Please present your insurance policy card and Aadhaar at our reception TPA desk.",
+        textKn:
+          'ನಮ್ಮಲ್ಲಿ ಪ್ರಮುಖ ಆರೋಗ್ಯ ವಿಮೆಗಳು ಮತ್ತು ಟಿಪಿಎ ಕ್ಯಾಶ್‌ಲೆಸ್ ಸೌಲಭ್ಯಗಳು ಲಭ್ಯವಿವೆ. ನಿಮ್ಮ ವಿಮಾ ಪಾಲಿಸಿ ಕಾರ್ಡ್ ಮತ್ತು ಆಧಾರ್ ಕಾರ್ಡ್‌ನೊಂದಿಗೆ ರಿಸೆಪ್ಷನ್ ವಿಮಾ ಡೆಸ್ಕ್ ಸಂಪರ್ಕಿಸಿ.',
+        textEn:
+          'We support major health insurance policies and corporate TPAs with cashless hospitalization facilities. Please present your insurance card and Aadhaar at our reception desk.',
         intent: 'INFO'
       };
     }
@@ -348,17 +421,48 @@ class ElevenLabsVoiceService {
 
     if (matchedDoctor) {
       return {
-        textKn: `${matchedDoctor.name} ಅವರು ${matchedDoctor.specialization} ವಿಭಾಗದಲ್ಲಿ ಪರಿಣಿತರಾಗಿದ್ದಾರೆ. ಅವರ ಅನುಭವ ${matchedDoctor.experienceYears} ವರ್ಷಗಳು. ಇವರೊಂದಿಗೆ ಅಪಾಯಿಂಟ್‌ಮೆಂಟ್ ಬುಕ್ ಮಾಡಲು ನಿಮ್ಮ ಹೆಸರು ಮತ್ತು ಫೋನ್ ನಂಬರ್ ತಿಳಿಸಿ.`,
-        textEn: `${matchedDoctor.name} is our specialist in ${matchedDoctor.specialization} with ${matchedDoctor.experienceYears} years of clinical experience. Would you like to book an appointment with them? Please state your name.`,
+        textKn: `${matchedDoctor.name} ಅವರು ${matchedDoctor.specialization} ವಿಭಾಗದಲ್ಲಿ ಪರಿಣಿತರಾಗಿದ್ದಾರೆ. ಇವರೊಂದಿಗೆ ಅಪಾಯಿಂಟ್‌ಮೆಂಟ್ ಬುಕ್ ಮಾಡಲು ನಿಮ್ಮ ಹೆಸರು ಮತ್ತು ಫೋನ್ ಸಂಖ್ಯೆ ತಿಳಿಸಿ.`,
+        textEn: `${matchedDoctor.name} is our specialist in ${matchedDoctor.specialization}. To book an appointment with them, please provide your name and phone number.`,
         intent: 'APPOINTMENT'
+      };
+    }
+
+    // Patient Name or Introduction
+    const nameMatch = query.match(/(?:my name is|i am|i'm|ನನ್ನ ಹೆಸರು|ನಾನು|ಹೆಸರು)\s+([A-Za-z\u0C80-\u0CFF]+)/i);
+    const trimmed = query.trim();
+    const isSingleName = !/\b(hospital|help|bed|dr|doctor|room|icu|visiting|emergency|ಆಸ್ಪತ್ರೆ)\b/i.test(q) &&
+      trimmed.split(/\s+/).length <= 3 &&
+      trimmed.length >= 2 &&
+      trimmed.length <= 40 &&
+      !/^(hi|hello|hey|ನಮಸ್ಕಾರ|ok|yes|no)$/i.test(trimmed) &&
+      !/^\d+$/.test(trimmed);
+
+    if (nameMatch || isSingleName) {
+      const patientName = nameMatch ? nameMatch[1].trim() : trimmed;
+      return {
+        textKn: `ಧನ್ಯವಾದಗಳು ${patientName} ಅವರೇ. ನಿಮ್ಮ ಅಪಾಯಿಂಟ್‌ಮೆಂಟ್‌ಗಾಗಿ ಯಾವ ವೈದ್ಯರನ್ನು ಭೇಟಿಯಾಗಬೇಕೆಂದು ಬಯಸುತ್ತೀರಿ? ಅಥವಾ ನಿಮ್ಮ 10 ಅಂಕಿಯ ಮೊಬೈಲ್ ಸಂಖ್ಯೆ ತಿಳಿಸಿ.`,
+        textEn: `Thank you ${patientName}. Which doctor or department would you like to consult? Or please provide your 10-digit mobile number.`,
+        intent: 'NAME_PROVIDED'
+      };
+    }
+
+    // Phone Number Detection
+    const digitsOnly = query.replace(/\D/g, '');
+    if ((digitsOnly.length === 10 && /^[6-9]/.test(digitsOnly)) || digitsOnly.length === 12) {
+      return {
+        textKn: "ಧನ್ಯವಾದಗಳು, ನಿಮ್ಮ ಮೊಬೈಲ್ ಸಂಖ್ಯೆ ದಾಖಲಾಗಿದೆ. ಅಪಾಯಿಂಟ್‌ಮೆಂಟ್‌ಗಾಗಿ ಇಂದು ಅಥವಾ ನಾಳೆ ಯಾವ ಸಮಯ ನಿಮಗೆ ಅನುಕೂಲ?",
+        textEn: "Thank you, your phone number has been recorded. Would today or tomorrow work best for your appointment?",
+        intent: 'PHONE_PROVIDED'
       };
     }
 
     // Appointment Booking Intent
     if (/book|appointment|consult|doctor|dr|ಅಪಾಯಿಂಟ್‌ಮೆಂಟ್|ಡಾಕ್ಟರ್/i.test(q)) {
       return {
-        textKn: "ಖಂಡಿತ, ಅಪಾಯಿಂಟ್‌ಮೆಂಟ್ ಬುಕ್ ಮಾಡಲು ದಯವಿಟ್ಟು ನಿಮ್ಮ ಪೂರ್ಣ ಹೆಸರು ಮತ್ತು 10 ಅಂಕಿಯ ಮೊಬೈಲ್ ಸಂಖ್ಯೆಯನ್ನು ತಿಳಿಸಿ. ಯಾವ ತಜ್ಞ ವೈದ್ಯರನ್ನು ಭೇಟಿಯಾಗಬೇಕೆಂದು ಬಯಸುತ್ತೀರಿ?",
-        textEn: "Certainly! To book an appointment, please state your full name and 10-digit mobile number, or which speciality doctor you wish to consult.",
+        textKn:
+          'ಖಂಡಿತ, ಅಪಾಯಿಂಟ್‌ಮೆಂಟ್ ಬುಕ್ ಮಾಡಲು ದಯವಿಟ್ಟು ನಿಮ್ಮ ಪೂರ್ಣ ಹೆಸರು ತಿಳಿಸಿ.',
+        textEn:
+          'Certainly! To book an appointment, please state your full name.',
         intent: 'APPOINTMENT'
       };
     }
@@ -366,16 +470,20 @@ class ElevenLabsVoiceService {
     // Room Tariff & Inpatient
     if (/room|bed|tariff|cost|price|icu cost|ಕೊಠಡಿ|ದರ/i.test(q)) {
       return {
-        textKn: "ನಮ್ಮಲ್ಲಿ ಜನರಲ್ ವಾರ್ಡ್, ಸೆಮಿ-ಪ್ರೈವೇಟ್, ಪ್ರೈವೇಟ್ ಎಸಿ ಕೊಠಡಿಗಳು ಮತ್ತು 24/7 ಐಸಿಯು ಲಭ್ಯವಿವೆ. ಕೊಠಡಿ ಲಭ್ಯತೆ ಮತ್ತು ದರಗಳ ವಿವರಗಳಿಗಾಗಿ ನಮ್ಮ ರಿಸೆಪ್ಷನ್ +91 88677 55541 ಸಂಪರ್ಕಿಸಿ.",
-        textEn: "We offer General Ward, Semi-Private, Deluxe Private AC rooms, and 24/7 ICU beds. Please contact our reception desk at +91 88677 55541 for bed availability and admission guidance.",
+        textKn:
+          'ನಮ್ಮಲ್ಲಿ ಜನರಲ್ ವಾರ್ಡ್, ಸೆಮಿ-ಪ್ರೈವೇಟ್, ಪ್ರೈವೇಟ್ ಎಸಿ ಕೊಠಡಿಗಳು ಮತ್ತು 24/7 ಐಸಿಯು ಲಭ್ಯವಿವೆ. ಕೊಠಡಿ ಲಭ್ಯತೆ ಮತ್ತು ದರಗಳ ವಿವರಗಳಿಗಾಗಿ ನಮ್ಮ ರಿಸೆಪ್ಷನ್ +91 88677 55541 ಸಂಪರ್ಕಿಸಿ.',
+        textEn:
+          'We offer General Ward, Semi-Private, Deluxe Private AC rooms, and 24/7 ICU beds. Please contact our reception desk at +91 88677 55541 for bed availability.',
         intent: 'INFO'
       };
     }
 
     // General Greeting or fallback
     return {
-      textKn: "ನಮಸ್ಕಾರ! ವೀ ಕೇರ್ ಆಸ್ಪತ್ರೆಗೆ ಸುಸ್ವಾಗತ. ನೀವು ವೈದ್ಯರ ಅಪಾಯಿಂಟ್‌ಮೆಂಟ್, ಭೇಟಿ ಸಮಯ, ಲ್ಯಾಬ್ ಪರೀಕ್ಷೆಗಳು ಅಥವಾ ವಿಳಾಸದ ಬಗ್ಗೆ ಕೇಳಬಹುದು. ನಾನು ನಿಮಗೆ ಹೇಗೆ ಸಹಾಯ ಮಾಡಲಿ?",
-      textEn: "Hello! Welcome to We Care Hospital. You can ask me about doctor appointments, visiting hours, blood tests, room tariffs, or emergency care. How may I assist you today?",
+      textKn:
+        'ನಮಸ್ಕಾರ! ವೀ ಕೇರ್ ಆಸ್ಪತ್ರೆಗೆ ಸುಸ್ವಾಗತ. ನೀವು ವೈದ್ಯರ ಅಪಾಯಿಂಟ್‌ಮೆಂಟ್, ಭೇಟಿ ಸಮಯ, ಲ್ಯಾಬ್ ಪರೀಕ್ಷೆಗಳು ಅಥವಾ ವಿಳಾಸದ ಬಗ್ಗೆ ಕೇಳಬಹುದು. ನಾನು ನಿಮಗೆ ಹೇಗೆ ಸಹಾಯ ಮಾಡಲಿ?',
+      textEn:
+        'Hello! Welcome to We Care Hospital. You can ask me about doctor appointments, visiting hours, blood tests, room tariffs, or emergency care. How may I assist you today?',
       intent: 'GENERAL'
     };
   }

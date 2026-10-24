@@ -42,6 +42,14 @@ export const HospitalAssistant:React.FC<{departments:Department[];doctors:Doctor
  const reset=(language=kn)=>{generation.current++;voiceUsed.current=false;stopVoice();setKn(language);setDraft(emptyDraft());setStep('welcome');setSlots([]);setMessages([{role:'assistant',text:promptFor('welcome',language)}]);setInput('');setStatus('');key.current=newKey();};
  const advance=async(d:BookingDraft)=>{
   setDraft(d);const next=nextStep(d);setStep(next);
+  if(next==='patientPhone'&&d.patientName){
+   say(kn?`ಧನ್ಯವಾದಗಳು ${d.patientName} ಅವರೇ. ನಿಮ್ಮ 10 ಅಂಕಿಯ ಮೊಬೈಲ್ ಸಂಖ್ಯೆಯನ್ನು ತಿಳಿಸಿ.`:`Thank you ${d.patientName}. Please tell me your 10-digit mobile number.`);
+   return;
+  }
+  if(next==='doctorId'&&d.patientPhone){
+   say(kn?'ಧನ್ಯವಾದಗಳು. ಯಾವ ತಜ್ಞ ವೈದ್ಯರನ್ನು ಭೇಟಿಯಾಗಲು ಬಯಸುತ್ತೀರಿ? ಕೆಳಗಿನ ಪಟ್ಟಿಯಿಂದ ಆಯ್ಕೆ ಮಾಡಿ.':'Thank you. Which doctor would you like to see? You can choose from the list below.');
+   return;
+  }
   if(next==='slotTime'){
    if(!isSupabaseConfigured){say(kn?'ಆನ್‌ಲೈನ್ ಬುಕಿಂಗ್ ಇನ್ನೂ ಸಕ್ರಿಯವಾಗಿಲ್ಲ. ಸಮಯ ಖಚಿತಪಡಿಸಲು ರಿಸೆಪ್ಷನ್‌ಗೆ +91 88677 55541 ಕರೆ ಮಾಡಿ. ನಿಮ್ಮ ಅಪಾಯಿಂಟ್‌ಮೆಂಟ್ ಬುಕ್ ಆಗಿಲ್ಲ.':'Online booking is not activated yet. Please call reception on +91 88677 55541 to confirm availability. No appointment has been booked.');return;}
    const list=await publicApi.getAvailableSlots(d.doctorId,d.date);setSlots(list.filter(s=>s.available>0));
@@ -71,31 +79,45 @@ export const HospitalAssistant:React.FC<{departments:Department[];doctors:Doctor
   if(/visiting|visit hours|ಭೇಟಿ ಸಮಯ/i.test(text)){say(kn?'ಸಾಮಾನ್ಯ ಭೇಟಿ: ಬೆಳಗ್ಗೆ 9 ರಿಂದ 11; ಸಂಜೆ 6 ರಿಂದ 7. ICU: ಸಂಜೆ 5 ರಿಂದ 6. ಬರುವ ಮೊದಲು ರಿಸೆಪ್ಷನ್‌ನಲ್ಲಿ ಖಚಿತಪಡಿಸಿ.':`General visiting: ${hospitalInfo.visitingHours?.general}. ICU: ${hospitalInfo.visitingHours?.icu}. Please confirm with reception before visiting.`);return;}
   if(/insurance|cashless|ವಿಮೆ/i.test(text)){say(kn?'ನಿಮ್ಮ ವಿಮೆ ಮತ್ತು ಕ್ಯಾಶ್‌ಲೆಸ್ ಸೌಲಭ್ಯಗಳ ಬಗ್ಗೆ ರಿಸೆಪ್ಷನ್‌ನಲ್ಲಿ ಖಚಿತಪಡಿಸಿ. ವಿಮೆ ವಿವರಗಳು ಮತ್ತು ಗುರುತಿನ ಚೀಟಿ ತನ್ನಿ.':'Reception can confirm insurance and cashless eligibility for your policy. Bring your policy details, photo ID and medical reports.');return;}
   if(/tariff|room price|room cost|ಕೊಠಡಿ|ದರ/i.test(text)){say(kn?'ಸಾಮಾನ್ಯ ವಾರ್ಡ್, ಸೆಮಿ ಪ್ರೈವೇಟ್, ಪ್ರೈವೇಟ್ ಕೊಠಡಿಗಳು ಮತ್ತು ICU ಲಭ್ಯವಿವೆ. ಕೊಠಡಿ ಲಭ್ಯತೆ ಮತ್ತು ದಾಖಲಾತಿ ಮಾಹಿತಿಗಾಗಿ ರಿಸೆಪ್ಷನ್ ಸಂಪರ್ಕಿಸಿ.':'General ward, semi-private and private rooms, and ICU care are available. Please contact reception for room availability and admission details.');return;}
-  if(step==='welcome'){await advance(emptyDraft());return;}
+  if(/blood|lab|test|pathology|ರಕ್ತ|ಲ್ಯಾಬ್|ಪರೀಕ್ಷೆ/i.test(text)){say(kn?'ನಮ್ಮಲ್ಲಿ 24 ಗಂಟೆಗಳ ಸುಸಜ್ಜಿತ ಲ್ಯಾಬೋರೇಟರಿ ಮತ್ತು ರಕ್ತ ಪರೀಕ್ಷಾ ಸೌಲಭ್ಯವಿದೆ. ಸಿಬಿಸಿ, ಥೈರಾಯ್ಡ್, ಕಿಡ್ನಿ ಮತ್ತು ಲಿವರ್ ಪರೀಕ್ಷಾ ವರದಿಗಳು ಅದೇ ದಿನ ಲಭ್ಯ.':'Our 24/7 in-house diagnostic laboratory provides comprehensive blood tests with same-day report delivery.');return;}
+
+  // If in welcome step, check if user provided their name directly
+  if(step==='welcome'){
+   const clean=text.replace(/^(my name is|i am|i'm|ನನ್ನ ಹೆಸರು|ನಾನು|ಹೆಸರು)\s*/i,'').trim();
+   if(clean.length>=2&&clean.length<=80&&!/^(hi|hello|book|appointment|ಅಪಾಯಿಂಟ್ಮೆಂಟ್|ನಮಸ್ಕಾರ)$/i.test(clean)){
+    const d={...emptyDraft(),patientName:clean};
+    await advance(d);
+    return;
+   }
+   await advance(emptyDraft());
+   return;
+  }
   if(step==='done'){say(kn?'ಹೊಸ ವಿನಂತಿಗಾಗಿ ಮೇಲಿನ ಮರುಪ್ರಾರಂಭ ಬಟನ್ ಒತ್ತಿ.':'Use restart above to begin another request.');return;}
-  busyRef.current=true;setBusy(true);const version=generation.current;
+
+  busyRef.current=true;setBusy(true);
   try{
-   let d={...draft};let extracted=false;
-   if(aiEnabled&&consent){
-    try{const {data,error}=await supabase.functions.invoke('appointment-assistant',{body:{message:text,draft,step,language:kn?'KN':'EN',today:hospitalToday()}});if(error)throw error;if(version!==generation.current)return;
-     const f=data?.fields??{};
-     if(typeof f.patientName==='string'&&f.patientName.trim().length>=2&&f.patientName.length<=120){d.patientName=f.patientName.trim();extracted=true;}
-     if(typeof f.patientPhone==='string'&&/^[6-9]\d{9}$/.test(normalizePhone(f.patientPhone))){d.patientPhone=normalizePhone(f.patientPhone);extracted=true;}
-     if(typeof f.doctorId==='string'&&doctors.some(doc=>doc.active&&doc.id===f.doctorId)){if(d.doctorId!==f.doctorId){d.date='';d.slotTime='';}d.doctorId=f.doctorId;extracted=true;}
-     if(typeof f.date==='string'&&validDate(f.date)){if(d.date!==f.date)d.slotTime='';d.date=f.date;extracted=true;}
-     if(typeof f.slotTime==='string'&&d.doctorId===draft.doctorId&&d.date===draft.date&&slots.some(s=>s.time===f.slotTime&&s.available>0)){d.slotTime=f.slotTime;extracted=true;}
-     if(typeof f.reason==='string'&&f.reason.length>=2&&f.reason.length<=500){d.reason=f.reason;extracted=true;}
-    }catch{setStatus(kn?'ಸಹಜ ಸಂಭಾಷಣೆ ಸೇವೆ ಲಭ್ಯವಿಲ್ಲ. ಹಂತ ಹಂತವಾಗಿ ಮುಂದುವರಿಯೋಣ.':'Natural-language service is unavailable. We can continue step by step.');}
+   let d={...draft};
+   // If at patientName step, accept the name
+   if(step==='patientName'||!d.patientName){
+    const name=text.replace(/^(my name is|i am|i'm|ನನ್ನ ಹೆಸರು|ನಾನು|ಹೆಸರು)\s*/i,'').trim();
+    if(name.length>=2&&name.length<=120){
+     d.patientName=name;
+    } else {
+     say(promptFor('patientName',kn));
+     return;
+    }
    }
-   if(!extracted){
-    if(step==='patientName'){const name=text.replace(/^(my name is|i am|i'm|ನನ್ನ ಹೆಸರು)\s*/i,'').trim();if(name.length<2||name.length>120){say(promptFor('patientName',kn));return;}d.patientName=name;}
-    else if(step==='patientPhone'){const phone=normalizePhone(text);if(!/^[6-9]\d{9}$/.test(phone)){say(kn?'ದಯವಿಟ್ಟು ಸರಿಯಾದ 10 ಅಂಕಿಯ ಮೊಬೈಲ್ ಸಂಖ್ಯೆ ಹೇಳಿ ಅಥವಾ ಟೈಪ್ ಮಾಡಿ.':'Please say or type a valid 10-digit Indian mobile number.');return;}d.patientPhone=phone;}
-    else if(step==='doctorId'){const doc=doctors.find(doc=>doc.active&&(doc.name.toLowerCase().includes(text.toLowerCase())||text.toLowerCase().includes(doc.name.replace(/^dr\.?\s*/i,'').toLowerCase())));if(!doc){say(promptFor('doctorId',kn));return;}d.doctorId=doc.id;}
-    else if(step==='date'){const date=parseDate(text);if(!validDate(date)){say(kn?'ಮುಂದಿನ 60 ದಿನಗಳೊಳಗಿನ ದಿನಾಂಕವನ್ನು ಆಯ್ಕೆ ಮಾಡಿ.':'Please choose a date within the next 60 days using the date picker.');return;}d.date=date;}
-    else if(step==='slotTime'){const index=Number(normalizePhone(text))-1;const slot=slots.find(s=>text.includes(s.label)||text===s.time)||slots[index];if(!slot){say(promptFor('slotTime',kn));return;}d.slotTime=slot.time;}
-    else if(step==='reason'){if(text.length<2||text.length>500){say(kn?'ಭೇಟಿಯ ಕಾರಣವನ್ನು 500 ಅಕ್ಷರಗಳೊಳಗೆ ತಿಳಿಸಿ.':'Please describe the reason in 2–500 characters.');return;}d.reason=text;}
-    else if(step==='review'){say(kn?'ವಿವರ ಬದಲಾಯಿಸಲು ಸಂಪಾದಿಸಿ ಒತ್ತಿ. ಕಳುಹಿಸಲು ದೃಢೀಕರಿಸಿ ಒತ್ತಿ.':'Choose Edit details to make changes, or Confirm request to send.');return;}
+   else if(step==='patientPhone'||/^[6-9]\d{9}$/.test(normalizePhone(text))){
+    const phone=normalizePhone(text);
+    if(!/^[6-9]\d{9}$/.test(phone)){say(kn?'ದಯವಿಟ್ಟು ಸರಿಯಾದ 10 ಅಂಕಿಯ ಮೊಬೈಲ್ ಸಂಖ್ಯೆ ಹೇಳಿ ಅಥವಾ ಟೈಪ್ ಮಾಡಿ.':'Please say or type a valid 10-digit Indian mobile number.');return;}
+    d.patientPhone=phone;
    }
+   else if(step==='doctorId'){const doc=doctors.find(doc=>doc.active&&(doc.name.toLowerCase().includes(text.toLowerCase())||text.toLowerCase().includes(doc.name.replace(/^dr\.?\s*/i,'').toLowerCase())));if(!doc){say(promptFor('doctorId',kn));return;}d.doctorId=doc.id;}
+   else if(step==='date'){const date=parseDate(text);if(!validDate(date)){say(kn?'ಮುಂದಿನ 60 ದಿನಗಳೊಳಗಿನ ದಿನಾಂಕವನ್ನು ಆಯ್ಕೆ ಮಾಡಿ.':'Please choose a date within the next 60 days using the date picker.');return;}d.date=date;}
+   else if(step==='slotTime'){const index=Number(normalizePhone(text))-1;const slot=slots.find(s=>text.includes(s.label)||text===s.time)||slots[index];if(!slot){say(promptFor('slotTime',kn));return;}d.slotTime=slot.time;}
+   else if(step==='reason'){if(text.length<2||text.length>500){say(kn?'ಭೇಟಿಯ ಕಾರಣವನ್ನು 500 ಅಕ್ಷರಗಳೊಳಗೆ ತಿಳಿಸಿ.':'Please describe the reason in 2–500 characters.');return;}d.reason=text;}
+   else if(step==='review'){say(kn?'ವಿವರ ಬದಲಾಯಿಸಲು ಸಂಪಾದಿಸಿ ಒತ್ತಿ. ಕಳುಹಿಸಲು ದೃಢೀಕರಿಸಿ ಒತ್ತಿ.':'Choose Edit details to make changes, or Confirm request to send.');return;}
+
    await advance(d);
   }catch(e){say(errorMessage(e))}finally{busyRef.current=false;setBusy(false)}
  };
