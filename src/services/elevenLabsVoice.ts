@@ -132,6 +132,48 @@ class ElevenLabsVoiceService {
     localStorage.setItem('wecare_elevenlabs_voice_id', voiceId);
   }
 
+  public hasApiKey(): boolean {
+    return Boolean(this.getApiKey().trim());
+  }
+
+  public hasAgentId(): boolean {
+    return Boolean(this.getAgentId().trim());
+  }
+
+  public async testApiKey(key: string, voiceId?: string): Promise<{ success: boolean; error?: string }> {
+    if (!key.trim()) {
+      return { success: false, error: 'API key is required' };
+    }
+    const targetVoice = voiceId || this.getSelectedVoiceId();
+    try {
+      const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${targetVoice}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'xi-api-key': key.trim(),
+          'Accept': 'audio/mpeg'
+        },
+        body: JSON.stringify({
+          text: 'Namaskara! Welcome to We Care Hospital. ElevenLabs voice is successfully connected.',
+          model_id: 'eleven_multilingual_v2',
+          voice_settings: { stability: 0.55, similarity_boost: 0.8 }
+        })
+      });
+      if (!response.ok) {
+        const errText = await response.text();
+        return { success: false, error: `ElevenLabs returned HTTP ${response.status}: ${errText}` };
+      }
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const audio = new Audio(url);
+      this.currentAudioElement = audio;
+      await audio.play();
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err.message || 'Connection to ElevenLabs failed' };
+    }
+  }
+
   /**
    * Stop any currently playing speech audio
    */

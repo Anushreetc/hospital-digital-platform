@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Phone, MapPin, Menu, X, ArrowUpRight, ShieldCheck } from 'lucide-react';
+import { Phone, MapPin, Menu, X, ArrowUpRight, ShieldCheck, Sparkles } from 'lucide-react';
 import { HospitalInfo } from '../types';
 
 interface NavbarProps {
@@ -53,14 +53,22 @@ export const Navbar: React.FC<NavbarProps> = ({ hospitalInfo, signedIn, onNaviga
             <Link to="/contact">Location & contact</Link>
             <button
               type="button"
-              onClick={() => window.dispatchEvent(new Event('open-voice-call'))}
-              title="ElevenLabs Voice Agent"
-              style={{ color: '#059669', fontWeight: 600 }}
+              onClick={() => window.dispatchEvent(new Event('open-voice-agent'))}
+              title="ElevenLabs AI Voice Assistant"
+              style={{
+                color: '#047857',
+                fontWeight: 700,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '5px',
+                background: '#ecfdf5',
+                padding: '4px 12px',
+                borderRadius: '9999px',
+                border: '1px solid #a7f3d0'
+              }}
             >
-              📞 Voice Agent (AI)
-            </button>
-            <button type="button" onClick={() => window.dispatchEvent(new Event('open-hospital-assistant'))}>
-              ಕನ್ನಡ / English
+              <Sparkles size={13} style={{ color: '#059669' }} />
+              <span>🎙️ Voice Agent (AI)</span>
             </button>
           </div>
           <Link to="/appointment" className="hospital-button" onClick={handleBookClick}>
