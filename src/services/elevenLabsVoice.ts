@@ -151,7 +151,11 @@ class ElevenLabsVoiceService {
     if (!key.trim()) {
       return { success: false, error: 'API key is required' };
     }
-    const targetVoice = voiceId || this.getSelectedVoiceId();
+    const rawTarget = voiceId || this.getSelectedVoiceId();
+    const targetVoice =
+      rawTarget && rawTarget !== 'custom' && rawTarget.trim().length > 3
+        ? rawTarget.trim()
+        : PRECONFIGURED_ELEVENLABS_VOICES[0].id;
     try {
       const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${targetVoice}`, {
         method: 'POST',
@@ -255,11 +259,17 @@ class ElevenLabsVoiceService {
     // 1. Try ElevenLabs API if key is available
     if (apiKey) {
       try {
+        const rawVoice = options.voiceId || this.getSelectedVoiceId();
+        const safeVoiceId =
+          rawVoice && rawVoice !== 'custom' && rawVoice.trim().length > 3
+            ? rawVoice.trim()
+            : PRECONFIGURED_ELEVENLABS_VOICES[0].id;
+
         options.onStart?.();
         this.isSpeaking = true;
 
         const response = await fetch(
-          `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`,
+          `https://api.elevenlabs.io/v1/text-to-speech/${safeVoiceId}`,
           {
             method: 'POST',
             headers: {

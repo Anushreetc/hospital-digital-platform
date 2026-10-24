@@ -100,6 +100,14 @@ export const UnifiedVoiceAgent: React.FC<Props> = ({
   const [agentIdInput, setAgentIdInput] = useState<string>(elevenLabsVoice.getAgentId());
   const [isTestingVoice, setIsTestingVoice] = useState(false);
   const [testStatus, setTestStatus] = useState<{ success?: boolean; message?: string } | null>(null);
+  const [voiceError, setVoiceError] = useState<string | null>(null);
+
+  const getEffectiveVoiceId = () => {
+    if (selectedVoiceId === 'custom') {
+      return customVoiceInput.trim() || PRECONFIGURED_ELEVENLABS_VOICES[0].id;
+    }
+    return selectedVoiceId;
+  };
 
   // Call Mode State
   const [callState, setCallState] = useState<'idle' | 'calling' | 'connected'>('idle');
@@ -263,9 +271,10 @@ export const UnifiedVoiceAgent: React.FC<Props> = ({
 
     setIsSpeaking(true);
     isSpeakingRef.current = true;
+    setVoiceError(null);
 
     elevenLabsVoice.speak(text, {
-      voiceId: selectedVoiceId,
+      voiceId: getEffectiveVoiceId(),
       isKannada: language === 'KN',
       onStart: () => {
         setIsSpeaking(true);
@@ -276,9 +285,11 @@ export const UnifiedVoiceAgent: React.FC<Props> = ({
         isSpeakingRef.current = false;
         onDone?.();
       },
-      onError: () => {
+      onError: (err: any) => {
         setIsSpeaking(false);
         isSpeakingRef.current = false;
+        const msg = typeof err === 'string' ? err : err?.message || 'Voice speech notice';
+        setVoiceError(msg);
         onDone?.();
       }
     });
@@ -417,13 +428,6 @@ export const UnifiedVoiceAgent: React.FC<Props> = ({
   };
 
   // Save Settings & Test ElevenLabs
-  const getEffectiveVoiceId = () => {
-    if (selectedVoiceId === 'custom') {
-      return customVoiceInput.trim() || PRECONFIGURED_ELEVENLABS_VOICES[0].id;
-    }
-    return selectedVoiceId;
-  };
-
   const handleSaveSettings = () => {
     let cleanApiKey = apiKeyInput.trim();
     let cleanAgentId = agentIdInput.trim();
@@ -867,13 +871,58 @@ export const UnifiedVoiceAgent: React.FC<Props> = ({
                       </div>
                     )}
 
-                    <button
-                      onClick={handleStartCall}
-                      className="w-full max-w-xs bg-emerald-600 hover:bg-emerald-500 active:scale-98 text-white font-bold py-3.5 rounded-2xl transition-all shadow-xl shadow-emerald-600/30 flex items-center justify-center gap-2.5 text-sm cursor-pointer"
-                    >
-                      <Phone className="w-4 h-4" />
-                      <span>{language === 'KN' ? 'ಈಗ ಕರೆ ಪ್ರಾರಂಭಿಸಿ' : 'Start Voice Call Now'}</span>
-                    </button>
+                    {/* Diagnostics or error feedback */}
+                    {(voiceError || testStatus) && (
+                      <div
+                        className={`w-full max-w-xs p-2.5 rounded-xl text-xs flex items-center justify-between gap-2 ${
+                          testStatus?.success
+                            ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
+                            : 'bg-rose-500/20 text-rose-300 border border-rose-500/40'
+                        }`}
+                      >
+                        <div className="flex items-center gap-1.5 min-w-0">
+                          {testStatus?.success ? (
+                            <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-400" />
+                          ) : (
+                            <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
+                          )}
+                          <span className="truncate text-[11px]">
+                            {testStatus?.message || voiceError}
+                          </span>
+                        </div>
+                        <button
+                          onClick={() => {
+                            setVoiceError(null);
+                            setTestStatus(null);
+                          }}
+                          className="text-slate-400 hover:text-white p-0.5 cursor-pointer shrink-0"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    )}
+
+                    <div className="w-full max-w-xs flex flex-col gap-2">
+                      <button
+                        onClick={handleStartCall}
+                        className="w-full bg-emerald-600 hover:bg-emerald-500 active:scale-98 text-white font-bold py-3.5 rounded-2xl transition-all shadow-xl shadow-emerald-600/30 flex items-center justify-center gap-2.5 text-sm cursor-pointer"
+                      >
+                        <Phone className="w-4 h-4" />
+                        <span>{language === 'KN' ? 'ಈಗ ಕರೆ ಪ್ರಾರಂಭಿಸಿ' : 'Start Voice Call Now'}</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={handleTestVoice}
+                        disabled={isTestingVoice}
+                        className="w-full py-2 bg-slate-800/80 hover:bg-slate-800 text-slate-300 hover:text-white rounded-xl text-xs font-semibold border border-slate-700/60 flex items-center justify-center gap-1.5 cursor-pointer transition-all"
+                      >
+                        <Volume2 className="w-3.5 h-3.5 text-emerald-400" />
+                        <span>
+                          {isTestingVoice ? 'Playing test audio...' : '🔊 Test Voice Audio'}
+                        </span>
+                      </button>
+                    </div>
                   </div>
                 ) : (
                   <div className="flex-1 flex flex-col justify-between overflow-hidden p-4">
