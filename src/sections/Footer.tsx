@@ -19,7 +19,7 @@ export const Footer: React.FC<Props> = ({ hospitalInfo }) => {
               <img
                 src="/images/wecare-official-logo.png"
                 alt="We Care Multispeciality Hospital Logo"
-                className="h-11 w-auto object-contain shrink-0"
+                className="h-13 w-13 sm:h-14 sm:w-14 object-contain shrink-0"
               />
               <span className="text-lg sm:text-xl font-bold text-white tracking-tight">
                 {hospitalInfo.name}
