@@ -4,40 +4,37 @@ import {Department,Doctor,HospitalInfo} from '../types';
 import {publicApi} from '../services/db';
 import {supabase,isSupabaseConfigured,errorMessage} from '../lib/supabase';
 import {BookingDraft,Step,emptyDraft,hospitalToday,plusDays,normalizePhone,parseDate,validDate,nextStep,promptFor} from '../assistant/booking';
+import {elevenLabsVoice, PRECONFIGURED_ELEVENLABS_VOICES} from '../services/elevenLabsVoice';
 const newKey=()=>Array.from(crypto.getRandomValues(new Uint8Array(24))).map(b=>b.toString(16).padStart(2,'0')).join('');
 type Message={role:'user'|'assistant';text:string};
 export const HospitalAssistant:React.FC<{departments:Department[];doctors:Doctor[];hospitalInfo:HospitalInfo}>=({departments,doctors,hospitalInfo})=>{
  const [open,setOpen]=useState(false),[kn,setKn]=useState(false),[draft,setDraft]=useState(emptyDraft),[step,setStep]=useState<Step>('welcome');
  const [messages,setMessages]=useState<Message[]>([{role:'assistant',text:promptFor('welcome',false)}]),[input,setInput]=useState(''),[busy,setBusy]=useState(false),[status,setStatus]=useState('');
  const [slots,setSlots]=useState<Array<{time:string;label:string;available:number}>>([]),[listening,setListening]=useState(false),[voice,setVoice]=useState(false),[consent,setConsent]=useState(false),[askConsent,setAskConsent]=useState(false),[audioEnabled,setAudioEnabled]=useState(true),[selectedDate,setSelectedDate]=useState(hospitalToday());
+ const [elevenVoiceId,setElevenVoiceId]=useState<string>(elevenLabsVoice.getSelectedVoiceId());
  const voiceUsed=useRef(false), micAttempt=useRef(0);
  const [startingMic,setStartingMic]=useState(false);
  const key=useRef(newKey()),recognition=useRef<any>(null),voiceOn=useRef(false),end=useRef<HTMLDivElement>(null),sendRef=useRef<(text:string)=>void>(()=>{}),listenRef=useRef<()=>void>(()=>{}),busyRef=useRef(false),mounted=useRef(true),generation=useRef(0);
  const aiEnabled=isSupabaseConfigured&&(import.meta as any).env.VITE_ENABLE_AI_ASSISTANT==='true';
- const cloudSpeech=isSupabaseConfigured&&(import.meta as any).env.VITE_ENABLE_CLOUD_SPEECH==='true';
  const audio=useRef<HTMLAudioElement|null>(null),speechVersion=useRef(0);
  const resumeListening=()=>{window.setTimeout(()=>{if(mounted.current&&voiceOn.current&&!busyRef.current)listenRef.current()},150)};
  const say=(text:string)=>{
   setMessages(m=>[...m,{role:'assistant',text}]);
   if(!voiceOn.current)return;
   if(!audioEnabled){resumeListening();return;}
-  if(cloudSpeech){
-   const version=++speechVersion.current;audio.current?.pause();window.speechSynthesis?.cancel();
-   void supabase.functions.invoke('appointment-assistant',{body:{action:'speak',message:text.slice(0,500),language:kn?'KN':'EN'}}).then(async({data,error})=>{
-    if(version!==speechVersion.current||!voiceOn.current)return;
-    if(error||!(data instanceof Blob))throw new Error('Speech unavailable');
-    const url=URL.createObjectURL(new Blob([data],{type:'audio/mpeg'}));const player=new Audio(url);audio.current=player;
-    player.onended=()=>{URL.revokeObjectURL(url);if(voiceOn.current&&!busyRef.current)listenRef.current()};
-    player.onerror=()=>{URL.revokeObjectURL(url);setStatus(kn?'ಧ್ವನಿ ಲಭ್ಯವಿಲ್ಲ. ಮೈಕ್ ಅಥವಾ ಪಠ್ಯ ಬಳಸಿ.':'Speech unavailable. Use the microphone or type.')};
-    try{await player.play()}catch{URL.revokeObjectURL(url);setStatus(kn?'ಧ್ವನಿ ಪ್ರಾರಂಭಿಸಲು ಮೈಕ್ ಒತ್ತಿ.':'Tap the microphone to continue; audio playback was blocked.');}
-   }).catch(()=>{if(version===speechVersion.current)setStatus(kn?'ಕನ್ನಡ ಧ್ವನಿ ಸೇವೆ ಲಭ್ಯವಿಲ್ಲ. ಮೈಕ್ ಒತ್ತಿ ಅಥವಾ ಟೈಪ್ ಮಾಡಿ.':'Cloud speech is unavailable. Tap the microphone or type.');});return;
-  }
-  if(!('speechSynthesis' in window)){resumeListening();return;}
-  const utteranceVersion=++speechVersion.current;window.speechSynthesis.cancel();const utterance=new SpeechSynthesisUtterance(text);utterance.lang=kn?'kn-IN':'en-IN';const chosen=window.speechSynthesis.getVoices().find(v=>v.lang.toLowerCase().startsWith(kn?'kn':'en'));
-  if(kn&&!chosen){setStatus('ಈ ಸಾಧನದಲ್ಲಿ ಕನ್ನಡ ಧ್ವನಿ ಲಭ್ಯವಿಲ್ಲ. ಪಠ್ಯದಲ್ಲಿ ಉತ್ತರಿಸುತ್ತೇನೆ. ನೀವು ಮಾತನಾಡಬಹುದು.');resumeListening();return;}
-  if(chosen)utterance.voice=chosen;utterance.rate=.95;utterance.onend=()=>{if(utteranceVersion===speechVersion.current)resumeListening()};utterance.onerror=()=>{if(utteranceVersion!==speechVersion.current)return;setStatus(kn?'ಧ್ವನಿ ಓದುವಿಕೆ ಲಭ್ಯವಿಲ್ಲ. ನೀವು ಮಾತನಾಡಬಹುದು.':'Spoken playback is unavailable. You can still speak or type.');resumeListening()};window.speechSynthesis.speak(utterance);
+  const version=++speechVersion.current;
+  elevenLabsVoice.stop();
+  window.speechSynthesis?.cancel();
+  setStatus(kn?'🔊 ElevenLabs ಧ್ವನಿ ಮಾತನಾಡುತ್ತಿದೆ...':'🔊 ElevenLabs voice speaking...');
+  elevenLabsVoice.speak(text,{
+   voiceId:elevenVoiceId,
+   isKannada:kn,
+   onStart:()=>{if(version===speechVersion.current)setStatus(kn?'🔊 ElevenLabs ಧ್ವನಿ ಮಾತನಾಡುತ್ತಿದೆ...':'🔊 ElevenLabs voice speaking...')},
+   onEnd:()=>{if(version===speechVersion.current){setStatus('');resumeListening()}},
+   onError:()=>{if(version===speechVersion.current){setStatus('');resumeListening()}}
+  });
  };
- const stopVoice=()=>{micAttempt.current++;setStartingMic(false);speechVersion.current++;audio.current?.pause();voiceOn.current=false;setVoice(false);recognition.current?.abort();window.speechSynthesis?.cancel();setListening(false)};
+ const stopVoice=()=>{micAttempt.current++;setStartingMic(false);speechVersion.current++;elevenLabsVoice.stop();audio.current?.pause();voiceOn.current=false;setVoice(false);recognition.current?.abort();window.speechSynthesis?.cancel();setListening(false)};
  const close=()=>{stopVoice();setOpen(false);setAskConsent(false)};
  useEffect(()=>{mounted.current=true;const openAssistant=()=>setOpen(true);window.addEventListener('open-hospital-assistant',openAssistant);return()=>{mounted.current=false;micAttempt.current++;generation.current++;speechVersion.current++;audio.current?.pause();voiceOn.current=false;recognition.current?.abort();window.speechSynthesis?.cancel();window.removeEventListener('open-hospital-assistant',openAssistant)}},[]);
  useEffect(()=>{end.current?.scrollIntoView({behavior:'smooth',block:'nearest'})},[messages,busy]);
@@ -144,7 +141,7 @@ export const HospitalAssistant:React.FC<{departments:Department[];doctors:Doctor
   voiceOn.current=true;setVoice(true);void listen();
  };
  const doctor=doctors.find(d=>d.id===draft.doctorId);
- return <>{!open&&<button className="assistant-launch" onClick={()=>setOpen(true)}><MessageCircle size={21}/><span>Care assistant<small>ಕನ್ನಡ · English · Voice</small></span></button>}{open&&<aside role="dialog" aria-label="Hospital care assistant" className="care-assistant" lang={kn?'kn':'en'}><div className="assistant-head"><MessageCircle size={25}/><div><strong>{kn?'ನಿಮ್ಮ ಆರೈಕೆ ಸಹಾಯಕ':'Your care assistant'}</strong><small>We Care Hospital · {kn?'ಕನ್ನಡ':'English'}</small></div><button aria-label="Close assistant" onClick={close}><X size={20}/></button></div><div className="assistant-settings"><select aria-label="Assistant language" value={kn?'KN':'EN'} onChange={e=>reset(e.target.value==='KN')} disabled={busy}><option value="EN">English</option><option value="KN">ಕನ್ನಡ</option></select><button aria-label="Restart conversation" onClick={()=>reset()} disabled={busy}><RotateCcw size={15}/></button><button aria-label={audioEnabled?'Mute spoken replies':'Enable spoken replies'} onClick={()=>{setAudioEnabled(!audioEnabled);speechVersion.current++;audio.current?.pause();window.speechSynthesis?.cancel()}}>{audioEnabled?<Volume2 size={16}/>:<VolumeX size={16}/>}</button><button onClick={()=>voice?stopVoice():setAskConsent(true)}>{voice?(kn?'ಧ್ವನಿ ನಿಲ್ಲಿಸಿ':'Stop voice'):(kn?'ಮಾತನಾಡಿ':'Start voice')}</button></div><div className="assistant-messages" role="log" aria-live="polite">{messages.map((m,i)=><div key={i} className={`assistant-message ${m.role}`}>{m.text}</div>)}{busy&&<div className="assistant-message">{kn?'ದಯವಿಟ್ಟು ನಿರೀಕ್ಷಿಸಿ…':'One moment…'}</div>}<div ref={end}/></div>
+ return <>{!open&&<button className="assistant-launch" onClick={()=>setOpen(true)}><MessageCircle size={21}/><span>Care assistant<small>ಕನ್ನಡ · English · Voice</small></span></button>}{open&&<aside role="dialog" aria-label="Hospital care assistant" className="care-assistant" lang={kn?'kn':'en'}><div className="assistant-head"><MessageCircle size={25}/><div><strong>{kn?'ನಿಮ್ಮ ಆರೈಕೆ ಸಹಾಯಕ':'Your care assistant'}</strong><small>We Care Hospital · ElevenLabs Voice</small></div><button aria-label="Close assistant" onClick={close}><X size={20}/></button></div><div className="assistant-settings"><select aria-label="Assistant language" value={kn?'KN':'EN'} onChange={e=>reset(e.target.value==='KN')} disabled={busy}><option value="EN">English</option><option value="KN">ಕನ್ನಡ</option></select><select aria-label="ElevenLabs voice" title="ElevenLabs Voice" value={elevenVoiceId} onChange={e=>{setElevenVoiceId(e.target.value);elevenLabsVoice.setSelectedVoiceId(e.target.value)}} disabled={busy}>{PRECONFIGURED_ELEVENLABS_VOICES.map(v=><option key={v.id} value={v.id}>{v.name.split(' ')[0]}</option>)}</select><button aria-label="Restart conversation" onClick={()=>reset()} disabled={busy}><RotateCcw size={15}/></button><button aria-label={audioEnabled?'Mute spoken replies':'Enable spoken replies'} onClick={()=>{setAudioEnabled(!audioEnabled);speechVersion.current++;audio.current?.pause();elevenLabsVoice.stop();window.speechSynthesis?.cancel()}}>{audioEnabled?<Volume2 size={16}/>:<VolumeX size={16}/>}</button><button onClick={()=>voice?stopVoice():setAskConsent(true)}>{voice?(kn?'ಧ್ವನಿ ನಿಲ್ಲಿಸಿ':'Stop voice'):(kn?'ಮಾತನಾಡಿ':'Start voice')}</button><button type="button" aria-label="Open voice phone call" title="Launch ElevenLabs Voice Call" onClick={()=>{close();window.dispatchEvent(new Event('open-voice-call'))}}>📞 {kn?'ಕರೆ':'Call'}</button></div><div className="assistant-messages" role="log" aria-live="polite">{messages.map((m,i)=><div key={i} className={`assistant-message ${m.role}`}>{m.text}</div>)}{busy&&<div className="assistant-message">{kn?'ದಯವಿಟ್ಟು ನಿರೀಕ್ಷಿಸಿ…':'One moment…'}</div>}<div ref={end}/></div>
  {askConsent&&<div className="assistant-consent">{kn?'ಇದು ಸ್ವಯಂಚಾಲಿತ ಧ್ವನಿ. ಬ್ರೌಸರ್ ಧ್ವನಿಯನ್ನು ಸಂಸ್ಕರಿಸಬಹುದು. AI ಅಥವಾ ಕ್ಲೌಡ್ ಧ್ವನಿ ಸಕ್ರಿಯವಿದ್ದರೆ ಪಠ್ಯ OpenAI ಅಥವಾ Microsoft Azure ಸೇವೆಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ. ನಿಮ್ಮ ಅನುಮತಿ ಇಲ್ಲದೆ ಬುಕಿಂಗ್ ಮಾಡುವುದಿಲ್ಲ.':'This is an automated voice, not a person. Your browser’s speech service may process audio. With AI or cloud speech enabled, text is sent to OpenAI for understanding or Microsoft Azure for spoken replies. Nothing is booked without your confirmation.'}<div><button className="hospital-button" onClick={startVoice}>{kn?'ಒಪ್ಪುತ್ತೇನೆ, ಮಾತನಾಡೋಣ':'Agree & start talking'}</button><button onClick={()=>setAskConsent(false)}>{kn?'ಈಗ ಬೇಡ':'Not now'}</button></div></div>}
  {step==='welcome'&&<div className="assistant-options"><button onClick={()=>advance(emptyDraft())}>{kn?'ಅಪಾಯಿಂಟ್‌ಮೆಂಟ್ ಬುಕ್ ಮಾಡಿ':'Book an appointment'}</button><button onClick={()=>send(kn?'ವಿಳಾಸ':'Hospital location')}>{kn?'ಆಸ್ಪತ್ರೆಯ ವಿಳಾಸ':'Hospital location'}</button><button onClick={()=>send(kn?'ಭೇಟಿ ಸಮಯ':'Visiting hours')}>{kn?'ಭೇಟಿ ಸಮಯ':'Visiting hours'}</button>{aiEnabled&&!consent&&<button onClick={()=>{setConsent(true);say(kn?'ಸಹಜ ಸಂಭಾಷಣೆ ಸಕ್ರಿಯವಾಗಿದೆ. ನಿಮ್ಮ ಪಠ್ಯ AI ಸೇವೆಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ.':'Natural conversation enabled. Your messages will be processed by the AI service.')}}>{kn?'AI ಸಂಭಾಷಣೆಗೆ ಒಪ್ಪುತ್ತೇನೆ':'Enable AI conversation (shares text)'}</button>}</div>}
  {step==='doctorId'&&<div className="assistant-options">{doctors.filter(d=>d.active).map(d=><button disabled={busy} onClick={()=>choose('doctorId',d.id)} key={d.id}>{d.name} · {d.specialization}</button>)}</div>}

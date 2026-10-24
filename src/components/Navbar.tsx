@@ -51,6 +51,14 @@ export const Navbar: React.FC<NavbarProps> = ({ hospitalInfo, signedIn, onNaviga
             <Link to="/#about">Our hospital</Link>
             <Link to="/patient-guide">Patient guide</Link>
             <Link to="/contact">Location & contact</Link>
+            <button
+              type="button"
+              onClick={() => window.dispatchEvent(new Event('open-voice-call'))}
+              title="ElevenLabs Voice Agent"
+              style={{ color: '#059669', fontWeight: 600 }}
+            >
+              📞 Voice Agent (AI)
+            </button>
             <button type="button" onClick={() => window.dispatchEvent(new Event('open-hospital-assistant'))}>
               ಕನ್ನಡ / English
             </button>
