@@ -91,7 +91,7 @@ export const UnifiedVoiceAgent: React.FC<Props> = ({
   const initialVoiceId = elevenLabsVoice.getSelectedVoiceId();
   const [selectedVoiceId, setSelectedVoiceId] = useState<string>(initialVoiceId);
   const isCustomVoiceInit = !PRECONFIGURED_ELEVENLABS_VOICES.some(
-    (v) => v.id === initialVoiceId
+    (v: any) => v.id === initialVoiceId
   );
   const [customVoiceInput, setCustomVoiceInput] = useState<string>(
     isCustomVoiceInit ? initialVoiceId : ''
@@ -425,19 +425,39 @@ export const UnifiedVoiceAgent: React.FC<Props> = ({
   };
 
   const handleSaveSettings = () => {
+    let cleanApiKey = apiKeyInput.trim();
+    let cleanAgentId = agentIdInput.trim();
+
+    // Auto-swap: If user pasted their secret API key (starts with sk_ or >30 chars) into Agent ID
+    if (!cleanApiKey && (cleanAgentId.startsWith('sk_') || cleanAgentId.length >= 32)) {
+      cleanApiKey = cleanAgentId;
+      cleanAgentId = '';
+      setApiKeyInput(cleanApiKey);
+      setAgentIdInput('');
+    }
+
     const effectiveVoiceId = getEffectiveVoiceId();
-    elevenLabsVoice.setApiKey(apiKeyInput);
-    elevenLabsVoice.setAgentId(agentIdInput);
+    elevenLabsVoice.setApiKey(cleanApiKey);
+    elevenLabsVoice.setAgentId(cleanAgentId);
     elevenLabsVoice.setSelectedVoiceId(effectiveVoiceId);
     setTestStatus({ success: true, message: 'Settings saved successfully. Voice updated!' });
     setTimeout(() => setTestStatus(null), 3000);
   };
 
   const handleTestVoice = async () => {
-    if (!apiKeyInput.trim()) {
+    let keyToTest = apiKeyInput.trim();
+    let cleanAgentId = agentIdInput.trim();
+
+    if (!keyToTest && (cleanAgentId.startsWith('sk_') || cleanAgentId.length >= 32)) {
+      keyToTest = cleanAgentId;
+      setApiKeyInput(keyToTest);
+      setAgentIdInput('');
+    }
+
+    if (!keyToTest) {
       setTestStatus({
         success: false,
-        message: 'Please enter an ElevenLabs API key first to test neural voice.'
+        message: 'Please paste your ElevenLabs API Key (starts with sk_...) in the API Key box above.'
       });
       return;
     }
@@ -445,7 +465,7 @@ export const UnifiedVoiceAgent: React.FC<Props> = ({
     setTestStatus(null);
     elevenLabsVoice.unlockAudio();
     const effectiveVoiceId = getEffectiveVoiceId();
-    const res = await elevenLabsVoice.testApiKey(apiKeyInput, effectiveVoiceId);
+    const res = await elevenLabsVoice.testApiKey(keyToTest, effectiveVoiceId);
     setIsTestingVoice(false);
     if (res.success) {
       setTestStatus({
@@ -1224,14 +1244,14 @@ export const UnifiedVoiceAgent: React.FC<Props> = ({
                   <label className="text-slate-300 font-bold block">Select Voice Profile:</label>
                   <select
                     value={
-                      PRECONFIGURED_ELEVENLABS_VOICES.some((v) => v.id === selectedVoiceId)
+                      PRECONFIGURED_ELEVENLABS_VOICES.some((v: any) => v.id === selectedVoiceId)
                         ? selectedVoiceId
                         : 'custom'
                     }
                     onChange={(e) => setSelectedVoiceId(e.target.value)}
                     className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white text-xs focus:outline-none focus:border-emerald-500"
                   >
-                    {PRECONFIGURED_ELEVENLABS_VOICES.map((v) => (
+                    {PRECONFIGURED_ELEVENLABS_VOICES.map((v: any) => (
                       <option key={v.id} value={v.id}>
                         {v.name} ({v.gender}) - {v.recommendedFor}
                       </option>
@@ -1240,7 +1260,7 @@ export const UnifiedVoiceAgent: React.FC<Props> = ({
                   </select>
 
                   {(selectedVoiceId === 'custom' ||
-                    (!PRECONFIGURED_ELEVENLABS_VOICES.some((v) => v.id === selectedVoiceId) &&
+                    (!PRECONFIGURED_ELEVENLABS_VOICES.some((v: any) => v.id === selectedVoiceId) &&
                       selectedVoiceId)) && (
                     <div className="pt-1.5 space-y-1">
                       <label className="text-[11px] text-emerald-400 font-semibold block">
@@ -1270,13 +1290,29 @@ export const UnifiedVoiceAgent: React.FC<Props> = ({
                   </label>
                   <input
                     type="password"
-                    placeholder="Enter your ElevenLabs API Key (e.g. sk_...)"
+                    placeholder="Enter your ElevenLabs API Key (starts with sk_...)"
                     value={apiKeyInput}
                     onChange={(e) => setApiKeyInput(e.target.value)}
                     className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-white text-xs font-mono focus:outline-none focus:border-emerald-500"
                   />
+                  {apiKeyInput.trim() && !apiKeyInput.startsWith('sk_') && apiKeyInput.length <= 25 && (
+                    <div className="text-[11px] text-amber-300 bg-amber-950/50 border border-amber-500/30 rounded-lg p-2 flex items-center justify-between">
+                      <span>⚠️ This looks like a Voice ID rather than an API Key.</span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedVoiceId('custom');
+                          setCustomVoiceInput(apiKeyInput.trim());
+                          setApiKeyInput('');
+                        }}
+                        className="text-emerald-400 font-bold underline text-[10px] cursor-pointer ml-2"
+                      >
+                        Move to Custom Voice
+                      </button>
+                    </div>
+                  )}
                   <p className="text-[10px] text-slate-500">
-                    Obtain your key from your ElevenLabs dashboard at elevenlabs.io. Saved locally and privately in your browser.
+                    Get your key from ElevenLabs &gt; Developers &gt; API Keys (e.g. sk_...).
                   </p>
                 </div>
 
@@ -1292,8 +1328,37 @@ export const UnifiedVoiceAgent: React.FC<Props> = ({
                     onChange={(e) => setAgentIdInput(e.target.value)}
                     className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white text-xs font-mono focus:outline-none focus:border-emerald-500"
                   />
+                  {agentIdInput.trim() && (agentIdInput.startsWith('sk_') || agentIdInput.length >= 32) && (
+                    <div className="text-[11px] text-amber-300 bg-amber-950/50 border border-amber-500/30 rounded-lg p-2 flex items-center justify-between">
+                      <span>✨ This looks like an API Key (secret key).</span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setApiKeyInput(agentIdInput.trim());
+                          setAgentIdInput('');
+                        }}
+                        className="text-emerald-400 font-bold underline text-[10px] cursor-pointer ml-2"
+                      >
+                        Move to API Key box
+                      </button>
+                    </div>
+                  )}
+                  {agentIdInput.trim() && !agentIdInput.startsWith('sk_') && (
+                    <div className="p-3 bg-emerald-950/30 border border-emerald-500/30 rounded-xl space-y-1.5 mt-2">
+                      <div className="flex items-center justify-between text-xs font-bold text-emerald-400">
+                        <span>Conversational Agent Connected</span>
+                        <span className="text-[10px] bg-emerald-500/20 px-2 py-0.5 rounded-full">Active</span>
+                      </div>
+                      <div
+                        className="flex justify-center py-1"
+                        dangerouslySetInnerHTML={{
+                          __html: `<elevenlabs-convai agent-id="${agentIdInput.trim()}"></elevenlabs-convai>`
+                        }}
+                      />
+                    </div>
+                  )}
                   <p className="text-[10px] text-slate-500">
-                    If you created a Conversational AI agent in ElevenLabs, enter its ID here.
+                    If you created a Conversational AI agent at elevenlabs.io/app/conversational-ai, paste its ID here.
                   </p>
                 </div>
 

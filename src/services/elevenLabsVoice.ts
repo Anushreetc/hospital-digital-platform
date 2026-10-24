@@ -90,11 +90,18 @@ class ElevenLabsVoiceService {
   }
 
   public getApiKey(): string {
-    return (
+    const directKey =
       localStorage.getItem('wecare_elevenlabs_api_key') ||
       (import.meta as any).env?.VITE_ELEVENLABS_API_KEY ||
-      ''
-    );
+      '';
+    if (directKey.trim()) return directKey.trim();
+
+    // Auto-fallback: if user pasted their secret API key (starts with sk_ or >30 chars) into agent_id
+    const storedAgent = localStorage.getItem('wecare_elevenlabs_agent_id') || '';
+    if (storedAgent.startsWith('sk_') || storedAgent.length >= 32) {
+      return storedAgent.trim();
+    }
+    return '';
   }
 
   public setApiKey(key: string): void {
