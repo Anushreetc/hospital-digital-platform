@@ -5,6 +5,7 @@
  */
 
 import { Doctor } from '../types';
+import { transliterateKannadaToPhonetic } from './kannadaTransliterate';
 
 export interface ElevenLabsVoice {
   id: string;
@@ -56,6 +57,37 @@ class ElevenLabsVoiceService {
   private currentAudioElement: HTMLAudioElement | null = null;
   private isSpeaking = false;
   private safetyTimeout: any = null;
+  private pingInterval: any = null;
+  private activeUtterance: SpeechSynthesisUtterance | null = null;
+  private voices: SpeechSynthesisVoice[] = [];
+
+  constructor() {
+    this.initVoices();
+  }
+
+  private initVoices(): void {
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      this.voices = window.speechSynthesis.getVoices();
+      window.speechSynthesis.onvoiceschanged = () => {
+        this.voices = window.speechSynthesis.getVoices();
+      };
+    }
+  }
+
+  public unlockAudio(): void {
+    try {
+      if (typeof window !== 'undefined') {
+        const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+        if (AudioCtx) {
+          const ctx = new AudioCtx();
+          ctx.resume().catch(() => {});
+        }
+        if ('speechSynthesis' in window) {
+          window.speechSynthesis.resume();
+        }
+      }
+    } catch {}
+  }
 
   public getApiKey(): string {
     return (
@@ -109,19 +141,25 @@ class ElevenLabsVoiceService {
       clearTimeout(this.safetyTimeout);
       this.safetyTimeout = null;
     }
+    if (this.pingInterval) {
+      clearInterval(this.pingInterval);
+      this.pingInterval = null;
+    }
     if (this.currentAudioElement) {
       try {
         this.currentAudioElement.pause();
         this.currentAudioElement.currentTime = 0;
-      } catch {
-        // already stopped
-      }
+      } catch {}
       this.currentAudioElement = null;
     }
-    if ('speechSynthesis' in window) {
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
       try {
         window.speechSynthesis.cancel();
       } catch {}
+    }
+    this.activeUtterance = null;
+    if (typeof window !== 'undefined') {
+      (window as any).__activeUtterance = null;
     }
   }
 
@@ -163,7 +201,7 @@ class ElevenLabsVoiceService {
         this.isSpeaking = false;
         options.onEnd?.();
       }
-    }, 12000);
+    }, 15000);
 
     // 1. Try ElevenLabs API if key is available
     if (apiKey) {
@@ -213,67 +251,22 @@ class ElevenLabsVoiceService {
         audio.onerror = () => {
           URL.revokeObjectURL(audioUrl);
           this.isSpeaking = false;
-          this.speakAudioStream(cleanedText, options);
+          this.speakBrowser(cleanedText, options);
         };
 
         await audio.play();
         return;
       } catch (err) {
-        console.warn('ElevenLabs API call notice, falling back to neural audio:', err);
+        console.warn('ElevenLabs API call notice, falling back to speech:', err);
       }
     }
 
-    // 2. High-fidelity Native Audio Stream (Kannada & Indian English)
-    this.speakAudioStream(cleanedText, options);
+    // 2. High-fidelity Speech Fallback
+    this.speakBrowser(cleanedText, options);
   }
 
   /**
-   * High-fidelity native speech audio streaming fallback
-   */
-  private speakAudioStream(
-    text: string,
-    options: {
-      isKannada?: boolean;
-      onStart?: () => void;
-      onEnd?: () => void;
-      onError?: (err: any) => void;
-    } = {}
-  ): void {
-    const lang = options.isKannada ? 'kn' : 'en';
-    const cleanSnippet = text.slice(0, 250);
-    const streamUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(
-      cleanSnippet
-    )}&tl=${lang}&client=tw-ob`;
-
-    try {
-      options.onStart?.();
-      this.isSpeaking = true;
-
-      const audio = new Audio(streamUrl);
-      this.currentAudioElement = audio;
-
-      audio.onended = () => {
-        this.isSpeaking = false;
-        if (this.safetyTimeout) clearTimeout(this.safetyTimeout);
-        options.onEnd?.();
-      };
-
-      audio.onerror = () => {
-        // Fallback to browser speech synthesis
-        this.speakBrowser(text, options);
-      };
-
-      audio.play().catch(() => {
-        // If autoplay blocked or error, fallback to browser synthesis
-        this.speakBrowser(text, options);
-      });
-    } catch {
-      this.speakBrowser(text, options);
-    }
-  }
-
-  /**
-   * Browser Speech Synthesis fallback
+   * Browser Speech Synthesis fallback calibrated with phonetic Kannada transliteration
    */
   private speakBrowser(
     text: string,
@@ -284,51 +277,130 @@ class ElevenLabsVoiceService {
       onError?: (err: any) => void;
     } = {}
   ): void {
-    if (!('speechSynthesis' in window)) {
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
       this.isSpeaking = false;
       options.onEnd?.();
       return;
     }
 
-    options.onStart?.();
-    this.isSpeaking = true;
-    window.speechSynthesis.cancel();
-
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = options.isKannada ? 'kn-IN' : 'en-IN';
-    utterance.rate = 0.95;
-    utterance.pitch = 1.05;
-
-    const voices = window.speechSynthesis.getVoices();
-    const preferredVoice = voices.find(
-      (v) =>
-        (options.isKannada && v.lang.toLowerCase().startsWith('kn')) ||
-        v.lang === 'en-IN' ||
-        v.name.includes('India') ||
-        v.name.includes('Rishi') ||
-        v.name.includes('Heera') ||
-        v.name.includes('Google UK English Female') ||
-        v.lang.startsWith('en')
-    );
-
-    if (preferredVoice) {
-      utterance.voice = preferredVoice;
+    // Refresh voices list in case it just populated
+    if (this.voices.length === 0) {
+      this.voices = window.speechSynthesis.getVoices();
     }
 
-    utterance.onend = () => {
+    const hasNativeKannada = this.voices.some((v) => v.lang.toLowerCase().includes('kn'));
+
+    // If Kannada and browser lacks native Kannada voice (common on Chrome Mac/Windows),
+    // transliterate to phonetic English so an Indian English voice pronounces authentic Kannada!
+    let textToSpeak = text;
+    if (options.isKannada && !hasNativeKannada) {
+      textToSpeak = transliterateKannadaToPhonetic(text);
+    }
+
+    const utterance = new SpeechSynthesisUtterance(textToSpeak);
+    utterance.volume = 1.0;
+    utterance.rate = 0.95;
+    utterance.pitch = 1.0;
+
+    // Pick best available voice
+    let chosenVoice: SpeechSynthesisVoice | undefined;
+    if (options.isKannada && hasNativeKannada) {
+      chosenVoice = this.voices.find((v) => v.lang.toLowerCase().includes('kn'));
+    }
+
+    if (!chosenVoice) {
+      // Look for Indian English voice
+      chosenVoice = this.voices.find(
+        (v) =>
+          v.lang === 'en-IN' ||
+          v.lang === 'en_IN' ||
+          /india|rishi|veena|lekha|heera|kavya/i.test(v.name)
+      );
+    }
+
+    if (!chosenVoice) {
+      // Look for pleasant English voice
+      chosenVoice = this.voices.find(
+        (v) =>
+          /google uk english female|samantha|karen|moira|fiona|victoria/i.test(v.name) ||
+          v.lang.startsWith('en')
+      );
+    }
+
+    if (!chosenVoice && this.voices.length > 0) {
+      chosenVoice = this.voices.find((v) => v.default) || this.voices[0];
+    }
+
+    if (chosenVoice) {
+      utterance.voice = chosenVoice;
+      utterance.lang = chosenVoice.lang;
+    } else {
+      // If no voice object was resolved, default to safe en-US
+      utterance.lang = 'en-US';
+    }
+
+    // Retain references to prevent Chromium V8 garbage collection dropping the utterance
+    this.activeUtterance = utterance;
+    (window as any).__activeUtterance = utterance;
+
+    const cleanup = () => {
       this.isSpeaking = false;
-      if (this.safetyTimeout) clearTimeout(this.safetyTimeout);
+      this.activeUtterance = null;
+      (window as any).__activeUtterance = null;
+      if (this.safetyTimeout) {
+        clearTimeout(this.safetyTimeout);
+        this.safetyTimeout = null;
+      }
+      if (this.pingInterval) {
+        clearInterval(this.pingInterval);
+        this.pingInterval = null;
+      }
+    };
+
+    utterance.onstart = () => {
+      this.isSpeaking = true;
+      options.onStart?.();
+    };
+
+    utterance.onend = () => {
+      cleanup();
       options.onEnd?.();
     };
 
     utterance.onerror = (e) => {
-      this.isSpeaking = false;
-      if (this.safetyTimeout) clearTimeout(this.safetyTimeout);
+      console.warn('SpeechSynthesis utterance event notice:', e);
+      cleanup();
       options.onError?.(e);
       options.onEnd?.();
     };
 
-    window.speechSynthesis.speak(utterance);
+    // Ensure audio and speech synthesis are not paused
+    this.unlockAudio();
+
+    // Chromium bug workaround: execute speak on next microtask so any prior cancel() finishes
+    setTimeout(() => {
+      try {
+        if (window.speechSynthesis.paused) {
+          window.speechSynthesis.resume();
+        }
+        window.speechSynthesis.speak(utterance);
+
+        // Keep-alive ping for Chromium to prevent early silence on longer sentences
+        if (this.pingInterval) clearInterval(this.pingInterval);
+        this.pingInterval = setInterval(() => {
+          if (!this.isSpeaking) {
+            clearInterval(this.pingInterval);
+            this.pingInterval = null;
+          } else if (window.speechSynthesis.paused) {
+            window.speechSynthesis.resume();
+          }
+        }, 3000);
+      } catch (err) {
+        console.error('SpeechSynthesis.speak failed:', err);
+        cleanup();
+        options.onEnd?.();
+      }
+    }, 40);
   }
 
   public getIsSpeaking(): boolean {

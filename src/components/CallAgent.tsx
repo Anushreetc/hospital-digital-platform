@@ -97,17 +97,44 @@ export const CallAgent: React.FC<Props> = ({
     return () => clearInterval(timer);
   }, [isOpen, callState]);
 
+  const playRingTone = () => {
+    try {
+      const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioCtx) return;
+      const ctx = new AudioCtx();
+      const osc1 = ctx.createOscillator();
+      const osc2 = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc1.frequency.value = 440;
+      osc2.frequency.value = 480;
+      gain.gain.value = 0.04;
+      osc1.connect(gain);
+      osc2.connect(gain);
+      gain.connect(ctx.destination);
+      osc1.start();
+      osc2.start();
+      setTimeout(() => {
+        try {
+          gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.08);
+          setTimeout(() => ctx.close(), 120);
+        } catch {}
+      }, 350);
+    } catch {}
+  };
+
   // Start Call Flow
   const handleStartCall = () => {
+    elevenLabsVoice.unlockAudio();
+    playRingTone();
     setCallState('calling');
     setCallSeconds(0);
     setMessages([initialGreeting]);
 
-    // Simulate realistic 1.2s connection ring, then connect and speak initial greeting
+    // Simulate connection ring, then connect and speak initial greeting
     setTimeout(() => {
       setCallState('connected');
       speakGreeting();
-    }, 1200);
+    }, 600);
   };
 
   const speakGreeting = () => {

@@ -20,11 +20,9 @@ export const HospitalAssistant:React.FC<{departments:Department[];doctors:Doctor
  const resumeListening=()=>{window.setTimeout(()=>{if(mounted.current&&voiceOn.current&&!busyRef.current)listenRef.current()},150)};
  const say=(text:string)=>{
   setMessages(m=>[...m,{role:'assistant',text}]);
-  if(!voiceOn.current)return;
   if(!audioEnabled){resumeListening();return;}
   const version=++speechVersion.current;
   elevenLabsVoice.stop();
-  window.speechSynthesis?.cancel();
   setStatus(kn?'🔊 ElevenLabs ಧ್ವನಿ ಮಾತನಾಡುತ್ತಿದೆ...':'🔊 ElevenLabs voice speaking...');
   elevenLabsVoice.speak(text,{
    voiceId:elevenVoiceId,
@@ -36,7 +34,7 @@ export const HospitalAssistant:React.FC<{departments:Department[];doctors:Doctor
  };
  const stopVoice=()=>{micAttempt.current++;setStartingMic(false);speechVersion.current++;elevenLabsVoice.stop();audio.current?.pause();voiceOn.current=false;setVoice(false);recognition.current?.abort();window.speechSynthesis?.cancel();setListening(false)};
  const close=()=>{stopVoice();setOpen(false);setAskConsent(false)};
- useEffect(()=>{mounted.current=true;const openAssistant=()=>setOpen(true);window.addEventListener('open-hospital-assistant',openAssistant);return()=>{mounted.current=false;micAttempt.current++;generation.current++;speechVersion.current++;audio.current?.pause();voiceOn.current=false;recognition.current?.abort();window.speechSynthesis?.cancel();window.removeEventListener('open-hospital-assistant',openAssistant)}},[]);
+ useEffect(()=>{mounted.current=true;const openAssistant=()=>{setOpen(true);elevenLabsVoice.unlockAudio()};window.addEventListener('open-hospital-assistant',openAssistant);return()=>{mounted.current=false;micAttempt.current++;generation.current++;speechVersion.current++;audio.current?.pause();voiceOn.current=false;recognition.current?.abort();window.speechSynthesis?.cancel();window.removeEventListener('open-hospital-assistant',openAssistant)}},[]);
  useEffect(()=>{end.current?.scrollIntoView({behavior:'smooth',block:'nearest'})},[messages,busy]);
  useEffect(()=>{if(!open)return;const escape=(e:KeyboardEvent)=>{if(e.key==='Escape')close()};window.addEventListener('keydown',escape);return()=>window.removeEventListener('keydown',escape)},[open]);
  const reset=(language=kn)=>{generation.current++;voiceUsed.current=false;stopVoice();setKn(language);setDraft(emptyDraft());setStep('welcome');setSlots([]);setMessages([{role:'assistant',text:promptFor('welcome',language)}]);setInput('');setStatus('');key.current=newKey();};
@@ -159,8 +157,14 @@ export const HospitalAssistant:React.FC<{departments:Department[];doctors:Doctor
  };listenRef.current=()=>{void listen()};
  const startVoice=()=>{
   setAskConsent(false);setConsent(true);voiceUsed.current=true;
-  if(step==='welcome'){setStep('patientName');setMessages(m=>[...m,{role:'assistant',text:promptFor('patientName',kn)}]);}
-  voiceOn.current=true;setVoice(true);void listen();
+  elevenLabsVoice.unlockAudio();
+  voiceOn.current=true;setVoice(true);
+  if(step==='welcome'){
+   setStep('patientName');
+   say(promptFor('patientName',kn));
+  }else{
+   say(promptFor(step,kn));
+  }
  };
  const doctor=doctors.find(d=>d.id===draft.doctorId);
  return <>{!open&&<button className="assistant-launch" onClick={()=>setOpen(true)}><MessageCircle size={21}/><span>Care assistant<small>ಕನ್ನಡ · English · Voice</small></span></button>}{open&&<aside role="dialog" aria-label="Hospital care assistant" className="care-assistant" lang={kn?'kn':'en'}><div className="assistant-head"><MessageCircle size={25}/><div><strong>{kn?'ನಿಮ್ಮ ಆರೈಕೆ ಸಹಾಯಕ':'Your care assistant'}</strong><small>We Care Hospital · ElevenLabs Voice</small></div><button aria-label="Close assistant" onClick={close}><X size={20}/></button></div><div className="assistant-settings"><select aria-label="Assistant language" value={kn?'KN':'EN'} onChange={e=>reset(e.target.value==='KN')} disabled={busy}><option value="EN">English</option><option value="KN">ಕನ್ನಡ</option></select><select aria-label="ElevenLabs voice" title="ElevenLabs Voice" value={elevenVoiceId} onChange={e=>{setElevenVoiceId(e.target.value);elevenLabsVoice.setSelectedVoiceId(e.target.value)}} disabled={busy}>{PRECONFIGURED_ELEVENLABS_VOICES.map(v=><option key={v.id} value={v.id}>{v.name.split(' ')[0]}</option>)}</select><button aria-label="Restart conversation" onClick={()=>reset()} disabled={busy}><RotateCcw size={15}/></button><button aria-label={audioEnabled?'Mute spoken replies':'Enable spoken replies'} onClick={()=>{setAudioEnabled(!audioEnabled);speechVersion.current++;audio.current?.pause();elevenLabsVoice.stop();window.speechSynthesis?.cancel()}}>{audioEnabled?<Volume2 size={16}/>:<VolumeX size={16}/>}</button><button onClick={()=>voice?stopVoice():setAskConsent(true)}>{voice?(kn?'ಧ್ವನಿ ನಿಲ್ಲಿಸಿ':'Stop voice'):(kn?'ಮಾತನಾಡಿ':'Start voice')}</button><button type="button" aria-label="Open voice phone call" title="Launch ElevenLabs Voice Call" onClick={()=>{close();window.dispatchEvent(new Event('open-voice-call'))}}>📞 {kn?'ಕರೆ':'Call'}</button></div><div className="assistant-messages" role="log" aria-live="polite">{messages.map((m,i)=><div key={i} className={`assistant-message ${m.role}`}>{m.text}</div>)}{busy&&<div className="assistant-message">{kn?'ದಯವಿಟ್ಟು ನಿರೀಕ್ಷಿಸಿ…':'One moment…'}</div>}<div ref={end}/></div>
