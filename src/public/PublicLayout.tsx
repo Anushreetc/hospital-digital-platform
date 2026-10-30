@@ -42,7 +42,7 @@ export const PublicLayout: React.FC = () => {
 
       <Footer hospitalInfo={hospitalInfo} />
 
-      {/* Single Unified ElevenLabs Voice Agent */}
+      {/* Single Unified Voice Agent */}
       <UnifiedVoiceAgent
         departments={departments}
         doctors={doctors}

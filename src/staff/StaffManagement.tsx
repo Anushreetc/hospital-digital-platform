@@ -17,7 +17,7 @@ const ROLE_LABELS: Record<UserRole, string> = {
   SUPER_ADMIN: 'Super admin',
 };
 
-const field = 'w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:ring-2 focus:ring-indigo-500';
+const field = 'w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-[#10294c] focus:outline-none focus:ring-2 focus:ring-blue-500';
 
 // Staff are added by invitation only. The database and the invite-staff
 // function enforce who may grant which role; this screen only offers the
@@ -94,20 +94,20 @@ export const StaffManagement: React.FC<Props> = ({ currentUser, doctors }) => {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-in fade-in duration-200">
-      <form onSubmit={invite} className="bg-slate-800/90 p-6 rounded-2xl border border-slate-700 space-y-3 h-fit">
-        <h3 className="font-bold text-lg text-white">Invite a staff member</h3>
-        <p className="text-[11px] text-slate-400">
+      <form onSubmit={invite} className="bg-slate-50 p-6 rounded-2xl border border-slate-200 space-y-3 h-fit">
+        <h3 className="font-bold text-lg text-[#10294c]">Invite a staff member</h3>
+        <p className="text-[11px] text-slate-500">
           They receive an email link to set a password. Every staff account must also set up an authenticator app (MFA) before it can see any data.
         </p>
-        <label className="block space-y-1 text-[11px] font-semibold text-slate-300">
+        <label className="block space-y-1 text-[11px] font-semibold text-slate-600">
           <span>Full name</span>
           <input value={fullName} onChange={e => setFullName(e.target.value)} className={field} required maxLength={120} />
         </label>
-        <label className="block space-y-1 text-[11px] font-semibold text-slate-300">
+        <label className="block space-y-1 text-[11px] font-semibold text-slate-600">
           <span>Work email</span>
           <input type="email" value={email} onChange={e => setEmail(e.target.value)} className={field} required />
         </label>
-        <label className="block space-y-1 text-[11px] font-semibold text-slate-300">
+        <label className="block space-y-1 text-[11px] font-semibold text-slate-600">
           <span>Role</span>
           <select value={role} onChange={e => setRole(e.target.value as StaffRole)} className={field}>
             {invitableRoles.map(r => (
@@ -116,7 +116,7 @@ export const StaffManagement: React.FC<Props> = ({ currentUser, doctors }) => {
           </select>
         </label>
         {role === 'DOCTOR' && (
-          <label className="block space-y-1 text-[11px] font-semibold text-slate-300">
+          <label className="block space-y-1 text-[11px] font-semibold text-slate-600">
             <span>Doctor profile</span>
             <select value={doctorId} onChange={e => setDoctorId(e.target.value)} className={field} required>
               <option value="">— Choose doctor —</option>
@@ -124,32 +124,32 @@ export const StaffManagement: React.FC<Props> = ({ currentUser, doctors }) => {
                 <option key={d.id} value={d.id}>{d.name} ({d.departmentName})</option>
               ))}
             </select>
-            {unlinkedDoctors.length === 0 && <span className="text-amber-400">Every doctor profile already has a login.</span>}
+            {unlinkedDoctors.length === 0 && <span className="text-amber-700">Every doctor profile already has a login.</span>}
           </label>
         )}
         {inviteMessage && (
-          <div className={`text-[11px] font-semibold p-2.5 rounded-xl border ${inviteMessage.ok ? 'bg-emerald-950/60 border-emerald-500/30 text-emerald-300' : 'bg-rose-950/60 border-rose-500/30 text-rose-300'}`}>
+          <div className={`text-[11px] font-semibold p-2.5 rounded-xl border ${inviteMessage.ok ? 'bg-emerald-50 border-emerald-200 text-emerald-700' : 'bg-rose-50 border-rose-200 text-rose-700'}`}>
             {inviteMessage.text}
           </div>
         )}
-        <button type="submit" disabled={inviting} className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs py-2.5 rounded-xl flex items-center justify-center gap-2 disabled:opacity-50">
+        <button type="submit" disabled={inviting} className="w-full bg-blue-600 hover:bg-blue-500 text-[#10294c] font-bold text-xs py-2.5 rounded-xl flex items-center justify-center gap-2 disabled:opacity-50">
           {inviting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
           Send invitation
         </button>
       </form>
 
-      <div className="lg:col-span-2 bg-slate-800/90 p-6 rounded-2xl border border-slate-700 space-y-4">
-        <h3 className="font-bold text-lg text-white">Staff accounts</h3>
-        {error && <div className="text-xs text-rose-300">{error}</div>}
+      <div className="lg:col-span-2 bg-slate-50 p-6 rounded-2xl border border-slate-200 space-y-4">
+        <h3 className="font-bold text-lg text-[#10294c]">Staff accounts</h3>
+        {error && <div className="text-xs text-rose-700">{error}</div>}
         {loading ? (
-          <Loader2 className="w-5 h-5 text-slate-400 animate-spin" />
+          <Loader2 className="w-5 h-5 text-slate-500 animate-spin" />
         ) : staff.length === 0 ? (
-          <div className="text-xs text-slate-400 italic">No staff accounts yet.</div>
+          <div className="text-xs text-slate-500 italic">No staff accounts yet.</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead>
-                <tr className="bg-slate-900 text-slate-400 font-bold border-b border-slate-800">
+                <tr className="bg-white text-slate-500 font-bold border-b border-slate-200">
                   <th className="p-3">Name</th>
                   <th className="p-3">Email</th>
                   <th className="p-3">Role</th>
@@ -157,17 +157,17 @@ export const StaffManagement: React.FC<Props> = ({ currentUser, doctors }) => {
                   <th className="p-3 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-700/60 text-slate-300">
+              <tbody className="divide-y divide-slate-200 text-slate-600">
                 {staff.map(member => (
                   <tr key={member.id}>
-                    <td className="p-3 font-bold text-white">{member.fullName || '—'}{member.id === currentUser.id && <span className="ml-1 text-[10px] text-indigo-300">(you)</span>}</td>
+                    <td className="p-3 font-bold text-[#10294c]">{member.fullName || '—'}{member.id === currentUser.id && <span className="ml-1 text-[10px] text-blue-700">(you)</span>}</td>
                     <td className="p-3">{member.email ?? '—'}</td>
                     <td className="p-3">
                       {canManage(member) ? (
                         <select
                           value={member.role}
                           onChange={e => changeRole(member, e.target.value as UserRole, member.active)}
-                          className="bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-[11px] text-white"
+                          className="bg-white border border-slate-200 rounded-lg px-2 py-1 text-[11px] text-[#10294c]"
                         >
                           {assignableRoles.map(r => (
                             <option key={r} value={r}>{ROLE_LABELS[r]}</option>
@@ -178,7 +178,7 @@ export const StaffManagement: React.FC<Props> = ({ currentUser, doctors }) => {
                       )}
                     </td>
                     <td className="p-3">
-                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${member.active ? 'bg-emerald-950 text-emerald-300' : 'bg-slate-700 text-slate-300'}`}>
+                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${member.active ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-200 text-slate-600'}`}>
                         {member.active ? 'ACTIVE' : 'DEACTIVATED'}
                       </span>
                     </td>
@@ -186,7 +186,7 @@ export const StaffManagement: React.FC<Props> = ({ currentUser, doctors }) => {
                       {canManage(member) && (
                         <button
                           onClick={() => changeRole(member, member.role, !member.active)}
-                          className={`px-2.5 py-1 rounded-lg font-bold text-[11px] inline-flex items-center gap-1 ${member.active ? 'bg-rose-600/30 hover:bg-rose-600 text-rose-200' : 'bg-emerald-600 hover:bg-emerald-500 text-white'}`}
+                          className={`px-2.5 py-1 rounded-lg font-bold text-[11px] inline-flex items-center gap-1 ${member.active ? 'bg-rose-50 hover:bg-rose-100 text-rose-700' : 'bg-emerald-600 hover:bg-emerald-500 text-white'}`}
                         >
                           {member.active ? <UserX className="w-3.5 h-3.5" /> : <UserCheck className="w-3.5 h-3.5" />}
                           {member.active ? 'Deactivate' : 'Reactivate'}

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Appointment, AuthUser, DoctorLeave } from '../types';
 import { accountApi } from '../services/db';
-import { errorMessage } from '../lib/supabase';
+import { supabase, errorMessage } from '../lib/supabase';
+import { NotificationBell } from './NotificationBell';
 import { Stethoscope, CheckCircle2, UserX, LogOut, Calendar, Users, LayoutDashboard, CalendarOff, Trash2, Loader2 } from 'lucide-react';
 
 interface Props {
@@ -46,7 +47,11 @@ export const DoctorDashboard: React.FC<Props> = ({ user, onLogout }) => {
   useEffect(() => {
     loadDoctorData();
     const timer = window.setInterval(loadDoctorData, REFRESH_INTERVAL_MS);
-    return () => window.clearInterval(timer);
+    // RLS limits these events to this doctor's own appointments.
+    const channel = supabase.channel('doctor-appointments')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'appointments' }, () => loadDoctorData())
+      .subscribe();
+    return () => { window.clearInterval(timer); void supabase.removeChannel(channel); };
   }, []);
 
   const handleStatusUpdate = async (id: string, status: 'COMPLETED' | 'NO_SHOW') => {
@@ -92,11 +97,11 @@ export const DoctorDashboard: React.FC<Props> = ({ user, onLogout }) => {
     .sort((a, b) => (a.preferredDate + a.preferredTime).localeCompare(b.preferredDate + b.preferredTime));
 
   return (
-    <div className="min-h-screen bg-[#F1F5F9] font-sans text-slate-800 flex flex-col pb-20">
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+    <div className="min-h-screen bg-[#f2f6fc] font-sans text-slate-800 flex flex-col pb-20">
+      <header className="bg-white border-b border-slate-200 sticky top-0 z-30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-lg shadow-blue-500/30">
+            <div className="w-10 h-10 rounded-xl bg-[#195fbd] text-white flex items-center justify-center">
               <Stethoscope className="w-6 h-6" />
             </div>
             <div>
@@ -106,6 +111,7 @@ export const DoctorDashboard: React.FC<Props> = ({ user, onLogout }) => {
           </div>
 
           <div className="flex items-center gap-3">
+            {user.doctorId && <NotificationBell />}
             <div className="text-right hidden sm:block">
               <p className="text-sm font-bold text-slate-900">{user.name}</p>
               <p className="text-xs text-slate-500">{formatDate(todayStr, { weekday: 'long', day: 'numeric', month: 'long' })}</p>
@@ -164,7 +170,7 @@ export const DoctorDashboard: React.FC<Props> = ({ user, onLogout }) => {
                     {idx === 0 && <div className="absolute top-0 left-0 w-1.5 h-full bg-blue-500"></div>}
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
-                        <span className="bg-slate-900 text-white font-black px-3 py-1 rounded-lg text-xs">Token {appt.tokenNumber}</span>
+                        <span className="bg-[#10294c] text-white font-bold px-3 py-1 rounded-lg text-xs">Token {appt.tokenNumber}</span>
                         <span className="bg-slate-100 text-slate-600 font-bold px-3 py-1 rounded-lg text-xs uppercase tracking-wider">{appt.preferredTime}</span>
                         {idx === 0 && <span className="bg-blue-100 text-blue-700 font-bold px-3 py-1 rounded-lg text-xs">NEXT</span>}
                       </div>
@@ -197,7 +203,7 @@ export const DoctorDashboard: React.FC<Props> = ({ user, onLogout }) => {
               <form onSubmit={addLeave} className="space-y-2">
                 <input type="date" min={todayStr} value={leaveDate} onChange={e => setLeaveDate(e.target.value)} required disabled={!user.doctorId} className="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-sm" />
                 <input type="text" placeholder="Reason (optional)" value={leaveReason} onChange={e => setLeaveReason(e.target.value)} maxLength={200} disabled={!user.doctorId} className="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-sm" />
-                <button type="submit" disabled={savingLeave || !user.doctorId} className="w-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold py-2.5 rounded-xl flex items-center justify-center gap-2 disabled:opacity-50">
+                <button type="submit" disabled={savingLeave || !user.doctorId} className="w-full bg-[#195fbd] hover:bg-[#124a96] text-white text-xs font-bold py-2.5 rounded-xl flex items-center justify-center gap-2 disabled:opacity-50">
                   {savingLeave && <Loader2 className="w-4 h-4 animate-spin" />}
                   Add leave day
                 </button>

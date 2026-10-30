@@ -92,7 +92,7 @@ const StaffGate: React.FC<{portal?: StaffPortal}> = ({portal}) => {
         <p className="text-sm text-slate-600">
           This account does not have staff access{profile.active ? '' : ' (it has been deactivated)'}. Ask a hospital administrator to invite you.
         </p>
-        <button onClick={signOut} className="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-sm">
+        <button onClick={signOut} className="w-full py-3 bg-[#195fbd] hover:bg-[#124a96] text-white font-bold rounded-xl text-sm">
           Sign out
         </button>
       </StaffCard>
@@ -100,7 +100,7 @@ const StaffGate: React.FC<{portal?: StaffPortal}> = ({portal}) => {
   }
 
   if (portal && !canAccessPortal(portal, profile.role, profile.active)) {
-    return <StaffCard title="This portal is restricted" subtitle="Your account does not have the required role."><p className="text-sm text-slate-600">Choose your assigned workspace or contact your administrator.</p><Link to="/staff" className="block text-blue-600">Back to staff portals</Link><button onClick={signOut} className="w-full rounded-lg bg-slate-900 text-white py-3">Sign out</button></StaffCard>;
+    return <StaffCard title="This portal is restricted" subtitle="Your account does not have the required role."><p className="text-sm text-slate-600">Choose your assigned workspace or contact your administrator.</p><Link to="/staff" className="block text-blue-600">Back to staff portals</Link><button onClick={signOut} className="w-full rounded-lg bg-[#195fbd] hover:bg-[#124a96] text-white py-3">Sign out</button></StaffCard>;
   }
 
   if (!hasMfa) {
@@ -128,7 +128,8 @@ const StaffGate: React.FC<{portal?: StaffPortal}> = ({portal}) => {
 
   if (portal === 'doctor' || profile.role === 'DOCTOR') {
     if (doctorId === undefined && profile.role === 'DOCTOR') return <FullPageLoader label="Loading your schedule…" />;
-    return <DoctorDashboard user={{ ...user, doctorId: doctorId || 'doc-101' }} onLogout={signOut} />;
+    // No silent fallback to another doctor's profile: an unlinked login sees the "not linked" notice.
+    return <DoctorDashboard user={user} onLogout={signOut} />;
   }
   return <ManagementDashboard user={user} onLogout={signOut} portal={portal} />;
 };
