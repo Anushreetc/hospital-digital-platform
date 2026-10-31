@@ -91,7 +91,7 @@ export const HomePage: React.FC = () => {
               to="/specialities"
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs transition-colors shrink-0 shadow-sm self-start md:self-auto"
             >
-              Explore all 12 Specialities <ArrowRight size={14} />
+              Explore all {departments.length || ''} Specialities <ArrowRight size={14} />
             </Link>
           </div>
 
@@ -162,7 +162,7 @@ export const HomePage: React.FC = () => {
               to="/doctors"
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-colors shrink-0 shadow-sm self-start md:self-auto"
             >
-              View all 13+ Doctors <ArrowRight size={14} />
+              View all {doctors.length || ''} Doctors <ArrowRight size={14} />
             </Link>
           </div>
 

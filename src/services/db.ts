@@ -416,3 +416,59 @@ export const staffApi = {
     if (data?.error) throw new Error(data.error);
   },
 };
+
+// ---------------------------------------------------------------------------
+// Portal alerts (written by database triggers; RLS limits each user to the
+// reception feed or their own doctor feed)
+// ---------------------------------------------------------------------------
+export interface PortalNotification {
+  id: string;
+  audience: 'RECEPTION' | 'DOCTOR';
+  kind: string;
+  title: string;
+  body: string;
+  appointmentId?: string;
+  voiceCallId?: string;
+  createdAt: string;
+  read: boolean;
+}
+
+export const toNotification = (r: any, read = false): PortalNotification => ({
+  id: r.id,
+  audience: r.audience,
+  kind: r.kind,
+  title: r.title,
+  body: r.body,
+  appointmentId: r.appointment_id ?? undefined,
+  voiceCallId: r.voice_call_id ?? undefined,
+  createdAt: r.created_at,
+  read,
+});
+
+export const notificationsApi = {
+  async list(limit = 30): Promise<PortalNotification[]> {
+    const rows = check(
+      await supabase
+        .from('notifications')
+        .select('id, audience, kind, title, body, appointment_id, voice_call_id, created_at')
+        .order('created_at', { ascending: false })
+        .limit(limit)
+    );
+    if (rows.length === 0) return [];
+    const reads = check(
+      await supabase.from('notification_reads').select('notification_id').in('notification_id', rows.map((r: any) => r.id))
+    );
+    const readIds = new Set(reads.map((r: any) => r.notification_id));
+    return rows.map((r: any) => toNotification(r, readIds.has(r.id)));
+  },
+
+  async markRead(ids: string[]): Promise<void> {
+    if (ids.length === 0) return;
+    const { data: auth } = await supabase.auth.getUser();
+    if (!auth.user) return;
+    const { error } = await supabase
+      .from('notification_reads')
+      .upsert(ids.map((id) => ({ notification_id: id, user_id: auth.user!.id })), { onConflict: 'notification_id,user_id', ignoreDuplicates: true });
+    if (error) throw error;
+  },
+};

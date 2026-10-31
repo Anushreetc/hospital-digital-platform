@@ -7,3 +7,6 @@ dist-staff/
 .env.*.local
 *.pyc
 __pycache__/
+
+# Raw files from the hospital (processed before use)
+incoming/

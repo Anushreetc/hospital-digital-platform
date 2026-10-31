@@ -12,12 +12,9 @@
     "preview:staff": "vite preview --mode staff"
   },
   "dependencies": {
-    "@livekit/components-react": "^2.9.24",
-    "@livekit/components-styles": "^1.2.0",
-    "@n8n/chat": "^1.39.2",
+    "@elevenlabs/react": "1.18.0",
     "@supabase/supabase-js": "^2.117.2",
     "@vapi-ai/web": "^2.7.0",
-    "livekit-client": "^2.22.1",
     "lucide-react": "^0.395.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
