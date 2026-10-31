@@ -38,12 +38,12 @@ export const DoctorsPage: React.FC = () => {
             Find Your Specialist Doctor
           </h1>
           <p className="mt-3 text-slate-300 max-w-2xl text-sm sm:text-base leading-relaxed">
-            Consult experienced doctors, surgeons and specialists across 12 disciplines in Doddaballapura. Dedicated OPD consultations, daily rounds and 24/7 emergency response.
+            Consult experienced doctors, surgeons and specialists across {departments.length || 'our'} disciplines in Doddaballapura. Dedicated OPD consultations, daily rounds and 24/7 emergency response.
           </p>
 
           <div className="mt-6 flex flex-wrap gap-4 text-xs text-slate-300">
             <span className="flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-full">
-              <Stethoscope size={14} className="text-blue-300" /> 13+ Specialists
+              <Stethoscope size={14} className="text-blue-300" /> {doctors.length || 'Our'} Specialists
             </span>
             <span className="flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-full">
               <Clock size={14} className="text-blue-300" /> Morning &amp; Evening OPD

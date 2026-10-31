@@ -78,7 +78,7 @@ export const Navbar: React.FC<NavbarProps> = ({ hospitalInfo, signedIn, onNaviga
             <details>
               <summary>More</summary>
               <div>
-                <Link to="/specialities" onClick={() => setOpen(false)}>All 12 Specialities</Link>
+                <Link to="/specialities" onClick={() => setOpen(false)}>All Specialities</Link>
                 <Link to="/doctors" onClick={() => setOpen(false)}>Doctors & OPD Schedule</Link>
                 <Link to="/patient-guide" onClick={() => setOpen(false)}>Inpatient Rooms & Tariffs</Link>
                 <Link to="/patient-guide#packages" onClick={() => setOpen(false)}>Health Check Packages</Link>

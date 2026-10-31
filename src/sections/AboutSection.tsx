@@ -44,7 +44,7 @@ export const AboutSection: React.FC<Props> = ({ hospitalInfo }) => {
             </div>
 
             <p className="text-sm sm:text-base text-slate-600 leading-relaxed font-normal">
-              Established in 2023, <strong>We Care Multispeciality Hospital &amp; ICU</strong> brings together 12 specialized medical disciplines and 13+ experienced clinicians under a modern 28-bed infrastructure. Our institution operates on an unwavering standard of round-the-clock doctor availability, dedicated intensive care, and rapid emergency ambulance response across Karnataka.
+              Established in 2023, <strong>We Care Multispeciality Hospital &amp; ICU</strong> brings together specialists across medical and surgical disciplines under a modern 28-bed infrastructure. Our institution operates on an unwavering standard of round-the-clock doctor availability, dedicated intensive care, and rapid emergency ambulance response across Karnataka.
             </p>
 
             {/* 4 Key Strengths Grid */}

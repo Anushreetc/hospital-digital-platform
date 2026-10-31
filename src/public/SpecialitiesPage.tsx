@@ -59,7 +59,7 @@ export const SpecialitiesPage: React.FC = () => {
 
           <div className="mt-6 flex flex-wrap gap-4 text-xs text-slate-300">
             <span className="flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-full">
-              <Activity size={14} className="text-blue-300" /> 12 Medical Disciplines
+              <Activity size={14} className="text-blue-300" /> {departments.length || 'Our'} Medical Disciplines
             </span>
             <span className="flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-full">
               <CheckCircle2 size={14} className="text-emerald-300" /> Advanced ICU &amp; OT

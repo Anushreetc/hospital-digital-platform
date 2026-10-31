@@ -40,7 +40,7 @@ export const DoctorsSection: React.FC<Props> = ({
             Consult Experienced Doctors &amp; Surgeons
           </h2>
           <p className="text-xs xs:text-sm sm:text-base text-slate-600">
-            Consult our team of qualified consultants and surgeons across 12 clinical disciplines available around the clock.
+            Consult our team of qualified consultants and surgeons across our clinical disciplines, available around the clock.
           </p>
         </div>
 
