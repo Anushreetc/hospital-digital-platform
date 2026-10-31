@@ -1,4 +1,4 @@
-import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import type { Session } from '@supabase/supabase-js';
 import { supabase, isSupabaseConfigured } from './supabase';
 import { accountApi } from '../services/db';
@@ -19,6 +19,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  const currentUserId = useRef<string | null>(null);
 
   const loadProfile = useCallback(async (s: Session | null) => {
     if (!s) {
@@ -38,15 +39,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     let cancelled = false;
     supabase.auth.getSession().then(async ({ data }) => {
       if (cancelled) return;
+      currentUserId.current = data.session?.user.id ?? null;
       setSession(data.session);
       await loadProfile(data.session);
       if (!cancelled) setLoading(false);
     });
     const { data: sub } = supabase.auth.onAuthStateChange((_event, s) => {
       setSession(s);
+      const userId = s?.user.id ?? null;
+      // Token refreshes (hourly) keep the same user: keep the loaded profile so
+      // the portal does not flash "Access unavailable" or reset its screens.
+      if (userId === currentUserId.current) return;
+      currentUserId.current = userId;
       setProfile(null);
+      if (!s) return;
+      setLoading(true);
       // Defer the profile query so it does not run inside the auth callback.
-      setTimeout(() => loadProfile(s), 0);
+      setTimeout(() => {
+        loadProfile(s).finally(() => {
+          if (!cancelled) setLoading(false);
+        });
+      }, 0);
     });
     return () => {
       cancelled = true;
@@ -61,6 +74,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     refreshProfile: () => loadProfile(session),
     signOut: async () => {
       await supabase.auth.signOut();
+      currentUserId.current = null;
       setSession(null);
       setProfile(null);
     },
