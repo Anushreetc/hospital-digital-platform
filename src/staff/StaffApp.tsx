@@ -26,15 +26,16 @@ const readMustSetPassword = () => {
 type Aal = { current: string | null; next: string | null };
 
 // Gate for the staff app. Order of checks:
-//   signed in -> password chosen (after invite/reset) -> staff role -> MFA (aal2) -> dashboard
+//   signed in -> password chosen (after invite/reset) -> staff role -> MFA (aal2, when required) -> dashboard
 // These screens are for usability; the database refuses staff data to any
-// session that is not an active staff account with MFA.
+// session that is not an active staff account (with MFA while public.staff_mfa_required() is on).
 export const StaffApp: React.FC<{portal?: StaffPortal}> = ({portal}) => <StaffGate portal={portal}/>;
 
 const StaffGate: React.FC<{portal?: StaffPortal}> = ({portal}) => {
   const { session, profile, loading, signOut, refreshProfile } = useAuth();
   const [mustSetPassword, setMustSetPassword] = useState(readMustSetPassword);
   const [aal, setAal] = useState<Aal | null>(null);
+  const [mfaRequired, setMfaRequired] = useState<boolean | null>(null);
   const [doctorId, setDoctorId] = useState<string | null | undefined>(undefined);
 
   useEffect(() => {
@@ -47,15 +48,18 @@ const StaffGate: React.FC<{portal?: StaffPortal}> = ({portal}) => {
   useEffect(() => {
     if (!session) {
       setAal(null);
+      setMfaRequired(null);
       return;
     }
     supabase.auth.mfa.getAuthenticatorAssuranceLevel().then(({ data }) => {
       setAal({ current: data?.currentLevel ?? null, next: data?.nextLevel ?? null });
     });
+    // Same switch the database uses; if it can't be read, keep requiring MFA.
+    supabase.rpc('staff_mfa_required').then(({ data, error }) => setMfaRequired(error ? true : data !== false));
   }, [session]);
 
   const isStaffRole = Boolean(profile && profile.active && profile.role !== 'PATIENT');
-  const hasMfa = aal?.current === 'aal2';
+  const hasMfa = aal?.current === 'aal2' || mfaRequired === false;
 
   useEffect(() => {
     if (hasMfa && profile?.role === 'DOCTOR') {
@@ -65,7 +69,7 @@ const StaffGate: React.FC<{portal?: StaffPortal}> = ({portal}) => {
     }
   }, [hasMfa, profile?.role]);
 
-  if (loading || (session && !aal)) return <FullPageLoader label="Checking your session…" />;
+  if (loading || (session && (!aal || mfaRequired === null))) return <FullPageLoader label="Checking your session…" />;
 
   if (!session) return <StaffLoginPage portal={portal}/>;
 
