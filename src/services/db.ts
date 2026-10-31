@@ -8,12 +8,17 @@ import {
   Appointment,
   AppointmentStatus,
   AuditLog,
+  Consultation,
+  ConsultationInput,
   Department,
   Doctor,
   DoctorAvailability,
   DoctorLeave,
   FacilityItem,
   HospitalInfo,
+  PatientGender,
+  PatientRecord,
+  PatientSummary,
   Profile,
   ServiceItem,
   StaffMember,
@@ -65,13 +70,14 @@ const toDoctor = (r: any): Doctor => ({
 });
 
 const APPOINTMENT_COLUMNS =
-  'id, code, patient_id, patient_name, patient_phone, patient_email, doctor_id, department_id, appointment_date, slot_time, token_number, reason, additional_message, source, language, status, notes, created_at, updated_at, doctor:doctors(name), department:departments(name)';
+  'id, code, patient_id, patient_record_id, patient_name, patient_phone, patient_email, doctor_id, department_id, appointment_date, slot_time, token_number, reason, additional_message, source, language, status, notes, created_at, updated_at, doctor:doctors(name), department:departments(name)';
 
 const toAppointment = (r: any): Appointment => ({
   id: r.id,
   code: r.code,
   tokenNumber: r.token_number != null ? String(r.token_number) : undefined,
   patientId: r.patient_id ?? undefined,
+  patientRecordId: r.patient_record_id ?? undefined,
   patientName: r.patient_name,
   patientPhone: r.patient_phone,
   patientEmail: r.patient_email ?? undefined,
@@ -470,5 +476,113 @@ export const notificationsApi = {
       .from('notification_reads')
       .upsert(ids.map((id) => ({ notification_id: id, user_id: auth.user!.id })), { onConflict: 'notification_id,user_id', ignoreDuplicates: true });
     if (error) throw error;
+  },
+};
+
+// ---------------------------------------------------------------------------
+// Patient records (search, visit history, prescriptions). All access goes
+// through database functions that check the caller's role and log views.
+// ---------------------------------------------------------------------------
+
+const toPatientSummary = (r: any): PatientSummary => ({
+  id: r.id,
+  code: r.code,
+  name: r.name,
+  phone: r.phone,
+  gender: r.gender ?? undefined,
+  age: r.age ?? undefined,
+  lastVisit: r.last_visit ?? undefined,
+  lastDoctor: r.last_doctor ?? undefined,
+  visitCount: Number(r.visit_count ?? 0),
+});
+
+const toConsultation = (r: any): Consultation => ({
+  id: r.id,
+  visitDate: r.visit_date,
+  appointmentId: r.appointment_id ?? undefined,
+  doctorId: r.doctor_id,
+  doctorName: r.doctor_name,
+  doctorQualification: r.doctor_qualification ?? undefined,
+  doctorDesignation: r.doctor_designation ?? undefined,
+  doctorRegistration: r.doctor_registration ?? undefined,
+  isMine: Boolean(r.is_mine),
+  createdAt: r.created_at,
+  updatedAt: r.updated_at,
+  complaint: r.complaint ?? undefined,
+  findings: r.findings ?? undefined,
+  vitals: r.vitals ?? undefined,
+  diagnosis: r.diagnosis ?? undefined,
+  advice: r.advice ?? undefined,
+  followUpDate: r.follow_up_date ?? undefined,
+  items: r.items?.map((i: any) => ({
+    medicine: i.medicine,
+    dose: i.dose ?? undefined,
+    frequency: i.frequency ?? undefined,
+    timing: i.timing ?? undefined,
+    durationDays: i.duration_days ?? undefined,
+    notes: i.notes ?? undefined,
+  })),
+});
+
+export const patientsApi = {
+  async search(query: string): Promise<PatientSummary[]> {
+    const rows = check(await supabase.rpc('search_patients', { p_query: query })) as any[];
+    return rows.map(toPatientSummary);
+  },
+
+  async getRecord(patientId: string): Promise<PatientRecord> {
+    const r = check(await supabase.rpc('get_patient_record', { p_patient: patientId })) as any;
+    return {
+      patient: {
+        ...toPatientSummary({ ...r.patient, visit_count: r.visits.length }),
+        birthYear: r.patient.birth_year ?? undefined,
+        createdAt: r.patient.created_at,
+      },
+      visits: r.visits.map(toConsultation),
+      bookings: r.bookings.map((b: any) => ({
+        id: b.id,
+        code: b.code,
+        date: b.date,
+        time: formatTime(b.time),
+        doctorId: b.doctor_id,
+        doctorName: b.doctor_name,
+        status: b.status,
+        reason: b.reason ?? undefined,
+        token: b.token ?? undefined,
+      })),
+    };
+  },
+
+  async updateDetails(patientId: string, gender: PatientGender | '', birthYear: number | null): Promise<void> {
+    check(await supabase.rpc('update_patient_details', { p_patient: patientId, p_gender: gender, p_birth_year: birthYear }));
+  },
+
+  async saveConsultation(input: ConsultationInput): Promise<string> {
+    return check(await supabase.rpc('save_consultation', {
+      p: {
+        id: input.id ?? '',
+        patient_id: input.patientId,
+        appointment_id: input.appointmentId ?? '',
+        complaint: input.complaint ?? '',
+        findings: input.findings ?? '',
+        vitals: input.vitals,
+        diagnosis: input.diagnosis ?? '',
+        advice: input.advice ?? '',
+        follow_up_date: input.followUpDate ?? '',
+        items: input.items.map((i) => ({
+          medicine: i.medicine,
+          dose: i.dose ?? '',
+          frequency: i.frequency ?? '',
+          timing: i.timing ?? '',
+          duration_days: i.durationDays ?? '',
+          notes: i.notes ?? '',
+        })),
+      },
+    })) as string;
+  },
+
+  async medicineSuggestions(prefix: string): Promise<string[]> {
+    if (prefix.trim().length < 2) return [];
+    return check(await supabase.rpc('medicine_suggestions', { p_prefix: prefix })) as string[];
   },
 };

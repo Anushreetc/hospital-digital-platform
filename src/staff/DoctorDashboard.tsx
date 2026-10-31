@@ -3,7 +3,8 @@ import { Appointment, AuthUser, DoctorLeave } from '../types';
 import { accountApi } from '../services/db';
 import { supabase, errorMessage } from '../lib/supabase';
 import { NotificationBell } from './NotificationBell';
-import { Stethoscope, CheckCircle2, UserX, LogOut, Calendar, Users, LayoutDashboard, CalendarOff, Trash2, Loader2 } from 'lucide-react';
+import { PatientRecords } from './PatientRecords';
+import { Stethoscope, CheckCircle2, UserX, LogOut, Calendar, Users, LayoutDashboard, CalendarOff, Trash2, Loader2, FileText, ClipboardList } from 'lucide-react';
 
 interface Props {
   user: AuthUser;
@@ -25,6 +26,15 @@ export const DoctorDashboard: React.FC<Props> = ({ user, onLogout }) => {
   const [leaveDate, setLeaveDate] = useState('');
   const [leaveReason, setLeaveReason] = useState('');
   const [savingLeave, setSavingLeave] = useState(false);
+
+  const [view, setView] = useState<'today' | 'patients'>('today');
+  const [openRecord, setOpenRecord] = useState<{ patientId: string; appointmentId?: string } | null>(null);
+
+  const showRecord = (appt: Appointment) => {
+    if (!appt.patientRecordId) return;
+    setOpenRecord({ patientId: appt.patientRecordId, appointmentId: appt.id });
+    setView('patients');
+  };
 
   const todayStr = todayIso();
 
@@ -133,6 +143,26 @@ export const DoctorDashboard: React.FC<Props> = ({ user, onLogout }) => {
           <div role="alert" className="p-4 bg-rose-50 border border-rose-200 rounded-2xl text-rose-800 text-sm font-semibold">{error}</div>
         )}
 
+        <div className="flex gap-2 border-b border-slate-200 pb-2">
+          {([['today', "Today's Queue", LayoutDashboard], ['patients', 'Patient Records', ClipboardList]] as const).map(([key, label, Icon]) => (
+            <button
+              key={key}
+              onClick={() => { setView(key); if (key === 'patients') setOpenRecord(null); }}
+              className={`px-4 py-2.5 text-xs font-extrabold rounded-xl transition-all flex items-center gap-2 ${
+                view === key ? 'bg-[#195fbd] text-white shadow-sm' : 'bg-slate-50 text-slate-500 hover:text-[#10294c] hover:bg-slate-100'}`}
+            >
+              <Icon className="w-4 h-4" />
+              <span>{label}</span>
+            </button>
+          ))}
+        </div>
+
+        {view === 'patients' && (
+          <PatientRecords isDoctor={Boolean(user.doctorId)} initialPatientId={openRecord?.patientId} initialAppointmentId={openRecord?.appointmentId} />
+        )}
+
+        {view === 'today' && (<>
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <MetricCard label="Waiting Today" value={queue.length} icon={<Users className="w-7 h-7" />} tone="blue" />
           <MetricCard label="Completed Today" value={todayAppts.filter(a => a.status === 'COMPLETED').length} icon={<CheckCircle2 className="w-7 h-7" />} tone="emerald" />
@@ -178,6 +208,12 @@ export const DoctorDashboard: React.FC<Props> = ({ user, onLogout }) => {
                       <p className="text-slate-500 text-sm mt-1">Reason: <span className="font-medium text-slate-700">{appt.reason}</span></p>
                     </div>
                     <div className="flex items-center gap-2 w-full md:w-auto">
+                      {appt.patientRecordId && (
+                        <button onClick={() => showRecord(appt)} className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-white hover:bg-blue-50 text-[#195fbd] border border-blue-200 px-4 py-3 rounded-xl font-bold transition-all">
+                          <FileText className="w-5 h-5" />
+                          Record &amp; Rx
+                        </button>
+                      )}
                       <button onClick={() => handleStatusUpdate(appt.id, 'COMPLETED')} className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-3 rounded-xl font-bold transition-all shadow-md shadow-emerald-500/20">
                         <CheckCircle2 className="w-5 h-5" />
                         Complete
@@ -244,6 +280,7 @@ export const DoctorDashboard: React.FC<Props> = ({ user, onLogout }) => {
             </div>
           </div>
         </div>
+        </>)}
       </main>
     </div>
   );
