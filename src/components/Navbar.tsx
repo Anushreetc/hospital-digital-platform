@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Phone, MapPin, Menu, X, ArrowUpRight, ShieldCheck, Sparkles } from 'lucide-react';
+import { Phone, MapPin, Menu, X, ArrowUpRight, Sparkles } from 'lucide-react';
 import { HospitalInfo } from '../types';
 
 interface NavbarProps {
@@ -38,7 +38,6 @@ export const Navbar: React.FC<NavbarProps> = ({ hospitalInfo, signedIn, onNaviga
           <a href={`tel:${hospitalInfo.emergencyPhone}`}>
             <Phone size={14} /> 24/7 emergency: {hospitalInfo.emergencyPhone}
           </a>
-          <Link to="/staff"><ShieldCheck size={14} /> Staff access</Link>
         </div>
       </div>
 

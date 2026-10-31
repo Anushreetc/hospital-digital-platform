@@ -136,6 +136,8 @@ export interface Appointment {
   code?: string;
   tokenNumber?: string;
   patientId?: string;
+  /** The patient's hospital record (patients table), matched by mobile number + name. */
+  patientRecordId?: string;
   createdAt: string;
   updatedAt?: string;
   patientName: string;
@@ -258,4 +260,88 @@ export interface VoiceCall {
   closedAt?: string;
   closedBy?: string;
   createdAt: string;
+}
+
+export type PatientGender = 'MALE' | 'FEMALE' | 'OTHER';
+
+export interface PatientSummary {
+  id: string;
+  code: string;
+  name: string;
+  phone: string;
+  gender?: PatientGender;
+  age?: number;
+  lastVisit?: string;
+  lastDoctor?: string;
+  visitCount: number;
+}
+
+export interface PrescriptionItem {
+  medicine: string;
+  dose?: string;
+  frequency?: string;
+  timing?: string;
+  durationDays?: number;
+  notes?: string;
+}
+
+export interface Vitals {
+  bp?: string;
+  pulse?: string;
+  temperature?: string;
+  weight?: string;
+  spo2?: string;
+}
+
+/** A visit. Medical fields are only returned to doctors. */
+export interface Consultation {
+  id: string;
+  visitDate: string;
+  appointmentId?: string;
+  doctorId: string;
+  doctorName: string;
+  doctorQualification?: string;
+  doctorDesignation?: string;
+  doctorRegistration?: string;
+  isMine: boolean;
+  createdAt: string;
+  updatedAt: string;
+  complaint?: string;
+  findings?: string;
+  vitals?: Vitals;
+  diagnosis?: string;
+  advice?: string;
+  followUpDate?: string;
+  items?: PrescriptionItem[];
+}
+
+export interface PatientBooking {
+  id: string;
+  code: string;
+  date: string;
+  time: string;
+  doctorId: string;
+  doctorName: string;
+  status: AppointmentStatus;
+  reason?: string;
+  token?: number;
+}
+
+export interface PatientRecord {
+  patient: PatientSummary & { birthYear?: number; createdAt: string };
+  visits: Consultation[];
+  bookings: PatientBooking[];
+}
+
+export interface ConsultationInput {
+  id?: string;
+  patientId: string;
+  appointmentId?: string;
+  complaint?: string;
+  findings?: string;
+  vitals: Vitals;
+  diagnosis?: string;
+  advice?: string;
+  followUpDate?: string;
+  items: PrescriptionItem[];
 }

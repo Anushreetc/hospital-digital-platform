@@ -4,6 +4,7 @@ import { accountApi, staffApi, DashboardStats } from '../services/db';
 import { supabase, errorMessage } from '../lib/supabase';
 import { StaffManagement } from './StaffManagement';
 import { NotificationBell } from './NotificationBell';
+import { PatientRecords } from './PatientRecords';
 import {
   Building2,
   Users,
@@ -28,7 +29,8 @@ import {
   AlertCircle,
   Radio,
   Send,
-  Calendar
+  Calendar,
+  ClipboardList
 } from 'lucide-react';
 
 interface Props {
@@ -54,6 +56,8 @@ export const ManagementDashboard: React.FC<Props> = ({ user, onLogout, portal })
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [doctors, setDoctors] = useState<Doctor[]>([]);
+  // Hidden doctors are an admin concern; reception only sees doctors patients can book.
+  const visibleDoctors = isAdmin ? doctors : doctors.filter((d) => d.active);
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [voiceCalls, setVoiceCalls] = useState<VoiceCall[]>([]);
@@ -63,7 +67,7 @@ export const ManagementDashboard: React.FC<Props> = ({ user, onLogout, portal })
   const [caseStatusFilter, setCaseStatusFilter] = useState<'ALL' | 'NEW' | 'UNDER_REVIEW' | 'CLOSED'>('ALL');
   const [caseSearchQuery, setCaseSearchQuery] = useState('');
   const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState<'overview' | 'receptionist_cases' | 'appointments' | 'doctors' | 'staff' | 'audit'>(() => {
+  const [activeTab, setActiveTab] = useState<'overview' | 'receptionist_cases' | 'appointments' | 'patients' | 'doctors' | 'staff' | 'audit'>(() => {
     return (portal === 'reception' || user.role === 'RECEPTIONIST') ? 'appointments' : 'overview';
   });
   const [searchQuery, setSearchQuery] = useState('');
@@ -262,12 +266,21 @@ export const ManagementDashboard: React.FC<Props> = ({ user, onLogout, portal })
           </button>
 
           <button
+            onClick={() => setActiveTab('patients')}
+            className={`px-4 py-2.5 text-xs font-extrabold rounded-xl transition-all cursor-pointer flex items-center gap-2 ${
+              activeTab === 'patients' ? 'bg-[#195fbd] text-white shadow-sm' : 'bg-slate-50 text-slate-500 hover:text-[#10294c] hover:bg-slate-100' }`}
+          >
+            <ClipboardList className="w-4 h-4" />
+            <span>Patients</span>
+          </button>
+
+          <button
             onClick={() => setActiveTab('doctors')}
             className={`px-4 py-2.5 text-xs font-extrabold rounded-xl transition-all cursor-pointer flex items-center gap-2 ${
               activeTab === 'doctors' ? 'bg-[#195fbd] text-white shadow-sm' : 'bg-slate-50 text-slate-500 hover:text-[#10294c] hover:bg-slate-100' }`}
           >
             <Stethoscope className="w-4 h-4" />
-            <span>Active Doctors ({doctors.length})</span>
+            <span>{isAdmin ? 'Doctors' : 'Active Doctors'} ({visibleDoctors.length})</span>
           </button>
 
           {isAdmin && (
@@ -956,6 +969,8 @@ export const ManagementDashboard: React.FC<Props> = ({ user, onLogout, portal })
           </div>
         )}
 
+        {activeTab === 'patients' && <PatientRecords isDoctor={false} />}
+
         {/* Staff & access (admins) */}
         {activeTab === 'staff' && isAdmin && (
           <StaffManagement currentUser={user} doctors={doctors} />
@@ -966,7 +981,7 @@ export const ManagementDashboard: React.FC<Props> = ({ user, onLogout, portal })
           <div className="bg-white p-6 rounded-2xl border border-slate-200 space-y-4 animate-in fade-in duration-200">
             <h3 className="font-bold text-lg text-[#10294c]">Active Verified Doctors Directory</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {doctors.map((d) => (
+              {visibleDoctors.map((d) => (
                 <div key={d.id} className="bg-white p-4 rounded-2xl border border-slate-200 flex items-start space-x-3.5 shadow-sm">
                   <img src={d.photoUrl} alt={d.name} className="w-14 h-14 rounded-2xl object-cover border border-slate-200 shrink-0" />
                   <div className="min-w-0 flex-1">
