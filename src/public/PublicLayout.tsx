@@ -15,8 +15,6 @@ export const PublicLayout: React.FC = () => {
 
   const {
     hospitalInfo,
-    departments,
-    doctors,
     selectedDoctor,
     doctorAvail,
     setSelectedDoctor,
@@ -43,11 +41,7 @@ export const PublicLayout: React.FC = () => {
       <Footer hospitalInfo={hospitalInfo} />
 
       {/* Single Unified Voice Agent */}
-      <UnifiedVoiceAgent
-        departments={departments}
-        doctors={doctors}
-        hospitalInfo={hospitalInfo}
-      />
+      <UnifiedVoiceAgent />
 
       <DoctorDetailModal
         doctor={selectedDoctor}

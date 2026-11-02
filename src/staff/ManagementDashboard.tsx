@@ -983,7 +983,13 @@ export const ManagementDashboard: React.FC<Props> = ({ user, onLogout, portal })
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {visibleDoctors.map((d) => (
                 <div key={d.id} className="bg-white p-4 rounded-2xl border border-slate-200 flex items-start space-x-3.5 shadow-sm">
-                  <img src={d.photoUrl} alt={d.name} className="w-14 h-14 rounded-2xl object-cover border border-slate-200 shrink-0" />
+                  {d.photoUrl ? (
+                    <img src={d.photoUrl} alt={d.name} className="w-14 h-14 rounded-2xl object-cover border border-slate-200 shrink-0" />
+                  ) : (
+                    <div className="w-14 h-14 rounded-2xl bg-blue-50 text-blue-700 font-bold flex items-center justify-center border border-slate-200 shrink-0" aria-label={d.name}>
+                      {d.name.replace(/^Dr\.?\s*/, '').split(' ').slice(0, 2).map((n) => n[0]).join('')}
+                    </div>
+                  )}
                   <div className="min-w-0 flex-1">
                     <div className="font-bold text-[#10294c] text-sm truncate">{d.name}{!d.active && <span className="ml-2 text-[10px] text-amber-700">(hidden)</span>}</div>
                     <div className="text-[11px] text-slate-500 truncate">{d.designation}</div>
