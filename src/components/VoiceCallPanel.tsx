@@ -66,8 +66,8 @@ const CallInner: React.FC<Props> = ({ language }) => {
     } catch {
       setError(
         kn
-          ? 'ಮೈಕ್ರೊಫೋನ್ ಅನುಮತಿ ನೀಡಲಾಗಿಲ್ಲ. ಬ್ರೌಸರ್ ಸೆಟ್ಟಿಂಗ್‌ನಲ್ಲಿ ಅನುಮತಿಸಿ ಅಥವಾ "ಬುಕಿಂಗ್ & ಚಾಟ್" ಬಳಸಿ.'
-          : 'Microphone access was blocked. Allow it in your browser settings, or use Book & Chat instead.'
+          ? 'ಮೈಕ್ರೊಫೋನ್ ಅನುಮತಿ ನೀಡಲಾಗಿಲ್ಲ. ಬ್ರೌಸರ್ ಸೆಟ್ಟಿಂಗ್‌ನಲ್ಲಿ ಅನುಮತಿಸಿ.'
+          : 'Microphone access was blocked. Allow it in your browser settings.'
       );
       return;
     }
@@ -86,8 +86,8 @@ const CallInner: React.FC<Props> = ({ language }) => {
         <Phone className="w-10 h-10 text-slate-500" />
         <p className="text-sm text-slate-600 max-w-xs">
           {kn
-            ? `ಧ್ವನಿ ಕರೆ ಸೇವೆ ಶೀಘ್ರದಲ್ಲೇ ಲಭ್ಯ. ಈಗ ಅಪಾಯಿಂಟ್‌ಮೆಂಟ್‌ಗಾಗಿ "ಬುಕಿಂಗ್ & ಚಾಟ್" ಬಳಸಿ ಅಥವಾ ${RECEPTION_PHONE} ಗೆ ಕರೆ ಮಾಡಿ.`
-            : `Voice calling is being set up. For now, use Book & Chat or call reception on ${RECEPTION_PHONE}.`}
+            ? `ಧ್ವನಿ ಕರೆ ಸೇವೆ ಶೀಘ್ರದಲ್ಲೇ ಲಭ್ಯ. ಈಗ ಅಪಾಯಿಂಟ್‌ಮೆಂಟ್‌ಗಾಗಿ ${RECEPTION_PHONE} ಗೆ ಕರೆ ಮಾಡಿ.`
+            : `Voice calling is being set up. For now, call reception on ${RECEPTION_PHONE}.`}
         </p>
       </div>
     );
